@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<title>IT Help Desk</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --sb:#0f172a;--bg:#f8fafc;--bg2:#f1f5f9;--card:#fff;--border:#e2e8f0;--border2:#cbd5e1;
+  --in:#6366f1;--in-d:#4f46e5;--in-l:#eef2ff;--pu:#8b5cf6;--pu-l:#f5f3ff;
+  --gr:#10b981;--gr-l:#ecfdf5;--gr-d:#059669;--re:#ef4444;--re-l:#fef2f2;
+  --am:#f59e0b;--am-l:#fffbeb;--bl:#3b82f6;--bl-l:#eff6ff;--cy:#06b6d4;--cy-l:#ecfeff;
+  --sl:#64748b;--sh:0 1px 4px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.06);
+  --sh2:0 8px 32px rgba(0,0,0,.13);--r:12px;--rs:8px
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:'Cairo',sans-serif;background:var(--bg);color:#0f172a;height:100%;width:100%;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+button{cursor:pointer;border:none;font-family:'Cairo',sans-serif;font-weight:600;transition:.15s;outline:none}
+button:active:not(:disabled){transform:scale(.97)}
+input,select,textarea{font-family:'Cairo',sans-serif;border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 14px;width:100%;font-size:16px;background:var(--card);color:#0f172a;transition:.15s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--in);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+textarea{resize:vertical;min-height:80px}
+label{font-size:11px;font-weight:700;color:var(--sl);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.page{display:none}
+
+/* LOGIN */
+#loginPage.active{display:flex;min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(145deg,#0f172a 0%,#1e1b4b 55%,#2d1b69 100%);padding:16px;position:relative;overflow:hidden}
+.lg-bg{position:absolute;inset:0;overflow:hidden}
+.lg-orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orbF 8s ease-in-out infinite}
+.o1{width:500px;height:500px;background:rgba(99,102,241,.25);top:-150px;right:-100px}
+.o2{width:400px;height:400px;background:rgba(139,92,246,.2);bottom:-100px;left:-80px;animation-delay:-3s}
+.o3{width:300px;height:300px;background:rgba(6,182,212,.15);top:40%;left:35%;animation-delay:-5s}
+@keyframes orbF{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(20px,-20px)}}
+.lg-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06)1px,transparent 1px);background-size:32px 32px}
+.lg-card{position:relative;z-index:2;background:rgba(255,255,255,.07);backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:48px 44px;width:100%;max-width:420px;box-shadow:0 32px 80px rgba(0,0,0,.4);animation:cIn .45s cubic-bezier(.2,0,0,1)}
+@keyframes cIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.lg-brand{text-align:center;margin-bottom:34px}
+.lg-ic{width:68px;height:68px;border-radius:18px;background:linear-gradient(135deg,var(--in),var(--pu));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;box-shadow:0 8px 24px rgba(99,102,241,.5)}
+.lg-brand h1{font-size:21px;font-weight:900;color:#fff}
+.lg-brand p{font-size:12px;color:rgba(255,255,255,.45);margin-top:4px}
+.lg-g{margin-bottom:14px}
+.lg-g label{color:rgba(255,255,255,.5)}
+.lg-g input{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1);color:#fff;border-radius:10px;font-size:16px}
+.lg-g input::placeholder{color:rgba(255,255,255,.25)}
+.lg-g input:focus{border-color:var(--in);background:rgba(99,102,241,.15)}
+.pw-wrap{position:relative}
+.pw-btn{position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;color:rgba(255,255,255,.35);font-size:13px;padding:4px}
+.pw-btn-d{position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;color:var(--sl);font-size:13px;padding:4px}
+.lg-sub{width:100%;padding:13px;border-radius:11px;font-size:15px;font-weight:900;background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;margin-top:6px;box-shadow:0 6px 20px rgba(99,102,241,.45)}
+.lg-sub:hover:not(:disabled){filter:brightness(1.08)}
+.lg-sub:disabled{opacity:.55;cursor:not-allowed}
+.err-box{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);color:#fca5a5;padding:9px 14px;border-radius:8px;font-size:12px;text-align:center;margin-top:10px;display:none}
+
+/* APP LAYOUT */
+#appPage{display:none;width:100%;min-height:100%}
+#appPage.active{display:flex;min-height:100vh}
+.sidebar{width:232px;background:var(--sb);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100}
+.sb-logo{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:10px}
+.sb-logo-ic{width:34px;height:34px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff}
+.sb-logo-tx{font-size:14px;font-weight:900;color:#fff}
+.sb-logo-sb{font-size:9px;color:rgba(255,255,255,.3);margin-top:1px}
+.sb-user{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:9px}
+.sb-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}
+.sb-un{font-size:12px;font-weight:700;color:#fff;line-height:1.3}
+.sb-ur{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto}
+.sb-sec{font-size:9px;font-weight:700;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:1.5px;padding:12px 10px 5px}
+.sb-i{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:9px;color:rgba(255,255,255,.45);font-size:12px;font-weight:600;cursor:pointer;width:100%;background:none;margin-bottom:1px;transition:.15s;position:relative}
+.sb-i .ic{width:18px;text-align:center;font-size:13px;flex-shrink:0}
+.sb-i:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8)}
+.sb-i.active{background:rgba(99,102,241,.18);color:#818cf8}
+.sb-i.active::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--in);border-radius:2px 0 0 2px}
+.nb{margin-right:auto;background:var(--re);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:12px;animation:nbP 2s infinite}
+@keyframes nbP{0%,100%{opacity:1}50%{opacity:.7}}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.05)}
+.sb-out{width:100%;padding:9px;border-radius:9px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.18);color:#fca5a5;font-size:12px;display:flex;align-items:center;justify-content:center;gap:7px}
+.sb-out:hover{background:rgba(239,68,68,.18)}
+.main-area{flex:1;margin-right:232px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 22px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-ttl{font-size:14px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:8px}
+.tb-ttl i{color:var(--in)}
+.tb-r{display:flex;align-items:center;gap:10px}
+.tb-bell{position:relative;width:34px;height:34px;border-radius:9px;background:var(--bg2);display:flex;align-items:center;justify-content:center;color:var(--sl);font-size:14px;cursor:pointer}
+.tb-bell .dot{position:absolute;top:5px;left:5px;width:8px;height:8px;background:var(--re);border-radius:50%;border:2px solid var(--card);display:none}
+.tb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff}
+.np{position:absolute;top:calc(100% + 8px);left:0;width:310px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh2);z-index:200;display:none;overflow:hidden}
+.np.open{display:block}
+.np-hdr{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.np-hdr h4{font-size:13px;font-weight:800}
+.np-item{padding:10px 16px;border-bottom:1px solid var(--bg2);display:flex;gap:9px;cursor:pointer;transition:.12s}
+.np-item:hover{background:var(--bg)}
+.np-ic{width:30px;height:30px;border-radius:8px;background:var(--in-l);color:var(--in);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.np-tx{font-size:11px;font-weight:700;margin-bottom:2px}
+.np-sb{font-size:10px;color:var(--sl)}
+.np-empty{padding:20px;text-align:center;font-size:12px;color:var(--sl)}
+.content{flex:1;padding:22px;max-width:1280px;margin:0 auto;width:100%}
+
+/* MOBILE */
+.mob-hdr2{position:fixed;top:0;left:0;right:0;z-index:100;background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:0 16px;height:60px;display:none;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.mob-hdr2 .mh-logo{display:flex;align-items:center;gap:10px}
+.mob-hdr2 .mh-ic{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff}
+.mob-hdr2 .mh-tx{font-size:14px;font-weight:900;color:#fff}
+.mob-hdr2 .mh-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;border:2px solid rgba(255,255,255,.2)}
+.mob-body{display:none;width:100%;min-height:100vh;padding-top:60px;padding-bottom:80px;background:var(--bg)}
+.mob-bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:#fff;border-top:1px solid var(--border);display:none;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+.mob-bni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;cursor:pointer;background:none;color:var(--sl);font-size:9px;font-weight:700;transition:.2s;position:relative;border:none}
+.mob-bni .bni-ic{font-size:20px;transition:.2s}
+.mob-bni.active{color:var(--in)}
+.mob-bni.active .bni-ic{transform:scale(1.1)}
+.mob-bni.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:36px;height:3px;background:var(--in);border-radius:0 0 4px 4px}
+.mob-fab{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;font-size:20px;box-shadow:0 6px 20px rgba(99,102,241,.5);display:none;align-items:center;justify-content:center;z-index:99;border:3px solid #fff}
+.app.force-mobile-view{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;overflow:hidden;background:var(--bg)}
+.app.force-mobile-view .sidebar,.app.force-mobile-view .main-area{display:none!important}
+.app.force-mobile-view .mob-hdr2{display:flex;width:100%;max-width:none}
+.app.force-mobile-view .mob-bnav{display:grid;width:100%;max-width:none}
+.app.force-mobile-view .mob-body{display:block;position:absolute;top:60px;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom,0px));width:100%;height:auto;min-height:unset;max-width:none;padding-top:0;padding-bottom:24px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.app.force-mobile-view .mob-fab{display:flex}
+
+/* COMPONENTS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:16px}
+.card-h{font-size:13px;font-weight:800;color:#0f172a;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.card-h i{color:var(--in);font-size:14px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:16px 14px;position:relative;overflow:hidden;transition:.2s}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--sc,var(--in))}
+.sc-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;background:var(--sc-bg,var(--in-l));color:var(--sc,var(--in))}
+.sc-n{font-size:26px;font-weight:900;color:var(--sc,var(--in));line-height:1}
+.sc-l{font-size:10px;color:var(--sl);margin-top:4px;font-weight:600}
+.skel{background:linear-gradient(90deg,var(--bg2) 25%,var(--border) 50%,var(--bg2) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-c{height:90px;border-radius:var(--r);margin-bottom:12px}
+.skel-s{height:80px;border-radius:var(--r)}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.b-op{background:var(--bl-l);color:#1d4ed8;border:1px solid #bfdbfe}
+.b-as{background:var(--am-l);color:#92400e;border:1px solid #fde68a}
+.b-pr{background:var(--cy-l);color:#155e75;border:1px solid #a5f3fc}
+.b-cl{background:var(--gr-l);color:#065f46;border:1px solid #a7f3d0}
+.b-ov{background:var(--re-l);color:#991b1b;border:1px solid #fecaca;animation:bl 2s infinite}
+.b-ur{background:var(--re-l);color:#991b1b;border:1px solid #fecaca}
+.b-hi{background:var(--am-l);color:#92400e;border:1px solid #fde68a}
+.b-md{background:var(--bl-l);color:#1d4ed8;border:1px solid #bfdbfe}
+.b-lo{background:var(--pu-l);color:#5b21b6;border:1px solid #ddd6fe}
+.b-ac{background:var(--gr-l);color:#065f46;border:1px solid #a7f3d0}
+.b-in{background:var(--re-l);color:#991b1b;border:1px solid #fecaca}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.5}}
+.btn{padding:8px 16px;border-radius:var(--rs);font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px;transition:.15s}
+.btn-p{background:var(--in);color:#fff}.btn-p:hover{background:var(--in-d);box-shadow:0 3px 10px rgba(99,102,241,.35)}
+.btn-s{background:var(--gr-l);color:var(--gr-d);border:1px solid #a7f3d0}.btn-s:hover{background:#d1fae5}
+.btn-d{background:var(--re-l);color:#b91c1c;border:1px solid #fecaca}.btn-d:hover{background:#fee2e2}
+.btn-w{background:var(--am-l);color:#92400e;border:1px solid #fde68a}.btn-w:hover{background:#fef3c7}
+.btn-g{background:var(--bg2);color:#475569;border:1px solid var(--border)}.btn-g:hover{background:var(--border)}
+.btn-sm{padding:4px 10px;font-size:10px;border-radius:6px}
+.ti{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);padding:16px 18px;margin-bottom:10px;border-right:3px solid var(--in);transition:.15s}
+.ti:hover{box-shadow:var(--sh2)}
+.ti.c-cl{border-right-color:var(--gr);opacity:.82}.ti.c-ov,.ti.c-ur{border-right-color:var(--re)}.ti.c-hi{border-right-color:var(--am)}
+.ti-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.ti-id{font-size:10px;color:var(--sl);font-weight:700;font-family:monospace;display:flex;align-items:center;gap:4px}
+.ti-ttl{font-size:13px;font-weight:800;margin:3px 0 5px;line-height:1.4}
+.ti-meta{display:flex;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--sl)}
+.ti-meta span{display:flex;align-items:center;gap:3px}
+.ti-bgs{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
+.ti-desc{font-size:11px;color:var(--sl);margin:6px 0;line-height:1.6}
+.ti-acts{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bg2)}
+.assigned-by{font-size:10px;background:var(--cy-l);color:#155e75;border:1px solid #a5f3fc;border-radius:6px;padding:2px 8px;display:inline-flex;align-items:center;gap:4px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg-f{grid-column:1/-1}.fg-r{margin-bottom:2px}
+.f-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.tw{overflow-x:auto;border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--bg);padding:9px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--sl);border-bottom:1px solid var(--border);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+td{padding:9px 12px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle}
+tr:hover td{background:var(--bg)}tr:last-child td{border-bottom:none}
+.cr{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.cw{position:relative;height:200px}
+.ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1000;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(5px)}
+.ov.open{display:flex;animation:foIn .18s ease}
+@keyframes foIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.18);animation:mIn .2s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.modal-h h3{font-size:16px;font-weight:900;display:flex;align-items:center;gap:7px}
+.modal-h h3 i{color:var(--in)}
+.modal-x{background:var(--bg2);border:1px solid var(--border);font-size:12px;color:var(--sl);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.modal-x:hover{background:var(--re-l);color:var(--re);border-color:#fecaca}
+.pb{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;flex:1}
+.pbf{height:100%;background:linear-gradient(90deg,var(--in),var(--pu));border-radius:3px}
+.empty{text-align:center;padding:50px 16px;color:var(--sl)}
+.empty i{font-size:40px;opacity:.2;display:block;margin-bottom:10px}
+.empty h3{font-size:14px;font-weight:700;margin-bottom:4px}.empty p{font-size:12px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--sb);color:#fff;padding:10px 20px;border-radius:24px;font-size:12px;font-weight:600;z-index:9999;opacity:0;pointer-events:none;transition:.22s;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:7px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(-5px)}
+#toast.terr{background:var(--re)}#toast.tok{background:var(--gr-d)}
+.sr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sr input,.sr select{flex:1;min-width:130px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite;vertical-align:middle}
+.spin-d{border-color:rgba(99,102,241,.2);border-top-color:var(--in)}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+.role-user{background:var(--bl-l);color:#1d4ed8;border:1px solid #bfdbfe}
+.role-it{background:var(--pu-l);color:#5b21b6;border:1px solid #ddd6fe}
+.role-manager{background:var(--am-l);color:#92400e;border:1px solid #fde68a}
+.role-admin{background:var(--re-l);color:#991b1b;border:1px solid #fecaca}
+.role-it_manager{background:linear-gradient(135deg,var(--in-l),var(--pu-l));color:#4338ca;border:1px solid #c7d2fe}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ig-i label{font-size:9px;color:var(--sl);text-transform:uppercase;letter-spacing:.5px}
+.ig-i strong{display:block;font-size:12px;margin-top:2px}
+.hi{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg2)}
+.hd{width:7px;height:7px;border-radius:50%;background:var(--in);margin-top:5px;flex-shrink:0}
+.ht{font-size:9px;color:var(--sl)}
+.mb-tab{animation:fadeIn .2s ease;width:100%}
+.mob-hero{background:linear-gradient(145deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);padding:24px 18px 28px;position:relative;overflow:hidden}
+.mob-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--card);border-bottom:1px solid var(--border)}
+.mob-stat{padding:14px 6px;text-align:center;position:relative}
+.mob-stat+.mob-stat::before{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--border)}
+.mob-stat .msn{font-size:22px;font-weight:900;line-height:1}
+.mob-stat .msl{font-size:9px;color:var(--sl);margin-top:3px;font-weight:600}
+.mob-qa{margin:16px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,var(--in),var(--pu));padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 24px rgba(99,102,241,.35);cursor:pointer;transition:.15s}
+.mob-qa:active{transform:scale(.97)}
+.mob-qa .qa-ic{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0}
+.mob-qa .qa-tx{color:#fff}.mob-qa .qa-tx h3{font-size:15px;font-weight:900}.mob-qa .qa-tx p{font-size:11px;opacity:.7;margin-top:2px}
+.mob-qa .qa-arr{margin-right:auto;color:rgba(255,255,255,.6);font-size:18px}
+.mob-sec{padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.mob-sec h3{font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+.mob-sec h3 i{color:var(--in);font-size:12px}
+.mob-tc{margin:0 16px 10px;background:var(--card);border-radius:14px;padding:14px 16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;gap:12px}
+.mob-tc-l{width:4px;height:44px;border-radius:4px;flex-shrink:0}
+.mob-tc-body{flex:1;min-width:0}
+.mob-tc-tt{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mob-tc-meta{font-size:10px;color:var(--sl);margin-top:3px}
+.mob-tc-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mob-form{padding:16px;width:100%}
+.mob-form-hdr{margin-bottom:20px}
+.mob-form-hdr h2{font-size:18px;font-weight:900;display:flex;align-items:center;gap:8px}
+.mob-form-hdr h2 i{color:var(--in)}
+.mob-form-hdr p{font-size:11px;color:var(--sl);margin-top:3px}
+.prob-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;width:100%}
+.prob-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:.15s;background:var(--card);display:flex;flex-direction:column;align-items:center;gap:6px}
+.prob-btn .pb-ic{font-size:24px}
+.prob-btn .pb-tx{font-size:11px;font-weight:700;color:#374151}
+.prob-btn:active{transform:scale(.96)}
+.prob-btn.selected{border-color:var(--in);background:var(--in-l)}
+.prob-btn.selected .pb-tx{color:var(--in-d)}
+.pri-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;width:100%}
+.pri-btn{border:2px solid var(--border);border-radius:10px;padding:9px 4px;text-align:center;cursor:pointer;transition:.15s;background:var(--card);font-size:10px;font-weight:700;color:var(--sl)}
+.pri-btn.sel-منخفضة{border-color:#10b981;background:#ecfdf5;color:#065f46}
+.pri-btn.sel-متوسطة{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
+.pri-btn.sel-عالية{border-color:#f59e0b;background:#fffbeb;color:#92400e}
+.pri-btn.sel-عاجلة{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+.dev-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;scrollbar-width:none;width:100%}
+.dev-row::-webkit-scrollbar{display:none}
+.dev-chip{border:2px solid var(--border);border-radius:24px;padding:7px 14px;white-space:nowrap;cursor:pointer;transition:.15s;background:var(--card);font-size:11px;font-weight:700;color:var(--sl);flex-shrink:0}
+.dev-chip.selected{border-color:var(--in);background:var(--in-l);color:var(--in-d)}
+.mob-desc{background:var(--bg2);border:2px solid var(--border);border-radius:14px;padding:14px;width:100%;font-size:16px;min-height:110px;margin-bottom:20px;transition:.15s;display:block}
+.mob-desc:focus{border-color:var(--in);background:var(--card);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.mob-submit{width:100%;padding:16px;border-radius:14px;font-size:15px;font-weight:900;background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;box-shadow:0 8px 20px rgba(99,102,241,.4);display:flex;align-items:center;justify-content:center;gap:8px}
+.mob-submit:disabled{opacity:.6;cursor:not-allowed}
+.mob-success{display:none;position:fixed;inset:0;background:#fff;z-index:500;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px}
+.mob-success.show{display:flex;animation:cIn .4s ease}
+.success-ic{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;margin-bottom:20px;box-shadow:0 12px 30px rgba(16,185,129,.4)}
+.pw-modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:2000;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(5px)}
+.pw-modal-overlay.open{display:flex}
+.pw-modal{background:var(--card);border-radius:18px;padding:24px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;border-right:4px solid var(--in);box-shadow:var(--sh);transition:.15s}
+.gcard:hover{box-shadow:var(--sh2)}
+.gcard.g-warn{border-right-color:var(--re)}.gcard.g-imp{border-right-color:var(--am)}.gcard.g-info{border-right-color:var(--bl)}
+.gcard-top{display:flex;align-items:flex-start;gap:12px}.gcard-ic{font-size:26px;flex-shrink:0;margin-top:2px}.gcard-body{flex:1}
+.gcard-ttl{font-size:13px;font-weight:800;margin-bottom:5px}.gcard-cnt{font-size:12px;color:var(--sl);line-height:1.7}
+.gcard-acts{display:flex;gap:5px;margin-top:10px}
+.dev-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.dev-tab-btn{border:2px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;color:var(--sl);background:var(--card);cursor:pointer;transition:.15s}
+.dev-tab-btn.active{border-color:var(--in);background:var(--in-l);color:var(--in-d)}
+.mentry{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;box-shadow:var(--sh);overflow:hidden}
+.mentry-hdr{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.12s}.mentry-hdr:hover{background:var(--bg)}
+.mentry-ic{font-size:22px;flex-shrink:0}.mentry-info{flex:1}.mentry-ttl{font-size:13px;font-weight:800}.mentry-sub{font-size:10px;color:var(--sl);margin-top:2px}
+.mentry-body{display:none;padding:0 16px 16px;border-top:1px solid var(--bg2)}.mentry-body.open{display:block}
+.step-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg2)}.step-item:last-child{border-bottom:none}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--in);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-tx{font-size:12px;color:#374151;line-height:1.6}
+/* AI */
+.ai-wrap{display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:400px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.ai-hdr{background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:14px 18px;display:flex;align-items:center;gap:10px}
+.ai-hdr-ic{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0}
+.ai-hdr-tx h3{font-size:13px;font-weight:900;color:#fff}.ai-hdr-tx p{font-size:10px;color:rgba(255,255,255,.45);margin-top:2px}
+.ai-dev-sel{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;background:var(--bg2)}
+.ai-dev-chip{border:2px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--sl);background:var(--card);cursor:pointer;transition:.15s}
+.ai-dev-chip.selected{border-color:var(--in);background:var(--in-l);color:var(--in-d)}
+.ai-limit-bar{padding:8px 16px;background:#fefce8;border-bottom:1px solid #fde68a;display:flex;align-items:center;gap:8px;font-size:11px;color:#92400e}
+.ai-limit-dots{display:flex;gap:4px;margin-right:auto}
+.ai-dot-ind{width:10px;height:10px;border-radius:50%;background:var(--border);transition:.3s}
+.ai-dot-ind.used{background:var(--in)}.ai-dot-ind.warn{background:var(--am)}.ai-dot-ind.danger{background:var(--re)}
+.ai-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ai-msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.7;animation:fadeIn .2s ease}
+.ai-msg.bot{background:var(--in-l);color:#1e1b4b;border:1px solid #c7d2fe;border-radius:12px 12px 12px 2px;align-self:flex-end}
+.ai-msg.user{background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;border-radius:12px 12px 2px 12px;align-self:flex-start}
+.ai-msg.sys{background:var(--bg2);color:var(--sl);font-size:11px;border-radius:8px;align-self:center;font-style:italic}
+.ai-msg.learn{background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:#065f46;border:1px solid #a7f3d0;font-size:11px;border-radius:8px;align-self:center}
+.ai-ticket-btn{background:linear-gradient(135deg,var(--gr-d),#059669);color:#fff;border-radius:10px;padding:10px 18px;font-size:12px;font-weight:700;margin-top:6px;display:flex;align-items:center;gap:6px;align-self:flex-end}
+.ai-inp-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--bg2)}
+.ai-inp{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;background:var(--card)}.ai-inp:focus{border-color:var(--in)}
+.ai-send{background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;border-radius:10px;padding:9px 16px;font-size:13px}.ai-send:disabled{opacity:.5}
+.ai-reset{background:var(--bg2);border:1px solid var(--border);color:var(--sl);border-radius:10px;padding:9px 12px;font-size:11px}
+.ai-typing{display:flex;align-items:center;gap:4px;padding:8px 12px;background:var(--in-l);border-radius:10px;border:1px solid #c7d2fe;align-self:flex-end;font-size:11px;color:var(--in-d)}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--in);animation:aiDot 1.2s infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes aiDot{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+/* MOBILE AI */
+.mob-support-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin:0 16px 12px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.mob-support-card:active{transform:scale(.97)}
+.msc-ic{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.msc-tx h3{font-size:14px;font-weight:800;color:#0f172a}.msc-tx p{font-size:11px;color:var(--sl);margin-top:2px}
+.mob-ai-wrap{display:flex;flex-direction:column;height:calc(100vh - 140px);overflow:hidden}
+.mob-ai-msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+.mob-ai-inp-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;background:#fff}
+.mob-ai-inp{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:15px;background:var(--bg)}.mob-ai-inp:focus{border-color:var(--in);background:var(--card);outline:none}
+.mob-ai-send{background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;border-radius:10px;padding:10px 14px;font-size:15px}
+/* MY INFO */
+.info-card{background:var(--card);border-radius:16px;padding:18px;margin:12px 16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.info-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg2)}
+.info-row:last-child{border-bottom:none}
+.info-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.info-label{font-size:9px;color:var(--sl);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.info-val{font-size:13px;font-weight:700;margin-top:2px}
+/* DEVICES */
+.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg2);position:relative}
+.upload-zone:hover{border-color:var(--in);background:var(--in-l)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone .uz-ic{font-size:28px;margin-bottom:8px}
+.upload-zone .uz-tx{font-size:12px;color:var(--sl);font-weight:600}
+.attach-preview{max-width:100%;max-height:200px;border-radius:8px;margin-top:6px;object-fit:cover}
+.dev-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;border-right:4px solid var(--in);box-shadow:var(--sh)}
+.dev-card.status-done{border-right-color:var(--gr)}.dev-card.status-out{border-right-color:var(--gr-d);opacity:.8}.dev-card.status-in{border-right-color:var(--am)}
+.dev-status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700}
+.ds-in{background:var(--am-l);color:#92400e;border:1px solid #fde68a}.ds-done{background:var(--gr-l);color:#065f46;border:1px solid #a7f3d0}.ds-out{background:var(--bl-l);color:#1d4ed8;border:1px solid #bfdbfe}
+.steps-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}.step-row{display:flex;gap:6px;align-items:center}.step-row input{flex:1}
+.step-row button{width:28px;height:28px;border-radius:6px;background:var(--re-l);color:var(--re);border:1px solid #fecaca;flex-shrink:0;font-size:12px}
+@media(max-width:600px){.fg{grid-template-columns:1fr}.fg-f{grid-column:1}.cr{grid-template-columns:1fr}.content{padding:14px}.sg{grid-template-columns:repeat(2,1fr)}.ig{grid-template-columns:1fr}}
+#mn-img-label:active{border-color:var(--in);background:var(--in-l)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="page active">
+  <div class="lg-bg"><span class="lg-orb o1"></span><span class="lg-orb o2"></span><span class="lg-orb o3"></span></div>
+  <div class="lg-dots"></div>
+  <div class="lg-card">
+    <div class="lg-brand">
+      <div class="lg-ic"><i class="fas fa-laptop-code"></i></div>
+      <h1>IT Help Desk</h1>
+      <p>نظام الدعم التقني وطلبات الصيانة</p>
+    </div>
+    <div class="lg-g">
+      <label><i class="fas fa-id-badge" style="margin-left:4px"></i>رقم البصمة</label>
+      <input id="li-id" type="text" placeholder="مثال: EMP-001" autocomplete="off" autocapitalize="characters"/>
+    </div>
+    <div class="lg-g">
+      <label><i class="fas fa-lock" style="margin-left:4px"></i>الرمز السري</label>
+      <div class="pw-wrap">
+        <input id="li-pw" type="password" placeholder="ادخل الرمز السري" autocomplete="current-password"/>
+        <button class="pw-btn" type="button" onclick="tpw('li-pw','li-ei')"><i class="fas fa-eye" id="li-ei"></i></button>
+      </div>
+    </div>
+    <button class="lg-sub" id="lgBtn" onclick="doLogin()"><i class="fas fa-sign-in-alt" style="margin-left:6px"></i>تسجيل الدخول</button>
+    <div class="err-box" id="lgErr"></div>
+  </div>
+</div>
+
+<!-- APP PAGE -->
+<div id="appPage" class="page app">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-ic"><i class="fas fa-laptop-code"></i></div>
+      <div><div class="sb-logo-tx">IT Help Desk</div><div class="sb-logo-sb">v10 Pro</div></div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-av" id="sb-av">?</div>
+      <div><div class="sb-un" id="sb-n">—</div><div class="sb-ur" id="sb-r">—</div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec s-staff" style="display:none">الرئيسية</div>
+      <button class="sb-i s-staff" data-t="dashboard" onclick="goTab('dashboard',this)" style="display:none"><span class="ic"><i class="fas fa-chart-line"></i></span>لوحة التحكم</button>
+      <button class="sb-i s-staff" data-t="tickets" onclick="goTab('tickets',this)" style="display:none"><span class="ic"><i class="fas fa-clipboard-list"></i></span>البلاغات</button>
+      <button class="sb-i s-staff" data-t="overdue" onclick="goTab('overdue',this)" style="display:none"><span class="ic"><i class="fas fa-clock"></i></span>المتأخرة<span class="nb" id="nb-ov" style="display:none">0</span></button>
+      <button class="sb-i s-staff" data-t="reports" onclick="goTab('reports',this)" style="display:none"><span class="ic"><i class="fas fa-chart-pie"></i></span>التقارير</button>
+      <div class="sb-sec s-it" style="display:none">العمليات</div>
+      <button class="sb-i s-it" data-t="newTicket" onclick="goTab('newTicket',this)" style="display:none"><span class="ic"><i class="fas fa-plus-circle"></i></span>إرسال بلاغ</button>
+      <button class="sb-i s-it" data-t="devices" onclick="goTab('devices',this)" style="display:none"><span class="ic"><i class="fas fa-laptop-medical"></i></span>إدارة الأجهزة</button>
+      <button class="sb-i s-it" data-t="internet-users" onclick="goTab('internet-users',this)" style="display:none"><span class="ic"><i class="fas fa-wifi"></i></span>يوزرات الإنترنت</button>
+      <div class="sb-sec s-tech" style="display:none">الصيانة</div>
+      <button class="sb-i s-tech" data-t="devices" onclick="goTab('devices',this)" style="display:none"><span class="ic"><i class="fas fa-wrench"></i></span>أجهزتي للصيانة</button>
+      <button class="sb-i s-tech" data-t="tech-stats" onclick="goTab('tech-stats',this)" style="display:none"><span class="ic"><i class="fas fa-chart-bar"></i></span>إنجازاتي</button>
+      <button class="sb-i s-tech" data-t="tech-ticket" onclick="goTab('tech-ticket',this)" style="display:none"><span class="ic"><i class="fas fa-plus-circle"></i></span>إرسال بلاغ</button>
+      <button class="sb-i s-admin" data-t="users" onclick="goTab('users',this)" style="display:none"><span class="ic"><i class="fas fa-users"></i></span>الموظفون</button>
+      <button class="sb-i s-admin" data-t="newUser" onclick="goTab('newUser',this)" style="display:none"><span class="ic"><i class="fas fa-user-plus"></i></span>موظف جديد</button>
+      <button class="sb-i s-admin" data-t="depts" onclick="goTab('depts',this)" style="display:none"><span class="ic"><i class="fas fa-building"></i></span>إدارة الأقسام</button>
+      <div class="sb-sec s-mgr" style="display:none">المراقبة</div>
+      <button class="sb-i s-mgr" data-t="newTicket" onclick="goTab('newTicket',this)" style="display:none"><span class="ic"><i class="fas fa-plus-circle"></i></span>إرسال بلاغ</button>
+      <!-- موظف عادي على الديسكتوب -->
+      <div class="sb-sec s-user-desk" style="display:none">بلاغاتي</div>
+      <button class="sb-i s-user-desk" data-t="userHome" onclick="goTab('userHome',this)" style="display:none"><span class="ic"><i class="fas fa-home"></i></span>الرئيسية</button>
+      <button class="sb-i s-user-desk" data-t="newTicketDesk" onclick="goTab('newTicketDesk',this)" style="display:none"><span class="ic"><i class="fas fa-plus-circle"></i></span>بلاغ جديد</button>
+      <button class="sb-i s-user-desk" data-t="myTicketsDesk" onclick="goTab('myTicketsDesk',this)" style="display:none"><span class="ic"><i class="fas fa-clipboard-list"></i></span>بلاغاتي</button>
+      <button class="sb-i s-user-desk" data-t="ai-desk" onclick="goTab('ai-desk',this)" style="display:none"><span class="ic"><i class="fas fa-robot"></i></span>المساعد الذكي</button>
+      <div class="sb-sec s-staff" style="display:none">قاعدة المعرفة</div>
+      <button class="sb-i s-staff" data-t="view-guidelines" onclick="goTab('view-guidelines',this)" style="display:none"><span class="ic"><i class="fas fa-shield-alt"></i></span>التوجيهات</button>
+      <button class="sb-i s-staff" data-t="view-manual" onclick="goTab('view-manual',this)" style="display:none"><span class="ic"><i class="fas fa-book"></i></span>كتيب التعليمات</button>
+      <button class="sb-i s-staff" data-t="ai-desk" onclick="goTab('ai-desk',this)" style="display:none"><span class="ic"><i class="fas fa-robot"></i></span>المساعد الذكي</button>
+    </nav>
+    <div class="sb-foot"><button class="sb-out" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i>تسجيل الخروج</button></div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="tb-ttl" id="pgTitle"><i class="fas fa-chart-line"></i>لوحة التحكم</div>
+      <div class="tb-r">
+        <!-- يوزر الإنترنت — يظهر لكل الأدوار -->
+        <div id="tb-iuser" style="display:none;align-items:center;gap:6px;background:var(--in-l);border:1px solid #c7d2fe;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--in-d)">
+          <i class="fas fa-wifi"></i>
+          <span id="tb-iuser-val" class="user-internet-badge">—</span>
+        </div>
+        <div class="tb-bell s-it" id="bellBtn" onclick="toggleNP()" style="display:none">
+          <i class="fas fa-bell"></i><div class="dot" id="nb2"></div>
+          <div class="np" id="npanel">
+            <div class="np-hdr"><h4><i class="fas fa-bell" style="color:var(--in);margin-left:5px"></i>إشعارات</h4><button class="btn btn-g btn-sm" onclick="event.stopPropagation();clearNP()">مسح</button></div>
+            <div id="npList"><div class="np-empty">لا توجد إشعارات</div></div>
+          </div>
+        </div>
+        <div class="tb-av" id="tb-av">?</div>
+      </div>
+    </header>
+    <main class="content">
+      <div id="tab-dashboard" class="tab" style="display:none">
+        <div class="sg" id="d-sg"><div class="skel skel-s"></div><div class="skel skel-s"></div><div class="skel skel-s"></div><div class="skel skel-s"></div></div>
+        <div class="cr">
+          <div class="card"><div class="card-h"><i class="fas fa-circle-half-stroke"></i>حسب الحالة</div><div class="cw"><canvas id="cSt"></canvas></div></div>
+          <div class="card"><div class="card-h"><i class="fas fa-signal"></i>حسب الأولوية</div><div class="cw"><canvas id="cPr"></canvas></div></div>
+        </div>
+        <div class="card" id="d-perf" style="display:none"><div class="card-h"><i class="fas fa-trophy"></i>أداء فريق IT</div><div class="tw"><table id="perfTbl"><thead><tr><th>الاسم</th><th>الكل</th><th>محلول</th><th>مفتوح</th><th>معدل</th><th>متوسط الوقت</th></tr></thead><tbody></tbody></table></div></div>
+        <div class="card" id="d-prob" style="display:none"><div class="card-h"><i class="fas fa-fire"></i>أكثر الأعطال تكراراً</div><div id="probList"></div></div>
+      </div>
+      <div id="tab-tickets" class="tab" style="display:none">
+        <div class="card"><div class="card-h"><i class="fas fa-clipboard-list"></i>قائمة البلاغات</div>
+          <div class="sr"><input id="f-q" placeholder="🔍 بحث..." oninput="debLoad()"/><select id="f-st" onchange="loadTickets()"><option value="all">كل الحالات</option><option value="جديدة">جديدة</option><option value="معينة">معينة</option><option value="قيد المعالجة">قيد المعالجة</option><option value="تم حل البلاغ">تم حل البلاغ</option></select><select id="f-pr" onchange="loadTickets()"><option value="all">كل الأولويات</option><option value="عاجلة">عاجلة</option><option value="عالية">عالية</option><option value="متوسطة">متوسطة</option><option value="منخفضة">منخفضة</option></select><button class="btn btn-g btn-sm" onclick="loadTickets()"><i class="fas fa-sync"></i></button></div>
+          <div id="tList"></div></div>
+      </div>
+      <div id="tab-overdue" class="tab" style="display:none">
+        <div style="background:linear-gradient(135deg,#fef2f2,#fee2e2);border:1px solid #fecaca;border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;border-radius:9px;background:var(--re);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0"><i class="fas fa-exclamation-triangle"></i></div><div><h3 style="font-size:13px;font-weight:800;color:#991b1b">البلاغات المتأخرة (أكثر من 48 ساعة)</h3><p id="ov-sub" style="font-size:11px;color:#b91c1c;margin-top:2px">جارٍ التحميل...</p></div></div>
+        <div id="ovList"></div>
+      </div>
+      <div id="tab-reports" class="tab" style="display:none">
+        <div class="cr"><div class="card"><div class="card-h"><i class="fas fa-chart-doughnut"></i>توزيع الحالات</div><div class="cw"><canvas id="cSt2"></canvas></div></div><div class="card"><div class="card-h"><i class="fas fa-chart-pie"></i>توزيع الأولويات</div><div class="cw"><canvas id="cPr2"></canvas></div></div></div>
+        <div class="cr"><div class="card"><div class="card-h"><i class="fas fa-chart-line"></i>البلاغات اليومية</div><div class="cw"><canvas id="cDy"></canvas></div></div><div class="card"><div class="card-h"><i class="fas fa-users"></i>أداء الفريق</div><div class="cw"><canvas id="cTm"></canvas></div></div></div>
+        <div class="card"><div class="card-h"><i class="fas fa-file-alt"></i>ملخص تنفيذي</div><div id="r-sum" class="sg"></div></div>
+      </div>
+      <div id="tab-newTicket" class="tab" style="display:none">
+        <div class="card"><div class="card-h"><i class="fas fa-plus-circle"></i>إنشاء بلاغ جديد</div>
+          <div class="fg">
+            <div class="fg-r"><label>نوع المشكلة *</label><select id="nt-p"><option value="">اختر...</option><option>عطل جهاز</option><option>مشكلة شبكة</option><option>مشكلة برنامج</option><option>طلب تثبيت</option><option>طلب تحديث</option><option>مشكلة طابعة</option><option>مشكلة إيميل</option><option>استرجاع بيانات</option><option>صلاحيات وصول</option><option>أخرى</option></select></div>
+            <div class="fg-r"><label>الأولوية *</label><select id="nt-pri"><option value="منخفضة">منخفضة</option><option value="متوسطة" selected>متوسطة</option><option value="عالية">عالية</option><option value="عاجلة">عاجلة</option></select></div>
+            <div class="fg-r"><label>نوع الجهاز</label><select id="nt-di"><option value="">اختر...</option><option value="laptop">💻 لابتوب</option><option value="desktop">🖥️ كمبيوتر</option><option value="printer">🖨️ طابعة</option><option value="phone">📱 هاتف</option><option value="network">🌐 شبكة</option><option value="server">🗄️ سيرفر</option><option value="other">🔧 أخرى</option></select></div>
+            <div class="fg-r fg-f"><label>وصف المشكلة *</label><textarea id="nt-d" rows="4" placeholder="اشرح المشكلة بالتفصيل..."></textarea></div>
+          </div>
+          <div class="f-acts"><button class="btn btn-p" onclick="subITTicket()"><i class="fas fa-paper-plane"></i>إرسال البلاغ</button></div>
+        </div>
+      </div>
+      <div id="tab-users" class="tab" style="display:none">
+        <div class="card"><div class="card-h"><i class="fas fa-users"></i>إدارة الموظفين</div>
+          <div class="sr"><input id="uQ" placeholder="🔍 بحث..." oninput="filterUsers()"/><button class="btn btn-g btn-sm" onclick="loadUsers()"><i class="fas fa-sync"></i></button></div>
+          <div class="tw"><table><thead><tr><th>رقم البصمة</th><th>الاسم</th><th>القسم</th><th>الدور</th><th>الحالة</th><th>آخر دخول</th><th>إجراءات</th></tr></thead><tbody id="uTbody"></tbody></table></div>
+        </div>
+      </div>
+      <div id="tab-newUser" class="tab" style="display:none">
+        <div class="card"><div class="card-h"><i class="fas fa-user-plus"></i>إضافة موظف جديد</div>
+          <div class="fg">
+            <div class="fg-r"><label>الاسم الأول *</label><input id="nu-f" placeholder="علي"/></div>
+            <div class="fg-r"><label>الاسم الأخير *</label><input id="nu-l" placeholder="أحمد"/></div>
+            <div class="fg-r"><label>رقم البصمة *</label><input id="nu-id" placeholder="EMP-XXX"/></div>
+            <div class="fg-r"><label>رقم الهاتف *</label><input id="nu-ph" placeholder="07XXXXXXXXX"/></div>
+            <div class="fg-r"><label>القسم *</label><select id="nu-dp"><option value="">اختر القسم...</option></select></div>
+            <div class="fg-r"><label>الدور *</label><select id="nu-ro" onchange="onRoleChange(this.value)">
+              <option value="user">موظف عادي</option>
+              <option value="tech" class="opt-admin" style="display:none">🔧 فني صيانة</option>
+              <option value="it" class="opt-admin" style="display:none">💻 فريق IT</option>
+              <option value="manager">👁️ مراقب / مدير</option>
+              <option value="it_manager" class="opt-admin" style="display:none">⭐ مسؤول IT</option>
+              <option value="admin" class="opt-admin" style="display:none">👑 أدمن</option>
+            </select></div>
+            <div class="fg-r fg-f" id="email-row" style="display:none"><label>إيميل الإشعارات</label><input id="nu-em" type="email" placeholder="name@company.com" dir="ltr"/></div>
+            <div class="fg-r fg-f"><label>كلمة المرور *</label><div class="pw-wrap"><input id="nu-pw" type="password" placeholder="ادخل كلمة المرور" autocomplete="new-password"/><button class="pw-btn-d" type="button" onclick="tpw('nu-pw','nu-ei')"><i class="fas fa-eye" id="nu-ei"></i></button></div></div>
+          </div>
+          <div class="f-acts"><button class="btn btn-p" onclick="subUser()"><i class="fas fa-save"></i>إضافة الموظف</button></div>
+        </div>
+      </div>
+      <div id="tab-depts" class="tab" style="display:none">
+        <div class="card"><div class="card-h"><i class="fas fa-building"></i>إدارة الأقسام</div>
+          <div style="display:flex;gap:8px;margin-bottom:16px"><input id="dept-new" placeholder="اسم القسم الجديد..."/><button class="btn btn-p" onclick="addDept()"><i class="fas fa-plus"></i>إضافة</button></div>
+          <div id="deptList"></div>
+        </div>
+      </div>
+      <div id="tab-view-guidelines" class="tab" style="display:none">
+        <div class="card"><div class="card-h" style="justify-content:space-between"><span><i class="fas fa-shield-alt"></i>التوجيهات والأنظمة</span><button id="addGuideBtn" class="btn btn-p btn-sm" onclick="openGuideModal()" style="display:none"><i class="fas fa-plus"></i>إضافة</button></div><div id="guideList"><div class="skel skel-c"></div></div></div>
+      </div>
+      <div id="tab-view-manual" class="tab" style="display:none">
+        <div class="card"><div class="card-h" style="justify-content:space-between"><span><i class="fas fa-book"></i>كتيب التعليمات</span><button id="addManualBtn" class="btn btn-p btn-sm" onclick="openManualModal()" style="display:none"><i class="fas fa-plus"></i>إضافة</button></div>
+          <div class="dev-tabs" id="deskDevTabs"><button class="dev-tab-btn active" onclick="switchDeskDev(this,'')">🔍 الكل</button><button class="dev-tab-btn" onclick="switchDeskDev(this,'desktop')">🖥️ الحاسبة</button><button class="dev-tab-btn" onclick="switchDeskDev(this,'laptop')">💻 لابتوب</button><button class="dev-tab-btn" onclick="switchDeskDev(this,'printer')">🖨️ طابعة</button><button class="dev-tab-btn" onclick="switchDeskDev(this,'network')">🌐 شبكة</button><button class="dev-tab-btn" onclick="switchDeskDev(this,'phone')">📱 هاتف</button></div>
+          <div id="manualList"><div class="skel skel-c"></div></div>
+        </div>
+      </div>
+      <div id="tab-ai-desk" class="tab" style="display:none">
+        <div class="ai-wrap">
+          <div class="ai-hdr">
+            <div class="ai-hdr-ic"><i class="fas fa-robot"></i></div>
+            <div class="ai-hdr-tx"><h3>المساعد الذكي المتطور</h3><p>يتعلم تلقائياً من حلول فريق IT — 7 رسائل كحد أقصى</p></div>
+            <button class="btn btn-g btn-sm" style="margin-right:auto" onclick="resetAI('desk')"><i class="fas fa-redo"></i>جديد</button>
+          </div>
+          <div class="ai-dev-sel" id="deskAiDevSel">
+            <button class="ai-dev-chip" onclick="pickAIDev(this,'desktop','desk')">🖥️ الحاسبة</button>
+            <button class="ai-dev-chip" onclick="pickAIDev(this,'laptop','desk')">💻 لابتوب</button>
+            <button class="ai-dev-chip" onclick="pickAIDev(this,'printer','desk')">🖨️ طابعة</button>
+            <button class="ai-dev-chip" onclick="pickAIDev(this,'network','desk')">🌐 شبكة</button>
+            <button class="ai-dev-chip" onclick="pickAIDev(this,'phone','desk')">📱 هاتف</button>
+            <button class="ai-dev-chip" onclick="pickAIDev(this,'other','desk')">🔧 أخرى</button>
+          </div>
+          <div class="ai-limit-bar" id="deskAiLimitBar" style="display:none">
+            <span>💬 الرسائل المتبقية:</span>
+            <div class="ai-limit-dots" id="deskAiDots"></div>
+          </div>
+          <div class="ai-msgs" id="deskAiMsgs"><div class="ai-msg sys">👋 اختر نوع الجهاز أعلاه للبدء</div></div>
+          <div class="ai-inp-row">
+            <button class="ai-reset" onclick="resetAI('desk')"><i class="fas fa-trash"></i></button>
+            <input class="ai-inp" id="deskAiInp" placeholder="اكتب رسالتك..." disabled onkeydown="if(event.key==='Enter'){event.preventDefault();sendAIMsg('desk')}"/>
+            <button class="ai-send" id="deskAiSend" onclick="sendAIMsg('desk')" disabled><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- تاب الرئيسية للموظف على الديسكتوب -->
+      <div id="tab-userHome" class="tab" style="display:none">
+        <div style="background:linear-gradient(135deg,var(--in),var(--pu));border-radius:var(--r);padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;gap:20px">
+          <div style="width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;flex-shrink:0" id="desk-user-av">?</div>
+          <div style="flex:1">
+            <div style="font-size:20px;font-weight:900;color:#fff" id="desk-user-name">—</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px" id="desk-user-dept">—</div>
+          </div>
+          <!-- يوزر الإنترنت بارز -->
+          <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 18px;text-align:center">
+            <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;margin-bottom:4px">يوزر الإنترنت</div>
+            <div style="font-size:16px;font-weight:900;color:#fff;font-family:monospace" id="desk-user-iuser">—</div>
+          </div>
+        </div>
+        <div class="sg" id="desk-user-stats">
+          <div class="sc" style="--sc:var(--in);--sc-bg:var(--in-l)"><div class="sc-ic"><i class="fas fa-clipboard-list"></i></div><div class="sc-n" id="du-total">—</div><div class="sc-l">إجمالي بلاغاتي</div></div>
+          <div class="sc" style="--sc:var(--bl);--sc-bg:var(--bl-l)"><div class="sc-ic"><i class="fas fa-folder-open"></i></div><div class="sc-n" id="du-open">—</div><div class="sc-l">جديدة</div></div>
+          <div class="sc" style="--sc:var(--cy);--sc-bg:var(--cy-l)"><div class="sc-ic"><i class="fas fa-spinner"></i></div><div class="sc-n" id="du-prog">—</div><div class="sc-l">قيد المعالجة</div></div>
+          <div class="sc" style="--sc:var(--gr-d);--sc-bg:var(--gr-l)"><div class="sc-ic"><i class="fas fa-check-circle"></i></div><div class="sc-n" id="du-done">—</div><div class="sc-l">محلولة</div></div>
+        </div>
+        <div class="card"><div class="card-h"><i class="fas fa-history"></i>آخر بلاغاتي</div><div id="desk-user-tickets"></div>
+          <div style="margin-top:12px"><button class="btn btn-p" onclick="goTab('newTicketDesk',document.querySelector('[data-t=newTicketDesk]'))"><i class="fas fa-plus-circle"></i>إرسال بلاغ جديد</button></div>
+        </div>
+      </div>
+
+      <!-- بلاغ جديد للموظف على الديسكتوب -->
+      <div id="tab-newTicketDesk" class="tab" style="display:none">
+        <div class="card" style="max-width:680px;margin:0 auto">
+          <div class="card-h"><i class="fas fa-plus-circle"></i>إرسال بلاغ جديد</div>
+          <div class="fg">
+            <div class="fg-r"><label>نوع المشكلة *</label><select id="utd-p"><option value="">اختر...</option><option>عطل جهاز</option><option>مشكلة شبكة</option><option>مشكلة برنامج</option><option>طلب تثبيت</option><option>مشكلة طابعة</option><option>مشكلة إيميل</option><option>استرجاع بيانات</option><option>أخرى</option></select></div>
+            <div class="fg-r"><label>الأولوية *</label><select id="utd-pri"><option value="منخفضة">منخفضة</option><option value="متوسطة" selected>متوسطة</option><option value="عالية">عالية</option><option value="عاجلة">🚨 عاجلة</option></select></div>
+            <div class="fg-r"><label>نوع الجهاز</label><select id="utd-di"><option value="">اختر...</option><option value="laptop">💻 لابتوب</option><option value="desktop">🖥️ كمبيوتر</option><option value="printer">🖨️ طابعة</option><option value="phone">📱 هاتف</option><option value="network">🌐 شبكة</option><option value="other">🔧 أخرى</option></select></div>
+            <div class="fg-r fg-f"><label>وصف المشكلة *</label><textarea id="utd-d" rows="5" placeholder="اشرح المشكلة بالتفصيل..."></textarea></div>
+            <!-- رفع صورة -->
+            <div class="fg-r fg-f">
+              <label>صورة المشكلة (اختياري)</label>
+              <div class="upload-zone" style="margin-top:5px"><input type="file" id="utd-img" accept="image/*" onchange="onDeskImgSelect(this)"/><div class="uz-ic">📎</div><div class="uz-tx">اضغط لاختيار صورة — JPG أو PNG (الحد 3MB)</div></div>
+              <div id="utd-img-preview" style="display:none;margin-top:8px"></div>
+            </div>
+          </div>
+          <div class="f-acts"><button class="btn btn-p" onclick="subDeskUserTicket()"><i class="fas fa-paper-plane"></i>إرسال البلاغ</button></div>
+        </div>
+      </div>
+
+      <!-- بلاغاتي للموظف على الديسكتوب -->
+      <div id="tab-myTicketsDesk" class="tab" style="display:none">
+        <div class="card"><div class="card-h"><i class="fas fa-clipboard-list"></i>بلاغاتي</div>
+          <div class="sr">
+            <select id="utd-st" onchange="loadDeskUserTickets()"><option value="all">كل الحالات</option><option value="جديدة">جديدة</option><option value="معينة">معينة</option><option value="قيد المعالجة">قيد المعالجة</option><option value="تم حل البلاغ">تم حل البلاغ</option></select>
+            <button class="btn btn-g btn-sm" onclick="loadDeskUserTickets()"><i class="fas fa-sync"></i></button>
+          </div>
+          <div id="desk-user-tlist"></div>
+        </div>
+      </div>
+
+      <!-- تاب إنجازات الفني -->
+      <div id="tab-tech-stats" class="tab" style="display:none">
+        <!-- يوزر الإنترنت للفني -->
+        <div id="tech-iuser-card" style="display:none;background:linear-gradient(135deg,var(--in),var(--pu));border-radius:var(--r);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0">🌐</div>
+          <div><div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase">يوزر الإنترنت</div><div id="tech-iuser-val" style="font-size:18px;font-weight:900;color:#fff;font-family:monospace">—</div></div>
+        </div>
+        <!-- إحصائيات -->
+        <div class="sg" id="tech-stats-grid">
+          <div class="sc" style="--sc:var(--in);--sc-bg:var(--in-l)"><div class="sc-ic"><i class="fas fa-laptop-medical"></i></div><div class="sc-n" id="ts-total">—</div><div class="sc-l">إجمالي الأجهزة</div></div>
+          <div class="sc" style="--sc:var(--gr-d);--sc-bg:var(--gr-l)"><div class="sc-ic"><i class="fas fa-check-circle"></i></div><div class="sc-n" id="ts-fixed">—</div><div class="sc-l">تم الإصلاح</div></div>
+          <div class="sc" style="--sc:var(--am);--sc-bg:var(--am-l)"><div class="sc-ic"><i class="fas fa-tools"></i></div><div class="sc-n" id="ts-pending">—</div><div class="sc-l">قيد الصيانة</div></div>
+          <div class="sc" style="--sc:var(--sl);--sc-bg:var(--bg2)"><div class="sc-ic"><i class="fas fa-handshake"></i></div><div class="sc-n" id="ts-delivered">—</div><div class="sc-l">مُسلَّم</div></div>
+        </div>
+        <!-- آخر الأجهزة -->
+        <div class="card"><div class="card-h"><i class="fas fa-history"></i>آخر أجهزة صيّنتها</div><div id="tech-recent-devices"></div></div>
+      </div>
+
+      <!-- تاب إرسال بلاغ للفني -->
+      <div id="tab-tech-ticket" class="tab" style="display:none">
+        <div class="card" style="max-width:680px">
+          <div class="card-h"><i class="fas fa-plus-circle"></i>إرسال بلاغ جديد</div>
+          <div class="fg">
+            <div class="fg-r"><label>نوع المشكلة *</label><select id="tt-p"><option value="">اختر...</option><option>عطل جهاز</option><option>مشكلة شبكة</option><option>مشكلة برنامج</option><option>طلب تثبيت</option><option>مشكلة طابعة</option><option>أخرى</option></select></div>
+            <div class="fg-r"><label>الأولوية *</label><select id="tt-pri"><option value="منخفضة">منخفضة</option><option value="متوسطة" selected>متوسطة</option><option value="عالية">عالية</option><option value="عاجلة">🚨 عاجلة</option></select></div>
+            <div class="fg-r"><label>نوع الجهاز</label><select id="tt-di"><option value="">اختر...</option><option value="laptop">💻 لابتوب</option><option value="desktop">🖥️ كمبيوتر</option><option value="printer">🖨️ طابعة</option><option value="phone">📱 هاتف</option><option value="other">🔧 أخرى</option></select></div>
+            <div class="fg-r fg-f"><label>وصف المشكلة *</label><textarea id="tt-d" rows="4" placeholder="اشرح المشكلة..."></textarea></div>
+          </div>
+          <div class="f-acts"><button class="btn btn-p" onclick="subTechTicket()"><i class="fas fa-paper-plane"></i>إرسال البلاغ</button></div>
+        </div>
+      </div>
+
+      <div id="tab-devices" class="tab" style="display:none">
+        <!-- WORKFLOW LEGEND -->
+        <div style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:0;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:11px;font-weight:700"><div style="width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:13px">📋</div>استلام من الموظف</div>
+          <i class="fas fa-arrow-left" style="color:rgba(255,255,255,.2);margin:0 8px;font-size:10px"></i>
+          <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:11px;font-weight:700"><div style="width:28px;height:28px;border-radius:8px;background:rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:13px">🔧</div>تسليم للفني</div>
+          <i class="fas fa-arrow-left" style="color:rgba(255,255,255,.2);margin:0 8px;font-size:10px"></i>
+          <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:11px;font-weight:700"><div style="width:28px;height:28px;border-radius:8px;background:rgba(6,182,212,.3);display:flex;align-items:center;justify-content:center;font-size:13px">⚙️</div>قيد الصيانة</div>
+          <i class="fas fa-arrow-left" style="color:rgba(255,255,255,.2);margin:0 8px;font-size:10px"></i>
+          <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:11px;font-weight:700"><div style="width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;font-size:13px">📦</div>استلام من الفني</div>
+          <i class="fas fa-arrow-left" style="color:rgba(255,255,255,.2);margin:0 8px;font-size:10px"></i>
+          <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);font-size:11px;font-weight:700"><div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,.3);display:flex;align-items:center;justify-content:center;font-size:13px">✅</div>تسليم للموظف</div>
+        </div>
+
+        <!-- IT: استلام جهاز من موظف -->
+        <div class="card s-it" style="border:2px solid var(--in);margin-bottom:16px">
+          <div class="card-h" style="margin-bottom:12px"><i class="fas fa-inbox" style="color:var(--in)"></i>استلام جهاز من الموظف <span style="font-size:10px;background:var(--in-l);color:var(--in-d);padding:2px 8px;border-radius:12px;margin-right:6px">IT فقط</span></div>
+          <div class="fg">
+            <div class="fg-r"><label>رقم البلاغ *</label><input id="ci-tid" placeholder="TKT-..."/></div>
+            <div class="fg-r"><label>نوع الجهاز *</label><select id="ci-type"><option value="laptop">💻 لابتوب</option><option value="desktop">🖥️ حاسبة</option><option value="printer">🖨️ طابعة</option><option value="phone">📱 هاتف</option><option value="other">🔧 أخرى</option></select></div>
+            <div class="fg-r"><label>وصف الجهاز / الرقم التسلسلي</label><input id="ci-desc" placeholder="Dell Latitude — SN12345"/></div>
+            <div class="fg-r"><label>اسم صاحب الجهاز</label><input id="ci-owner" placeholder="اسم الموظف"/></div>
+            <div class="fg-r"><label>القسم</label><input id="ci-dept" placeholder="قسم الموظف"/></div>
+            <div class="fg-r fg-f"><label>حالة الجهاز عند الاستلام</label><textarea id="ci-notes" rows="2" placeholder="يعمل جزئياً / لا يعمل / شاشة مكسورة..."></textarea></div>
+          </div>
+          <div class="f-acts"><button class="btn btn-p" onclick="doCheckin()"><i class="fas fa-inbox"></i>تسجيل استلام الجهاز</button></div>
+        </div>
+
+        <!-- TECH: نتيجة الصيانة -->
+        <div class="card s-tech" style="border:2px solid var(--am);margin-bottom:16px;display:none" id="techRepairSection">
+          <div class="card-h" style="margin-bottom:12px"><i class="fas fa-wrench" style="color:var(--am)"></i>تسجيل نتيجة الصيانة <span style="font-size:10px;background:var(--am-l);color:#92400e;padding:2px 8px;border-radius:12px;margin-right:6px">فني الصيانة</span></div>
+          <p style="font-size:11px;color:var(--sl);margin-bottom:12px">بعد انتهائك من الصيانة، سجّل النتيجة هنا ليتمكن موظف IT من استلام الجهاز</p>
+          <div class="fg">
+            <div class="fg-r"><label>رقم الجهاز *</label><input id="tr-devid" placeholder="DEV-..."/></div>
+            <div class="fg-r"><label>نتيجة الصيانة *</label>
+              <select id="tr-result">
+                <option value="fixed">✅ تم الإصلاح بنجاح</option>
+                <option value="partial">⚠️ إصلاح جزئي</option>
+                <option value="failed">❌ تعذّر الإصلاح</option>
+                <option value="needs_parts">🔩 يحتاج قطع غيار</option>
+              </select>
+            </div>
+            <div class="fg-r fg-f"><label>تفاصيل العمل المنجز *</label><textarea id="tr-work" rows="3" placeholder="ما الذي تم عمله بالتفصيل..."></textarea></div>
+            <div class="fg-r fg-f"><label>سبب الفشل / الملاحظات</label><textarea id="tr-reason" rows="2" placeholder="إذا تعذّر الإصلاح، اذكر السبب..."></textarea></div>
+            <div class="fg-r"><label>هل الجهاز جاهز للاستلام؟</label>
+              <select id="tr-ready">
+                <option value="yes">نعم — جاهز للاستلام من IT</option>
+                <option value="no">لا — يحتاج مراجعة إضافية</option>
+              </select>
+            </div>
+          </div>
+          <div class="f-acts"><button class="btn btn-w" onclick="subTechRepair()"><i class="fas fa-save"></i>تسليم للـ IT + تسجيل النتيجة</button></div>
+        </div>
+
+        <!-- فلتر وقائمة الأجهزة -->
+        <div class="card">
+          <div class="card-h" style="justify-content:space-between">
+            <span><i class="fas fa-list"></i>سجل الأجهزة</span>
+            <button class="btn btn-g btn-sm" onclick="loadDevices()"><i class="fas fa-sync"></i>تحديث</button>
+          </div>
+          <div class="sr">
+            <select id="dev-filter" onchange="loadDevices()">
+              <option value="all">كل الأجهزة</option>
+              <option value="عند IT">📥 عند IT — بانتظار الفني</option>
+              <option value="عند الفني">🔧 عند الفني — قيد الصيانة</option>
+              <option value="أُنجز — بانتظار IT">📦 أُنجز — بانتظار IT</option>
+              <option value="جاهز للتسليم">✅ جاهز للتسليم للموظف</option>
+              <option value="مُسلَّم">🏁 مُسلَّم — مغلق</option>
+            </select>
+          </div>
+          <div id="devList"></div>
+        </div>
+      </div>
+
+      <!-- TAB: إدارة اليوزرات -->
+      <div id="tab-internet-users" class="tab" style="display:none">
+        <!-- البحث برقم البصمة -->
+        <div class="card" style="border:2px solid var(--bl);margin-bottom:16px">
+          <div class="card-h"><i class="fas fa-search" style="color:var(--bl)"></i>البحث عن يوزر موظف
+            <span style="font-size:10px;background:var(--bl-l);color:#1d4ed8;padding:2px 8px;border-radius:12px;margin-right:6px">ابحث برقم البصمة</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <div style="flex:1"><label>رقم البصمة</label><input id="iu-search-id" placeholder="EMP-001" autocapitalize="characters" onkeydown="if(event.key==='Enter')searchInternetUser()"/></div>
+            <button class="btn btn-p" onclick="searchInternetUser()" style="margin-bottom:2px"><i class="fas fa-search"></i>بحث</button>
+          </div>
+          <div id="iu-search-result"></div>
+        </div>
+        <!-- تعديل يوزر يدوياً -->
+        <div class="card" style="border:2px solid var(--cy);margin-bottom:16px">
+          <div class="card-h"><i class="fas fa-edit" style="color:var(--cy)"></i>تعديل يوزر إنترنت يدوياً
+            <span style="font-size:10px;background:var(--cy-l);color:#155e75;padding:2px 8px;border-radius:12px;margin-right:6px">للتصحيح فقط</span>
+          </div>
+          <p style="font-size:11px;color:var(--sl);margin-bottom:12px">استخدم هذا القسم فقط لتصحيح يوزر خاطئ — التوزيع يتم تلقائياً عند إضافة الموظف</p>
+          <div class="fg">
+            <div class="fg-r"><label>رقم البصمة *</label><input id="iu-eid" placeholder="EMP-001" autocapitalize="characters"/></div>
+            <div class="fg-r"><label>يوزر الإنترنت الصحيح *</label><input id="iu-user" placeholder="ali.ahmed" dir="ltr"/></div>
+          </div>
+          <div class="f-acts"><button class="btn btn-w" onclick="subInternetUser()"><i class="fas fa-save"></i>تصحيح اليوزر</button></div>
+        </div>
+        <div class="card">
+          <div class="card-h" style="justify-content:space-between">
+            <span><i class="fas fa-users-cog"></i>قائمة يوزرات الإنترنت</span>
+            <div style="display:flex;gap:8px">
+              <input id="iu-q" placeholder="🔍 بحث..." style="width:160px;padding:6px 10px;font-size:11px" oninput="filterIUsers()"/>
+              <button class="btn btn-g btn-sm" onclick="loadInternetUsers()"><i class="fas fa-sync"></i></button>
+            </div>
+          </div>
+          <div class="tw"><table><thead><tr><th>رقم البصمة</th><th>الاسم</th><th>القسم</th><th>يوزر الإنترنت</th><th>آخر تحديث</th><th>إجراء</th></tr></thead><tbody id="iuTbody"></tbody></table></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MOBILE HEADER -->
+  <header class="mob-hdr2">
+    <div class="mh-logo"><div class="mh-ic"><i class="fas fa-laptop-code"></i></div><div class="mh-tx">IT Help Desk</div></div>
+    <div class="mh-av" id="mob-av">?</div>
+  </header>
+
+  <!-- MOBILE BODY -->
+  <div class="mob-body">
+    <div id="mb-home" class="mb-tab">
+      <div class="mob-hero">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:4px">مرحباً بك</div>
+        <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:2px" id="mob-gr">—</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4)" id="mob-dp">—</div>
+      </div>
+      <div class="mob-stats" id="mob-ms">
+        <div class="mob-stat"><div class="msn" style="color:var(--in)">—</div><div class="msl">الكل</div></div>
+        <div class="mob-stat"><div class="msn" style="color:var(--bl)">—</div><div class="msl">جديدة</div></div>
+        <div class="mob-stat"><div class="msn" style="color:var(--gr-d)">—</div><div class="msl">محلولة</div></div>
+        <div class="mob-stat"><div class="msn" style="color:#155e75">—</div><div class="msl">جارية</div></div>
+      </div>
+      <div class="mob-qa" onclick="mobTab('mb-new',1)">
+        <div class="qa-ic"><i class="fas fa-plus"></i></div>
+        <div class="qa-tx"><h3>أرسل بلاغاً جديداً</h3><p>أبلغنا عن مشكلتك التقنية</p></div>
+        <i class="fas fa-chevron-left qa-arr"></i>
+      </div>
+      <div class="mob-sec"><h3><i class="fas fa-history"></i>آخر بلاغاتك</h3></div>
+      <div id="mob-rec"></div>
+    </div>
+
+    <div id="mb-new" class="mb-tab" style="display:none">
+      <div class="mob-form">
+        <div class="mob-form-hdr"><h2><i class="fas fa-plus-circle"></i>بلاغ جديد</h2><p>اختر نوع المشكلة واشرح ما يحدث</p></div>
+        <div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">نوع المشكلة *</div>
+        <div class="prob-grid">
+          <div class="prob-btn" onclick="selProb(this,'عطل جهاز')"><span class="pb-ic">🖥️</span><span class="pb-tx">عطل جهاز</span></div>
+          <div class="prob-btn" onclick="selProb(this,'مشكلة شبكة')"><span class="pb-ic">🌐</span><span class="pb-tx">مشكلة شبكة</span></div>
+          <div class="prob-btn" onclick="selProb(this,'مشكلة برنامج')"><span class="pb-ic">💻</span><span class="pb-tx">مشكلة برنامج</span></div>
+          <div class="prob-btn" onclick="selProb(this,'مشكلة طابعة')"><span class="pb-ic">🖨️</span><span class="pb-tx">مشكلة طابعة</span></div>
+          <div class="prob-btn" onclick="selProb(this,'مشكلة إيميل')"><span class="pb-ic">📧</span><span class="pb-tx">مشكلة إيميل</span></div>
+          <div class="prob-btn" onclick="selProb(this,'طلب تثبيت')"><span class="pb-ic">📦</span><span class="pb-tx">طلب تثبيت</span></div>
+          <div class="prob-btn" onclick="selProb(this,'استرجاع بيانات')"><span class="pb-ic">💾</span><span class="pb-tx">استرجاع بيانات</span></div>
+          <div class="prob-btn" onclick="selProb(this,'أخرى')"><span class="pb-ic">🔧</span><span class="pb-tx">أخرى</span></div>
+        </div>
+        <input type="hidden" id="mn-p" value=""/>
+        <div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">الأولوية *</div>
+        <div class="pri-row"><div class="pri-btn" onclick="selPri(this,'منخفضة')">منخفضة</div><div class="pri-btn sel-متوسطة" onclick="selPri(this,'متوسطة')">متوسطة</div><div class="pri-btn" onclick="selPri(this,'عالية')">عالية</div><div class="pri-btn" onclick="selPri(this,'عاجلة')">🚨 عاجلة</div></div>
+        <input type="hidden" id="mn-pri" value="متوسطة"/>
+        <div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">نوع الجهاز</div>
+        <div class="dev-row"><div class="dev-chip selected" onclick="selDev(this,'')">الكل</div><div class="dev-chip" onclick="selDev(this,'laptop')">💻 لابتوب</div><div class="dev-chip" onclick="selDev(this,'desktop')">🖥️ كمبيوتر</div><div class="dev-chip" onclick="selDev(this,'printer')">🖨️ طابعة</div><div class="dev-chip" onclick="selDev(this,'phone')">📱 هاتف</div><div class="dev-chip" onclick="selDev(this,'network')">🌐 شبكة</div><div class="dev-chip" onclick="selDev(this,'other')">🔧 أخرى</div></div>
+        <input type="hidden" id="mn-di" value=""/>
+        <div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">وصف المشكلة *</div>
+        <textarea id="mn-d" class="mob-desc" placeholder="اشرح المشكلة بالتفصيل..."></textarea>
+        <!-- رفع صورة اختياري -->
+        <div style="margin-bottom:20px">
+          <div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">صورة المشكلة (اختياري)</div>
+          <label for="mn-img" style="display:flex;align-items:center;gap:10px;background:var(--bg2);border:2px dashed var(--border2);border-radius:14px;padding:14px 16px;cursor:pointer;transition:.15s" id="mn-img-label">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--in-l);display:flex;align-items:center;justify-content:center;color:var(--in);font-size:18px;flex-shrink:0"><i class="fas fa-camera"></i></div>
+            <div><div style="font-size:13px;font-weight:700;color:#374151">ارفق صورة للمشكلة</div><div style="font-size:10px;color:var(--sl);margin-top:2px">JPG أو PNG — الحد 3MB</div></div>
+            <i class="fas fa-chevron-left" style="margin-right:auto;color:var(--sl);font-size:12px"></i>
+          </label>
+          <input type="file" id="mn-img" accept="image/*" style="display:none" onchange="onMobImgSelect(this)"/>
+          <div id="mn-img-preview" style="margin-top:8px;display:none">
+            <div style="display:flex;align-items:center;gap:8px;background:var(--gr-l);border:1px solid #a7f3d0;border-radius:10px;padding:8px 12px">
+              <img id="mn-img-thumb" style="width:40px;height:40px;border-radius:6px;object-fit:cover"/>
+              <div style="flex:1;min-width:0"><div id="mn-img-name" style="font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div><div style="font-size:10px;color:var(--sl)">✅ جاهزة للإرسال</div></div>
+              <button onclick="removeMobImg()" style="background:var(--re-l);border:1px solid #fecaca;color:var(--re);border-radius:6px;padding:4px 8px;font-size:10px"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+        </div>
+        <button class="mob-submit" id="mobSubBtn" onclick="subMob()"><i class="fas fa-paper-plane"></i>إرسال البلاغ</button>
+      </div>
+    </div>
+
+    <!-- SUPPORT -->
+    <div id="mb-support" class="mb-tab" style="display:none">
+      <div style="background:linear-gradient(145deg,#0f172a,#1e1b4b);padding:24px 18px 28px"><div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:4px">الدعم التقني</div><div style="font-size:12px;color:rgba(255,255,255,.45)">التوجيهات · كتيب التعليمات · المساعد الذكي</div></div>
+      <div style="padding:12px 16px 4px"><div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:8px">🤖 المساعد الذكي</div></div>
+      <div class="mob-support-card" onclick="openMobAI()"><div class="msc-ic" style="background:linear-gradient(135deg,var(--in),var(--pu))"><i class="fas fa-robot" style="color:#fff"></i></div><div class="msc-tx"><h3>تشخيص ذكي للمشاكل</h3><p>يتعلم من حلول IT — 7 رسائل حد أقصى</p></div><i class="fas fa-chevron-left" style="color:var(--sl);font-size:12px"></i></div>
+      <div style="padding:4px 16px 4px"><div style="font-size:11px;font-weight:700;color:var(--sl);margin-bottom:8px">📚 قاعدة المعرفة</div></div>
+      <div class="mob-support-card" onclick="openMobManual()"><div class="msc-ic" style="background:linear-gradient(135deg,var(--bl),#2563eb)"><i class="fas fa-book" style="color:#fff"></i></div><div class="msc-tx"><h3>كتيب التعليمات</h3><p>حلول جاهزة لأشهر مشاكل الأجهزة</p></div><i class="fas fa-chevron-left" style="color:var(--sl);font-size:12px"></i></div>
+      <div class="mob-support-card" onclick="openMobGuidelines()"><div class="msc-ic" style="background:linear-gradient(135deg,var(--am),#d97706)"><i class="fas fa-shield-alt" style="color:#fff"></i></div><div class="msc-tx"><h3>التوجيهات والأنظمة</h3><p>قواعد وإجراءات احترازية مهمة</p></div><i class="fas fa-chevron-left" style="color:var(--sl);font-size:12px"></i></div>
+    </div>
+
+    <!-- GUIDELINES MOBILE -->
+    <div id="mb-guidelines" class="mb-tab" style="display:none">
+      <div style="padding:16px 16px 8px;display:flex;align-items:center;gap:8px"><button onclick="mobTab('mb-support',1)" style="background:none;color:var(--sl);font-size:14px;padding:4px"><i class="fas fa-arrow-right"></i></button><div style="font-size:17px;font-weight:900">التوجيهات والأنظمة</div></div>
+      <div id="mobGuideList" style="padding:0 16px"><div class="skel skel-c"></div></div>
+    </div>
+
+    <!-- MANUAL MOBILE -->
+    <div id="mb-manual" class="mb-tab" style="display:none">
+      <div style="padding:16px 16px 8px;display:flex;align-items:center;gap:8px"><button onclick="mobTab('mb-support',1)" style="background:none;color:var(--sl);font-size:14px;padding:4px"><i class="fas fa-arrow-right"></i></button><div style="font-size:17px;font-weight:900">كتيب التعليمات</div></div>
+      <div style="padding:0 16px 8px;overflow-x:auto"><div class="dev-row" id="mobManualDevRow"><div class="dev-chip selected" onclick="switchMobDev(this,'')">الكل</div><div class="dev-chip" onclick="switchMobDev(this,'desktop')">🖥️</div><div class="dev-chip" onclick="switchMobDev(this,'laptop')">💻</div><div class="dev-chip" onclick="switchMobDev(this,'printer')">🖨️</div><div class="dev-chip" onclick="switchMobDev(this,'network')">🌐</div><div class="dev-chip" onclick="switchMobDev(this,'phone')">📱</div></div></div>
+      <div id="mobManualList" style="padding:0 16px"><div class="skel skel-c"></div></div>
+    </div>
+
+    <!-- AI MOBILE -->
+    <div id="mb-ai" class="mb-tab" style="display:none">
+      <div class="mob-ai-wrap">
+        <div style="background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:12px 16px;display:flex;align-items:center;gap:10px">
+          <button onclick="mobTab('mb-support',1)" style="background:none;color:rgba(255,255,255,.5);font-size:16px;padding:4px"><i class="fas fa-arrow-right"></i></button>
+          <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff"><i class="fas fa-robot"></i></div>
+          <div><div style="font-size:13px;font-weight:900;color:#fff">المساعد الذكي</div><div style="font-size:10px;color:rgba(255,255,255,.4)" id="mobAiStatus">اختر نوع الجهاز</div></div>
+          <button onclick="resetAI('mob')" style="margin-right:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700"><i class="fas fa-redo"></i> جديد</button>
+        </div>
+        <div id="mobAiDevSel" style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none">
+          <button class="ai-dev-chip" onclick="pickAIDev(this,'desktop','mob')">🖥️</button>
+          <button class="ai-dev-chip" onclick="pickAIDev(this,'laptop','mob')">💻</button>
+          <button class="ai-dev-chip" onclick="pickAIDev(this,'printer','mob')">🖨️</button>
+          <button class="ai-dev-chip" onclick="pickAIDev(this,'network','mob')">🌐</button>
+          <button class="ai-dev-chip" onclick="pickAIDev(this,'phone','mob')">📱</button>
+          <button class="ai-dev-chip" onclick="pickAIDev(this,'other','mob')">🔧</button>
+        </div>
+        <div id="mobAiLimitBar" style="padding:6px 14px;background:#fefce8;border-bottom:1px solid #fde68a;display:none;align-items:center;gap:8px;font-size:10px;color:#92400e">
+          <span>💬 متبقية:</span><div class="ai-limit-dots" id="mobAiDots" style="display:flex;gap:3px;margin-right:auto"></div>
+        </div>
+        <div class="mob-ai-msgs" id="mobAiMsgs"><div class="ai-msg sys">👋 اختر نوع الجهاز واشرح مشكلتك</div></div>
+        <div class="mob-ai-inp-row">
+          <textarea class="mob-ai-inp" id="mobAiInp" placeholder="اكتب مشكلتك..." rows="1" disabled style="resize:none;overflow:hidden;line-height:1.4" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+          <button class="mob-ai-send" id="mobAiSend" onclick="sendAIMsg('mob')" disabled><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY TICKETS MOBILE -->
+    <div id="mb-ticks" class="mb-tab" style="display:none">
+      <div style="padding:16px 16px 8px"><div style="font-size:17px;font-weight:900;margin-bottom:12px">بلاغاتي</div>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none">
+          <button class="dev-chip selected" data-val="all" onclick="filterMobTick(this,'all')">الكل</button>
+          <button class="dev-chip" data-val="جديدة" onclick="filterMobTick(this,'جديدة')">🔵 جديدة</button>
+          <button class="dev-chip" data-val="قيد المعالجة" onclick="filterMobTick(this,'قيد المعالجة')">🔄 جارية</button>
+          <button class="dev-chip" data-val="تم حل البلاغ" onclick="filterMobTick(this,'تم حل البلاغ')">✅ محلولة</button>
+        </div>
+      </div>
+      <div id="mob-tl" style="padding:0 16px"></div>
+    </div>
+
+    <!-- MY INFO MOBILE -->
+    <div id="mb-info" class="mb-tab" style="display:none">
+      <div style="background:linear-gradient(145deg,#0f172a,#1e1b4b);padding:28px 20px;text-align:center">
+        <div id="inf-av" style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin:0 auto 12px;border:3px solid rgba(255,255,255,.2)">?</div>
+        <div id="inf-name" style="font-size:19px;font-weight:900;color:#fff">—</div>
+        <div id="inf-role" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">—</div>
+      </div>
+      <!-- Internet Username Card -->
+      <div style="margin:16px 16px 0">
+        <div style="background:linear-gradient(135deg,var(--in),var(--pu));border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 20px rgba(99,102,241,.35)">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0">🌐</div>
+          <div style="flex:1"><div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.5px">يوزر الإنترنت</div><div id="inf-internet" style="font-size:16px;font-weight:900;color:#fff;margin-top:3px;font-family:monospace;letter-spacing:1px">—</div></div>
+          <i class="fas fa-wifi" style="color:rgba(255,255,255,.5);font-size:18px"></i>
+        </div>
+      </div>
+      <div class="info-card" style="margin-top:12px">
+        <div class="info-row"><div class="info-ic" style="background:var(--in-l);color:var(--in)"><i class="fas fa-id-badge"></i></div><div><div class="info-label">رقم البصمة</div><div class="info-val" id="inf-id" style="font-family:monospace">—</div></div></div>
+        <div class="info-row"><div class="info-ic" style="background:var(--pu-l);color:var(--pu)"><i class="fas fa-building"></i></div><div><div class="info-label">القسم</div><div class="info-val" id="inf-dept">—</div></div></div>
+        <div class="info-row"><div class="info-ic" style="background:var(--am-l);color:var(--am)"><i class="fas fa-phone"></i></div><div><div class="info-label">رقم الهاتف</div><div class="info-val" id="inf-phone">—</div></div></div>
+        <div class="info-row"><div class="info-ic" style="background:var(--gr-l);color:var(--gr-d)"><i class="fas fa-clipboard-list"></i></div><div><div class="info-label">عدد البلاغات</div><div class="info-val" id="inf-tickets">—</div></div></div>
+      </div>
+      <div style="margin:0 16px 16px"><button onclick="doLogout()" style="width:100%;padding:14px;border-radius:13px;background:var(--re-l);border:2px solid #fecaca;color:#b91c1c;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-sign-out-alt"></i>تسجيل الخروج</button></div>
+    </div>
+  </div>
+
+  <button class="mob-fab" onclick="mobTab('mb-new',1)" title="بلاغ جديد"><i class="fas fa-plus"></i></button>
+
+  <nav class="mob-bnav">
+    <button class="mob-bni active" onclick="mobTab('mb-home',0)"><span class="bni-ic"><i class="fas fa-home"></i></span>الرئيسية</button>
+    <button class="mob-bni" onclick="mobTab('mb-support',1)"><span class="bni-ic"><i class="fas fa-life-ring"></i></span>الدعم</button>
+    <button class="mob-bni" onclick="mobTab('mb-ticks',2);loadMobTicks()"><span class="bni-ic"><i class="fas fa-clipboard-list"></i></span>بلاغاتي</button>
+    <button class="mob-bni" onclick="mobTab('mb-info',3);loadMyInfo()"><span class="bni-ic"><i class="fas fa-user-circle"></i></span>معلوماتي</button>
+    <button class="mob-bni" onclick="doLogout()"><span class="bni-ic"><i class="fas fa-sign-out-alt"></i></span>خروج</button>
+  </nav>
+
+  <div class="mob-success" id="mobSuccess">
+    <div class="success-ic">✅</div>
+    <div style="font-size:22px;font-weight:900;margin-bottom:8px">تم إرسال البلاغ!</div>
+    <div style="font-size:13px;color:var(--sl);margin-bottom:8px" id="successTid">—</div>
+    <div style="font-size:12px;color:var(--sl);margin-bottom:28px">سيتواصل معك فريق IT قريباً</div>
+    <button onclick="closeMobSuccess()" style="background:linear-gradient(135deg,var(--in),var(--pu));color:#fff;padding:14px 32px;border-radius:12px;font-size:14px;font-weight:700">حسناً 👍</button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="ov" id="ovTick"><div class="modal"><div class="modal-h"><h3><i class="fas fa-clipboard-check"></i>تفاصيل البلاغ</h3><button class="modal-x" onclick="closeM('ovTick')"><i class="fas fa-times"></i></button></div><div id="mTBody"></div></div></div>
+<div class="ov" id="ovUpd"><div class="modal" style="max-width:460px"><div class="modal-h"><h3><i class="fas fa-edit"></i>تحديث البلاغ</h3><button class="modal-x" onclick="closeM('ovUpd')"><i class="fas fa-times"></i></button></div>
+  <div class="fg-r" style="margin-bottom:12px"><label>الحالة الجديدة</label><select id="upd-st"><option value="">بدون تغيير</option><option value="معينة">معينة</option><option value="قيد المعالجة">قيد المعالجة</option><option value="تم حل البلاغ">تم حل البلاغ</option></select></div>
+  <div class="fg-r" style="margin-bottom:12px"><label>الحل المطبق</label><textarea id="upd-sol" rows="3" placeholder="اكتب الحل الذي طبقته..."></textarea></div>
+  <div class="fg-r"><label>ملاحظات</label><textarea id="upd-not" rows="2" placeholder="ملاحظات إضافية..."></textarea></div>
+  <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovUpd')">إلغاء</button><button class="btn btn-p" onclick="subUpd()"><i class="fas fa-save"></i>حفظ</button></div>
+</div></div>
+<div class="ov" id="ovAsgn"><div class="modal" style="max-width:400px"><div class="modal-h"><h3><i class="fas fa-user-check"></i>تعيين المعالج</h3><button class="modal-x" onclick="closeM('ovAsgn')"><i class="fas fa-times"></i></button></div>
+  <div class="fg-r"><label>اختر المعالج</label><select id="asgn-sl"></select></div>
+  <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovAsgn')">إلغاء</button><button class="btn btn-p" onclick="subAsgn()"><i class="fas fa-check"></i>تعيين</button></div>
+</div></div>
+<div class="ov" id="ovHelp"><div class="modal" style="max-width:400px"><div class="modal-h"><h3><i class="fas fa-hands-helping"></i>طلب مساعدة</h3><button class="modal-x" onclick="closeM('ovHelp')"><i class="fas fa-times"></i></button></div>
+  <div class="fg-r" style="margin-bottom:12px"><label>اختر المساعد</label><select id="hlp-sl"></select></div>
+  <div class="fg-r"><label>سبب طلب المساعدة</label><textarea id="hlp-not" rows="3" placeholder="اشرح الصعوبة..."></textarea></div>
+  <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovHelp')">إلغاء</button><button class="btn btn-s" onclick="subHelp()"><i class="fas fa-paper-plane"></i>إرسال</button></div>
+</div></div>
+<div class="pw-modal-overlay" id="pwModal">
+  <div class="pw-modal">
+    <div class="modal-h"><h3><i class="fas fa-key"></i>تغيير الرمز السري</h3><button class="modal-x" onclick="closePwModal()"><i class="fas fa-times"></i></button></div>
+    <div style="font-size:13px;color:var(--sl);margin-bottom:16px" id="pwModalName">—</div>
+    <div class="fg-r" style="margin-bottom:16px"><label>الرمز السري الجديد *</label><div class="pw-wrap"><input id="pw-new" type="password" placeholder="ادخل الرمز الجديد" autocomplete="new-password"/><button class="pw-btn-d" type="button" onclick="tpw('pw-new','pw-ei')"><i class="fas fa-eye" id="pw-ei"></i></button></div></div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closePwModal()">إلغاء</button><button class="btn btn-w" onclick="submitPwReset()"><i class="fas fa-save"></i>حفظ</button></div>
+  </div>
+</div>
+<div class="ov" id="ovAddGuide">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-h"><h3><i class="fas fa-shield-alt"></i><span id="guideModalTitle">إضافة توجيه</span></h3><button class="modal-x" onclick="closeM('ovAddGuide')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="gm-id"/>
+    <div class="fg">
+      <div class="fg-r fg-f"><label>العنوان *</label><input id="gm-title" placeholder="مثال: ممنوع نقل الكيبلات"/></div>
+      <div class="fg-r fg-f"><label>المحتوى *</label><textarea id="gm-content" rows="4" placeholder="اشرح التوجيه..."></textarea></div>
+      <div class="fg-r"><label>الأيقونة</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><button class="dev-chip selected" onclick="pickGuideIcon(this,'⚠️')">⚠️</button><button class="dev-chip" onclick="pickGuideIcon(this,'🚫')">🚫</button><button class="dev-chip" onclick="pickGuideIcon(this,'🔒')">🔒</button><button class="dev-chip" onclick="pickGuideIcon(this,'💾')">💾</button><button class="dev-chip" onclick="pickGuideIcon(this,'🖥️')">🖥️</button><button class="dev-chip" onclick="pickGuideIcon(this,'🔌')">🔌</button><button class="dev-chip" onclick="pickGuideIcon(this,'📋')">📋</button></div><input type="hidden" id="gm-icon" value="⚠️"/></div>
+      <div class="fg-r"><label>الأهمية *</label><select id="gm-priority"><option value="تحذير">🔴 تحذير</option><option value="مهم" selected>🟡 مهم</option><option value="معلومة">🔵 معلومة</option></select></div>
+    </div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovAddGuide')">إلغاء</button><button class="btn btn-p" onclick="subGuide()"><i class="fas fa-save"></i>حفظ</button></div>
+  </div>
+</div>
+<div class="ov" id="ovAddManual">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-h"><h3><i class="fas fa-book"></i><span id="manualModalTitle">إضافة دليل</span></h3><button class="modal-x" onclick="closeM('ovAddManual')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="mm-id"/>
+    <div class="fg">
+      <div class="fg-r"><label>نوع الجهاز *</label><select id="mm-device"><option value="desktop">🖥️ الحاسبة</option><option value="laptop">💻 لابتوب</option><option value="printer">🖨️ طابعة</option><option value="network">🌐 شبكة</option><option value="phone">📱 هاتف</option><option value="other">🔧 أخرى</option></select></div>
+      <div class="fg-r"><label>نوع المشكلة</label><select id="mm-prob"><option value="">اختر...</option><option>عطل جهاز</option><option>مشكلة شبكة</option><option>مشكلة برنامج</option><option>مشكلة طابعة</option><option>صلاحيات وصول</option><option>أخرى</option></select></div>
+      <div class="fg-r fg-f"><label>عنوان الدليل *</label><input id="mm-title" placeholder="مثال: الطابعة لا تطبع"/></div>
+      <div class="fg-r fg-f"><label>وصف مختصر</label><input id="mm-desc" placeholder="جملة تلخص الدليل"/></div>
+      <div class="fg-r"><label>الأيقونة</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><button class="dev-chip" onclick="pickManualIcon(this,'🖥️')">🖥️</button><button class="dev-chip selected" onclick="pickManualIcon(this,'💻')">💻</button><button class="dev-chip" onclick="pickManualIcon(this,'🖨️')">🖨️</button><button class="dev-chip" onclick="pickGuideIcon(this,'🌐')">🌐</button><button class="dev-chip" onclick="pickManualIcon(this,'🔑')">🔑</button><button class="dev-chip" onclick="pickManualIcon(this,'⚡')">⚡</button><button class="dev-chip" onclick="pickManualIcon(this,'🔧')">🔧</button></div><input type="hidden" id="mm-icon" value="💻"/></div>
+      <div class="fg-r fg-f"><label>خطوات الحل *</label><div class="steps-list" id="stepsList"></div><button class="btn btn-g btn-sm" onclick="addStep()" style="margin-top:4px"><i class="fas fa-plus"></i>إضافة خطوة</button></div>
+    </div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovAddManual')">إلغاء</button><button class="btn btn-p" onclick="subManual()"><i class="fas fa-save"></i>حفظ</button></div>
+  </div>
+</div>
+<div class="ov" id="ovDevice">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-h"><h3><i class="fas fa-laptop-medical"></i><span id="devModalTitle">تحديث الجهاز</span></h3><button class="modal-x" onclick="closeM('ovDevice')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="dm-devid"/><input type="hidden" id="dm-action"/>
+    <div class="fg-r" style="margin-bottom:12px"><label>ملاحظات</label><textarea id="dm-notes" rows="3" placeholder="ملاحظات اختيارية..."></textarea></div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovDevice')">إلغاء</button><button class="btn btn-p" onclick="submitDeviceAction()"><i class="fas fa-save"></i>تأكيد</button></div>
+  </div>
+</div>
+<div class="ov" id="ovAttach">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-h"><h3><i class="fas fa-paperclip"></i>رفع مرفق</h3><button class="modal-x" onclick="closeM('ovAttach')"><i class="fas fa-times"></i></button></div>
+    <p style="font-size:12px;color:var(--sl);margin-bottom:14px">يمكنك رفع صورة للمشكلة (الحد الأقصى 3MB)</p>
+    <div class="upload-zone"><input type="file" id="attachFile" accept="image/*,video/mp4" onchange="handleFileSelect(this)"/><div class="uz-ic">📎</div><div class="uz-tx">اضغط لاختيار ملف<br/><span style="font-size:10px">صور: JPG, PNG | فيديو: MP4</span></div></div>
+    <div id="attachPreviewArea" style="margin-top:10px"></div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovAttach')">إلغاء</button><button class="btn btn-p" id="uploadBtn" onclick="submitAttach()" disabled><i class="fas fa-cloud-upload-alt"></i>رفع</button></div>
+  </div>
+</div>
+
+<!-- Modal: تسليم الجهاز للفني -->
+<div class="ov" id="ovSendTech">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-h"><h3><i class="fas fa-wrench" style="color:var(--am)"></i>تسليم الجهاز للفني</h3><button class="modal-x" onclick="closeM('ovSendTech')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="st-devid"/>
+    <div style="background:var(--am-l);border:1px solid #fde68a;border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;font-size:11px;color:#92400e">⚠️ بعد التسليم، الفني سيتولى الصيانة ويسجل النتيجة من حسابه</div>
+    <div class="fg-r" style="margin-bottom:12px"><label>اختر الفني *</label><select id="st-tech"></select></div>
+    <div class="fg-r" style="margin-bottom:12px"><label>ملاحظات للفني</label><textarea id="st-notes" rows="3" placeholder="المشكلة التي أبلغ عنها الموظف..."></textarea></div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovSendTech')">إلغاء</button><button class="btn btn-w" onclick="subSendTech()"><i class="fas fa-share"></i>تسليم للفني</button></div>
+  </div>
+</div>
+
+<!-- Modal: استلام من الفني + تسليم للموظف -->
+<div class="ov" id="ovReceiveBack">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-h"><h3><i class="fas fa-box-open" style="color:var(--pu)"></i>استلام الجهاز من الفني</h3><button class="modal-x" onclick="closeM('ovReceiveBack')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="rb-devid"/>
+    <div id="rb-techResult" style="border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;font-size:11px;border:1px solid var(--border)"></div>
+    <div class="fg-r" style="margin-bottom:12px"><label>حالة الجهاز بعد الاستلام من الفني</label><textarea id="rb-itNotes" rows="2" placeholder="ملاحظات موظف IT بعد الاستلام..."></textarea></div>
+    <div style="background:var(--gr-l);border:1px solid #a7f3d0;border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;font-size:11px;color:#065f46">✅ بعد التأكيد ستتمكن من تسليم الجهاز للموظف</div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovReceiveBack')">إلغاء</button><button class="btn btn-s" onclick="subReceiveBack()"><i class="fas fa-check-double"></i>تأكيد الاستلام من الفني</button></div>
+  </div>
+</div>
+
+<!-- Modal: تسليم نهائي للموظف -->
+<div class="ov" id="ovFinalDeliver">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-h"><h3><i class="fas fa-handshake" style="color:var(--gr-d)"></i>تسليم نهائي للموظف</h3><button class="modal-x" onclick="closeM('ovFinalDeliver')"><i class="fas fa-times"></i></button></div>
+    <input type="hidden" id="fd-devid"/>
+    <div id="fd-summary" style="border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;font-size:11px;background:var(--bg2);border:1px solid var(--border)"></div>
+    <div class="fg-r" style="margin-bottom:12px"><label>حالة الجهاز عند التسليم للموظف</label>
+      <select id="fd-condition">
+        <option value="تم الإصلاح الكامل">✅ تم الإصلاح الكامل</option>
+        <option value="إصلاح جزئي">⚠️ إصلاح جزئي — يعمل بشكل محدود</option>
+        <option value="لم يُصلح — جهاز بديل">🔄 لم يُصلح — تم تقديم جهاز بديل</option>
+        <option value="لم يُصلح — للاستبدال">❌ لم يُصلح — يحتاج استبدال</option>
+      </select>
+    </div>
+    <div class="fg-r"><label>ملاحظات للموظف</label><textarea id="fd-notes" rows="2" placeholder="أي تعليمات أو معلومات للموظف..."></textarea></div>
+    <div class="f-acts"><button class="btn btn-g" onclick="closeM('ovFinalDeliver')">إلغاء</button><button class="btn btn-s" onclick="subFinalDeliver()"><i class="fas fa-check-circle"></i>تأكيد التسليم وإغلاق البلاغ</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+'use strict';
+// ══════════════════════════════════════════
+//  CONSTANTS & STATE
+// ══════════════════════════════════════════
+const ROLE_L={user:'موظف',it:'فريق IT',tech:'فني صيانة',manager:'مراقب',it_manager:'مسؤول IT',admin:'أدمن'};
+const ROLE_IC={user:'fa-user',it:'fa-laptop-code',tech:'fa-wrench',manager:'fa-eye',it_manager:'fa-star',admin:'fa-crown'};
+const ROLE_CL={user:'role-user',it:'role-it',tech:'role-it',manager:'role-manager',it_manager:'role-it_manager',admin:'role-admin'};
+const SB={'جديدة':'b-op','معينة':'b-as','قيد المعالجة':'b-pr','تم حل البلاغ':'b-cl'};
+const PB={'عاجلة':'b-ur','عالية':'b-hi','متوسطة':'b-md','منخفضة':'b-lo'};
+const DI={laptop:'💻',desktop:'🖥️',printer:'🖨️',phone:'📱',network:'🌐',server:'🗄️',other:'🔧','':'⚙️'};
+const DEVICE_LABELS={desktop:'الحاسبة',laptop:'اللابتوب',printer:'الطابعة',network:'الشبكة',phone:'الهاتف',other:'جهاز آخر'};
+const MAX_AI=7;
+let DEPTS=[];
+const S={token:null,user:null,tickets:[],users:[],tid:null,charts:{},notifs:[],lastCheck:null,poll:null,pwUid:null};
+const AI={desk:{conv:[],device:'',busy:false,count:0,sys:''},mob:{conv:[],device:'',busy:false,count:0,sys:''}};
+
+// ══════════════════════════════════════════
+//  CACHE
+// ══════════════════════════════════════════
+function gc(k){const r=localStorage.getItem('hd_'+k);if(!r)return null;try{const{d,t,ttl}=JSON.parse(r);if(Date.now()-t>ttl*1000){localStorage.removeItem('hd_'+k);return null;}return d;}catch(e){return null;}}
+function sc(k,d,ttl){try{localStorage.setItem('hd_'+k,JSON.stringify({d,t:Date.now(),ttl}));}catch(e){}}
+function cc(k){if(k)localStorage.removeItem('hd_'+k);else Object.keys(localStorage).filter(x=>x.startsWith('hd_')).forEach(x=>localStorage.removeItem(x));}
+function saveTok(t){try{sessionStorage.setItem('hd_tok',t);}catch(e){}}
+function loadTok(){try{return sessionStorage.getItem('hd_tok');}catch(e){return null;}}
+function clearTok(){try{sessionStorage.removeItem('hd_tok');}catch(e){}}
+
+// ══════════════════════════════════════════
+//  API
+// ══════════════════════════════════════════
+function api(action,data){
+  return new Promise((res,rej)=>{
+    google.script.run
+      .withSuccessHandler(r=>res(r))
+      .withFailureHandler(e=>rej(e))
+      .doPost_proxy({action,data:{...(data||{}),_ts:Date.now()},token:S.token});
+  });
+}
+async function sha256(m){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(m));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+function esc(v){if(v==null)return'';return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
+function tpw(i,e){const el=document.getElementById(i),ic=document.getElementById(e);el.type=el.type==='password'?'text':'password';ic.className='fas '+(el.type==='password'?'fa-eye':'fa-eye-slash');}
+
+// ══════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════
+async function doLogin(){
+  const empId=document.getElementById('li-id').value.trim().toUpperCase();
+  const pw=document.getElementById('li-pw').value;
+  const errEl=document.getElementById('lgErr'),btn=document.getElementById('lgBtn');
+  errEl.style.display='none';
+  if(!empId){showE('ادخل رقم البصمة');return;}
+  if(!pw){showE('ادخل الرمز السري');return;}
+  btn.innerHTML='<span class="spin"></span> جارٍ التحقق...';btn.disabled=true;
+  try{
+    const pwHash=await sha256(pw);
+    const r=await api('auth.login',{empId,pwHash});
+    if(!r||!r.success){showE(r?r.message:'خطأ في الاتصال');return;}
+    S.token=r.token;S.user=r.user;saveTok(r.token);enterApp();
+  }catch(e){showE('خطأ في الاتصال — حاول مجدداً');}
+  finally{btn.innerHTML='<i class="fas fa-sign-in-alt" style="margin-left:6px"></i>تسجيل الدخول';btn.disabled=false;}
+  function showE(m){errEl.textContent=m;errEl.style.display='block';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginPage').classList.contains('active'))doLogin();});
+async function checkSession(){const tok=loadTok();if(!tok)return;S.token=tok;try{const r=await api('auth.check');if(r&&r.success){S.user=r.user;enterApp();}else{clearTok();S.token=null;}}catch(e){clearTok();S.token=null;}}
+function doLogout(){
+  if(S.poll)clearInterval(S.poll);
+  S.token=null;S.user=null;S.tickets=[];S.users=[];S.notifs=[];
+  Object.values(S.charts).forEach(c=>{try{c.destroy();}catch(e){}});S.charts={};
+  cc();clearTok();showPage('loginPage');
+  document.getElementById('li-id').value='';document.getElementById('li-pw').value='';
+  document.getElementById('appPage').className='page app';
+}
+
+// ══════════════════════════════════════════
+//  ENTER APP
+// ══════════════════════════════════════════
+function enterApp(){
+  const u=S.user,ini=(u.firstName[0]||'')+(u.lastName[0]||'');
+  const role=u.role;
+  if(role==='user'){
+    showPage('appPage');
+    // الموظف العادي دائماً يشوف واجهة الموبايل - تتكيف مع كل الأجهزة
+    document.getElementById('appPage').classList.add('force-mobile-view');
+    const av=document.getElementById('mob-av');if(av)av.textContent=ini;
+    loadUserHome();mobTab('mb-home',0);
+    loadTopbarInternetUser();
+    return;
+  }
+  document.getElementById('sb-av').textContent=ini;
+  document.getElementById('sb-n').textContent=u.firstName+' '+u.lastName;
+  document.getElementById('sb-r').textContent=ROLE_L[role]||role;
+  document.getElementById('tb-av').textContent=ini;
+  const isIT=['it','it_manager','admin'].includes(role);
+  const isMgr=['manager','it_manager','admin'].includes(role);
+  const isAdmin=role==='admin';
+  const isStaff=['it','manager','it_manager','admin'].includes(role);
+  document.querySelectorAll('.s-staff').forEach(el=>el.style.display=isStaff?'':'none');
+  document.querySelectorAll('.s-it').forEach(el=>el.style.display=isIT?'':'none');
+  document.querySelectorAll('.s-mgr').forEach(el=>el.style.display=isMgr?'':'none');
+  document.querySelectorAll('.s-admin').forEach(el=>el.style.display=isAdmin?'':'none');
+  document.querySelectorAll('.opt-admin').forEach(el=>el.style.display=isAdmin?'':'none');
+  // الفني يشوف قسمه الخاص
+  document.querySelectorAll('.s-tech').forEach(el=>el.style.display=role==='tech'?'':'none');
+  // قسم نموذج الفني بالأجهزة
+  const techSec=document.getElementById('techRepairSection');
+  if(techSec)techSec.style.display=role==='tech'?'':'none';
+  if(isIT){document.getElementById('bellBtn').style.display='';reqNotifPerm();S.lastCheck=new Date().toISOString();S.poll=setInterval(pollNotifs,90000);}
+  showPage('appPage');loadDepts();
+  // جلب يوزر الإنترنت للـ topbar (لكل الأدوار بدون استثناء)
+  loadTopbarInternetUser();
+  if(role==='tech'){
+    // أظهر يوزر الإنترنت للفني في الـ topbar
+    loadTopbarInternetUser();
+    goTab('tech-stats',document.querySelector('[data-t="tech-stats"]'));return;
+  }
+  if(role==='manager'){goTab('tickets',document.querySelector('[data-t="tickets"]'));return;}
+  goTab('dashboard',document.querySelector('[data-t="dashboard"]'));
+}
+
+async function loadTopbarInternetUser(){
+  try{
+    const r=await api('user.myInfo');
+    if(r&&r.success&&r.internetUser){
+      const badge=document.getElementById('tb-iuser');
+      const val=document.getElementById('tb-iuser-val');
+      if(badge)badge.style.display='flex';
+      if(val)val.textContent=r.internetUser;
+      // أيضاً حدّث كل عناصر user-internet-badge
+      document.querySelectorAll('.user-internet-badge').forEach(el=>el.textContent=r.internetUser);
+    }
+  }catch(e){}
+}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+// ══════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════
+const TAB_IC={dashboard:'fa-chart-line',tickets:'fa-clipboard-list',overdue:'fa-clock',reports:'fa-chart-pie',newTicket:'fa-plus-circle',users:'fa-users',newUser:'fa-user-plus','view-guidelines':'fa-shield-alt','view-manual':'fa-book','ai-desk':'fa-robot',depts:'fa-building',devices:'fa-laptop-medical','internet-users':'fa-wifi','tech-stats':'fa-chart-bar','tech-ticket':'fa-plus-circle'};
+const TAB_TX={dashboard:'لوحة التحكم',tickets:'البلاغات',overdue:'المتأخرة',reports:'التقارير',newTicket:'بلاغ جديد',users:'الموظفون',newUser:'موظف جديد','view-guidelines':'التوجيهات','view-manual':'كتيب التعليمات','ai-desk':'المساعد الذكي',depts:'الأقسام',devices:'إدارة الأجهزة','internet-users':'يوزرات الإنترنت','tech-stats':'إنجازاتي','tech-ticket':'إرسال بلاغ'};
+function goTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.sb-i').forEach(b=>b.classList.remove('active'));
+  const tab=document.getElementById('tab-'+name);if(tab)tab.style.display='block';
+  if(btn)btn.classList.add('active');
+  const pt=document.getElementById('pgTitle');
+  if(pt)pt.innerHTML=`<i class="fas ${TAB_IC[name]||'fa-circle'}"></i>${TAB_TX[name]||''}`;
+  const L={dashboard:loadDashboard,tickets:loadTickets,overdue:loadOverdue,reports:loadReports,users:loadUsers,depts:loadDepts,devices:loadDevices,'internet-users':loadInternetUsers,'view-guidelines':loadGuidelinesTab,'view-manual':()=>loadManualTab(''),'ai-desk':()=>{},'tech-stats':loadTechStats,'tech-ticket':()=>{},userHome:loadDeskUserHome,myTicketsDesk:loadDeskUserTickets,newTicketDesk:()=>{}};
+  if(L[name])L[name]();
+}
+function mobTab(id,idx){
+  document.querySelectorAll('.mb-tab').forEach(t=>t.style.display='none');
+  const el=document.getElementById(id);if(el)el.style.display='block';
+  document.querySelectorAll('.mob-bni').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  const fab=document.querySelector('.mob-fab');if(fab)fab.style.display=(id==='mb-new')?'none':'flex';
+}
+
+// ══════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════
+async function loadDashboard(){const c=gc('dashboard');if(c)renderDash(c);try{const r=await api('stats.dashboard');if(r&&r.success){sc('dashboard',r,180);renderDash(r);}}catch(e){}}
+function renderDash(r){
+  const{stats,byPriority,topProblems,itPerformance}=r;
+  const cfg=[{k:'total',l:'إجمالي',ic:'fa-chart-bar',c:'var(--in)',bg:'var(--in-l)'},{k:'open',l:'جديدة',ic:'fa-folder-open',c:'var(--bl)',bg:'var(--bl-l)'},{k:'assigned',l:'معينة',ic:'fa-user-check',c:'#92400e',bg:'var(--am-l)'},{k:'inProgress',l:'قيد المعالجة',ic:'fa-spinner',c:'#155e75',bg:'var(--cy-l)'},{k:'closed',l:'تم الحل',ic:'fa-check-circle',c:'var(--gr-d)',bg:'var(--gr-l)'},{k:'overdue',l:'متأخرة',ic:'fa-exclamation-triangle',c:'#b91c1c',bg:'var(--re-l)'}];
+  document.getElementById('d-sg').innerHTML=cfg.map(s=>`<div class="sc" style="--sc:${s.c};--sc-bg:${s.bg}"><div class="sc-ic"><i class="fas ${s.ic}"></i></div><div class="sc-n" id="st-${s.k}">${stats[s.k]||0}</div><div class="sc-l">${s.l}</div></div>`).join('');
+  cfg.forEach(s=>animN('st-'+s.k,stats[s.k]||0));
+  const nb=document.getElementById('nb-ov');if(nb&&(stats.overdue||0)>0){nb.textContent=stats.overdue;nb.style.display='';}
+  mkChart('cSt','doughnut',['جديدة','معينة','قيد المعالجة','تم الحل'],[stats.open,stats.assigned,stats.inProgress,stats.closed],['#3b82f6','#f59e0b','#06b6d4','#10b981']);
+  mkChart('cPr','bar',['عاجلة','عالية','متوسطة','منخفضة'],[byPriority['عاجلة'],byPriority['عالية'],byPriority['متوسطة'],byPriority['منخفضة']],['#ef4444','#f59e0b','#3b82f6','#8b5cf6']);
+  if(itPerformance&&itPerformance.length){document.getElementById('d-perf').style.display='';document.querySelector('#perfTbl tbody').innerHTML=itPerformance.map(p=>`<tr><td><strong>${esc(p.name)}</strong></td><td style="text-align:center">${p.total}</td><td style="text-align:center;color:var(--gr-d)">${p.solved}</td><td style="text-align:center;color:#92400e">${p.open}</td><td style="min-width:90px"><div style="display:flex;align-items:center;gap:5px"><div class="pb"><div class="pbf" style="width:${p.rate}%"></div></div><span style="font-size:9px;color:var(--sl)">${p.rate}%</span></div></td><td style="text-align:center;font-size:11px;color:var(--sl)">${p.avg}h</td></tr>`).join('');}
+  if(topProblems&&topProblems.length){const mx=topProblems[0].count;document.getElementById('d-prob').style.display='';document.getElementById('probList').innerHTML=topProblems.map(p=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>${esc(p.name)}</span><span style="color:var(--sl)">${p.count}</span></div><div class="pb" style="height:6px"><div class="pbf" style="width:${Math.round(p.count/mx*100)}%"></div></div></div>`).join('');}
+}
+
+// ══════════════════════════════════════════
+//  USER HOME (MOBILE)
+// ══════════════════════════════════════════
+async function loadUserHome(){try{const r=await api('stats.user');if(r&&r.success)renderUH(r);}catch(e){}}
+function renderUH(r){
+  const{stats,recent}=r,u=S.user;
+  const av=document.getElementById('mob-av'),gr=document.getElementById('mob-gr'),dp=document.getElementById('mob-dp');
+  if(av)av.textContent=(u.firstName[0]||'')+(u.lastName[0]||'');
+  if(gr)gr.textContent=u.firstName+' '+u.lastName;
+  if(dp)dp.textContent=u.dept;
+  const ms=document.getElementById('mob-ms');
+  if(ms)ms.innerHTML=[{n:stats.total,l:'الكل',c:'var(--in)'},{n:stats.open,l:'جديدة',c:'var(--bl)'},{n:stats.closed,l:'محلولة',c:'var(--gr-d)'},{n:stats.inProgress,l:'جارية',c:'#155e75'}].map(s=>`<div class="mob-stat"><div class="msn" style="color:${s.c}">${s.n}</div><div class="msl">${s.l}</div></div>`).join('');
+  const colors={'جديدة':'#3b82f6','معينة':'#f59e0b','قيد المعالجة':'#06b6d4','تم حل البلاغ':'#10b981'};
+  const recEl=document.getElementById('mob-rec');if(!recEl)return;
+  if(!recent.length){recEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--sl)"><i class="fas fa-clipboard" style="font-size:32px;opacity:.2;display:block;margin-bottom:10px"></i><div style="font-size:13px;font-weight:600">لا توجد بلاغات بعد</div></div>';return;}
+  recEl.innerHTML=recent.map(t=>`<div class="mob-tc"><div class="mob-tc-l" style="background:${colors[t.status]||'#6366f1'}"></div><div class="mob-tc-body"><div class="mob-tc-tt">${esc(t.problemType)}</div><div class="mob-tc-meta">${esc(t.createdAt)}</div></div><div class="mob-tc-r"><span class="badge" style="background:${colors[t.status]||'#6366f1'}20;color:${colors[t.status]||'#6366f1'};border:1px solid ${colors[t.status]||'#6366f1'}40;font-size:9px">${esc(t.status)}</span></div></div>`).join('');
+}
+
+// ══════════════════════════════════════════
+//  MY INFO (معلوماتي)
+// ══════════════════════════════════════════
+async function loadMyInfo(){
+  const u=S.user;if(!u)return;
+  const ini=(u.firstName[0]||'')+(u.lastName[0]||'');
+  const setT=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
+  setT('inf-av',ini);setT('inf-name',u.firstName+' '+u.lastName);setT('inf-role',ROLE_L[u.role]);
+  setT('inf-id',u.empId);setT('inf-dept',u.dept);setT('inf-phone',u.phone||'—');
+  setT('inf-internet','⏳ جارٍ التحميل...');setT('inf-tickets','—');
+  try{
+    const r=await api('user.myInfo');
+    if(r&&r.success){
+      setT('inf-internet',r.internetUser||'غير مُعيَّن');
+      setT('inf-tickets',r.ticketCount||'0');
+      if(r.phone)setT('inf-phone',r.phone);
+    }else{setT('inf-internet','غير مُعيَّن');}
+  }catch(e){setT('inf-internet','غير متاح');}
+}
+
+// ══════════════════════════════════════════
+//  TICKETS
+// ══════════════════════════════════════════
+let _dbt;function debLoad(){clearTimeout(_dbt);_dbt=setTimeout(loadTickets,350);}
+async function loadTickets(){
+  const q=(document.getElementById('f-q')||{}).value||'';
+  const st=(document.getElementById('f-st')||{}).value||'all';
+  const pr=(document.getElementById('f-pr')||{}).value||'all';
+  const el=document.getElementById('tList');if(!el)return;el.innerHTML=skel(3);
+  try{const r=await api('tickets.list',{q,status:st,priority:pr});if(!r||!r.success){toast(r?r.message:'خطأ',true);return;}S.tickets=r.tickets;renderTL(r.tickets,el);}
+  catch(e){el.innerHTML='<div class="empty"><i class="fas fa-exclamation-circle"></i><h3>فشل التحميل</h3></div>';}
+}
+async function loadOverdue(){
+  const el=document.getElementById('ovList');el.innerHTML=skel(2);
+  try{const r=await api('tickets.list',{overdueOnly:true});if(!r||!r.success)return;
+    document.getElementById('ov-sub').textContent=r.tickets.length?r.tickets.length+' بلاغ تجاوز 48 ساعة':'لا توجد بلاغات متأخرة ✅';
+    S.tickets=[...S.tickets,...r.tickets.filter(t=>!S.tickets.find(x=>x.id===t.id))];
+    el.innerHTML=r.tickets.length?r.tickets.map(t=>tickCard(t)).join(''):'<div class="empty"><i class="fas fa-check-circle" style="color:var(--gr)"></i><h3 style="color:var(--gr-d)">ممتاز! لا توجد بلاغات متأخرة</h3></div>';}
+  catch(e){}
+}
+async function loadMobTicks(){
+  const fEl=document.querySelector('#mb-ticks .dev-chip.selected');
+  const st=fEl?fEl.dataset.val:'all';
+  const el=document.getElementById('mob-tl');if(!el)return;el.innerHTML=skel(2);
+  const colors={'جديدة':'#3b82f6','معينة':'#f59e0b','قيد المعالجة':'#06b6d4','تم حل البلاغ':'#10b981'};
+  try{const r=await api('tickets.list',{status:st});if(!r||!r.success)return;
+    if(!r.tickets.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--sl)"><i class="fas fa-clipboard" style="font-size:32px;opacity:.2;display:block;margin-bottom:10px"></i><div>لا توجد بلاغات</div></div>';return;}
+    el.innerHTML=r.tickets.map(t=>`<div class="mob-tc" onclick="openDetail('${esc(t.id)}')" style="cursor:pointer"><div class="mob-tc-l" style="background:${colors[t.status]||'#6366f1'}"></div><div class="mob-tc-body"><div class="mob-tc-tt">${esc(t.problemType)}</div><div class="mob-tc-meta">${esc(t.createdAt)}</div></div><div class="mob-tc-r"><span class="badge" style="background:${colors[t.status]||'#6366f1'}20;color:${colors[t.status]||'#6366f1'};border:1px solid ${colors[t.status]||'#6366f1'}40;font-size:9px">${esc(t.status)}</span><i class="fas fa-chevron-left" style="font-size:10px;color:var(--sl)"></i></div></div>`).join('');}
+  catch(e){}
+}
+function filterMobTick(el,val){document.querySelectorAll('#mb-ticks .dev-chip').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');el.dataset.val=val;loadMobTicks();}
+function renderTL(list,el){
+  if(!list||!list.length){el.innerHTML='<div class="empty"><i class="fas fa-search"></i><h3>لا توجد بلاغات</h3></div>';return;}
+  el.innerHTML=list.map(t=>tickCard(t)).join('');
+}
+function tickCard(t){
+  const cl=t.status==='تم حل البلاغ'?'c-cl':t.isOverdue?'c-ov':t.priority==='عاجلة'?'c-ur':t.priority==='عالية'?'c-hi':'';
+  const dev=DI[t.deviceId||'']||'⚙️';
+  const desc=t.desc.length>110?t.desc.slice(0,110)+'…':t.desc;
+  const u=S.user;
+  const isIT=u&&['it','admin','it_manager'].includes(u.role);
+  const isMgr=u&&['manager','it_manager','admin'].includes(u.role);
+  const claimedBadge=t.assignedName?`<span class="assigned-by"><i class="fas fa-user-check"></i>مستلم: ${esc(t.assignedName)}</span>`:'';
+  let acts='';
+  if(u&&(isIT||isMgr)){
+    const canClaim=isIT&&!t.assignedName&&t.status==='جديدة';
+    const canAssign=(isIT||isMgr)&&t.status!=='تم حل البلاغ';
+    acts=`
+${canClaim?`<button class="btn btn-s btn-sm" onclick="doClaim('${esc(t.id)}')"><i class="fas fa-hand-pointer"></i>استلام</button>`:''}
+${isIT?`<button class="btn btn-w btn-sm" onclick="openUpd('${esc(t.id)}')"><i class="fas fa-edit"></i>تحديث</button>`:''}
+${canAssign?`<button class="btn btn-p btn-sm" onclick="openAsgn('${esc(t.id)}')"><i class="fas fa-user-check"></i>تعيين</button>`:''}
+${isIT&&t.assignedName?`<button class="btn btn-g btn-sm" onclick="doUnasgn('${esc(t.id)}')"><i class="fas fa-user-minus"></i>إلغاء</button>`:''}`;
+  }
+  return `<div class="ti ${cl}">
+<div class="ti-top">
+<div style="flex:1;min-width:0">
+<div class="ti-id"><i class="fas fa-hashtag"></i>${esc(t.id)} · ${esc(t.createdAt)}</div>
+<div class="ti-ttl">${dev} ${esc(t.problemType)}</div>
+<div class="ti-meta">
+<span><i class="fas fa-building" style="color:var(--in)"></i>${esc(t.requesterDept)}</span>
+<span><i class="fas fa-user" style="color:var(--in)"></i>${esc(t.requesterName)}</span>
+${claimedBadge}
+</div>
+</div>
+<div class="ti-bgs">
+<span class="badge ${SB[t.status]||'b-op'}">${esc(t.status)}</span>
+<span class="badge ${PB[t.priority]||'b-md'}">${esc(t.priority)}</span>
+${t.isOverdue?'<span class="badge b-ov"><i class="fas fa-clock"></i>متأخر</span>':''}
+</div>
+</div>
+<div class="ti-desc">${esc(desc)}</div>
+<div class="ti-acts">
+<button class="btn btn-g btn-sm" onclick="openDetail('${esc(t.id)}')"><i class="fas fa-eye"></i>التفاصيل</button>
+<button class="btn btn-g btn-sm" onclick="openAttachModal('${esc(t.id)}')"><i class="fas fa-paperclip"></i>مرفق</button>
+${acts}
+${u&&u.role==='admin'?`<button class="btn btn-d btn-sm" onclick="deleteTicket('${esc(t.id)}')"><i class="fas fa-trash"></i>حذف</button>`:''}
+</div>
+</div>`;
+}
+function openDetail(tid){
+  const t=S.tickets.find(x=>x.id===tid);if(!t)return;
+  const hist=(t.history||[]).map(h=>`<div class="hi"><div class="hd"></div><div><div style="font-size:12px;font-weight:600">${esc(h.action)}</div><div class="ht">${esc(h.by)} · ${esc(h.time)}</div></div></div>`).join('');
+  document.getElementById('mTBody').innerHTML=`
+<div class="ig">
+<div class="ig-i"><label>رقم البلاغ</label><strong style="font-family:monospace">${esc(t.id)}</strong></div>
+<div class="ig-i"><label>الحالة</label><span class="badge ${SB[t.status]||'b-op'}">${esc(t.status)}</span></div>
+<div class="ig-i"><label>المُبلِّغ</label><strong>${esc(t.requesterName)}</strong></div>
+<div class="ig-i"><label>القسم</label><strong>${esc(t.requesterDept)}</strong></div>
+<div class="ig-i"><label>نوع المشكلة</label><strong>${esc(t.problemType)}</strong></div>
+<div class="ig-i"><label>الأولوية</label><span class="badge ${PB[t.priority]||'b-md'}">${esc(t.priority)}</span></div>
+<div class="ig-i"><label>المعالج</label><strong>${esc(t.assignedName)||'غير معين'}</strong></div>
+<div class="ig-i"><label>تاريخ الإنشاء</label><strong>${esc(t.createdAt)}</strong></div>
+</div>
+<div style="margin-bottom:12px"><label>وصف المشكلة</label><p style="background:var(--bg);padding:12px;border-radius:var(--rs);font-size:12px;margin-top:5px;line-height:1.7;border:1px solid var(--border)">${esc(t.desc)}</p></div>
+${t.solution?`<div style="margin-bottom:12px"><label>الحل المطبق</label><p style="background:var(--gr-l);border:1px solid #a7f3d0;padding:12px;border-radius:var(--rs);font-size:12px;margin-top:5px">${esc(t.solution)}</p></div>`:''}
+${hist?`<div><div class="card-h" style="margin-bottom:8px"><i class="fas fa-history"></i>سجل التاريخ</div>${hist}</div>`:''}`;
+  openM('ovTick');
+}
+
+// ══════════════════════════════════════════
+//  TICKET ACTIONS
+// ══════════════════════════════════════════
+async function subITTicket(){const p=document.getElementById('nt-p').value,pri=document.getElementById('nt-pri').value,d=document.getElementById('nt-d').value.trim(),di=document.getElementById('nt-di').value;if(!p||!d){toast('نوع المشكلة والوصف مطلوبان',true);return;}try{const r=await api('tickets.create',{problemType:p,priority:pri,description:d,deviceId:di});if(r&&r.success){toast('✅ '+r.message);cc();['nt-p','nt-d','nt-di'].forEach(id=>document.getElementById(id).value='');goTab('tickets',document.querySelector('[data-t="tickets"]'));}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+// معالجة صورة الموبايل
+let _mobImg=null;
+function onMobImgSelect(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>3*1024*1024){toast('حجم الصورة كبير — الحد 3MB',true);input.value='';return;}
+  _mobImg=file;
+  const preview=document.getElementById('mn-img-preview');
+  const thumb=document.getElementById('mn-img-thumb');
+  const name=document.getElementById('mn-img-name');
+  const label=document.getElementById('mn-img-label');
+  if(thumb)thumb.src=URL.createObjectURL(file);
+  if(name)name.textContent=file.name;
+  if(preview)preview.style.display='block';
+  if(label)label.style.borderColor='var(--gr-d)';
+}
+function removeMobImg(){
+  _mobImg=null;
+  document.getElementById('mn-img').value='';
+  document.getElementById('mn-img-preview').style.display='none';
+  document.getElementById('mn-img-label').style.borderColor='';
+}
+async function subMob(){
+  const p=document.getElementById('mn-p').value,
+        pri=document.getElementById('mn-pri').value||'متوسطة',
+        d=document.getElementById('mn-d').value.trim(),
+        di=document.getElementById('mn-di').value;
+  if(!p){toast('اختر نوع المشكلة',true);return;}
+  if(!d){toast('اكتب وصف المشكلة',true);return;}
+  const btn=document.getElementById('mobSubBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>إرسال...';
+  try{
+    const r=await api('tickets.create',{problemType:p,priority:pri,description:d,deviceId:di});
+    if(r&&r.success){
+      document.getElementById('successTid').textContent='رقم البلاغ: '+r.ticketId;
+      // رفع الصورة إذا موجودة
+      if(_mobImg){
+        try{
+          btn.innerHTML='<span class="spin"></span>رفع الصورة...';
+          const b64=await fileToBase64(_mobImg);
+          await api('tickets.attach',{ticketId:r.ticketId,fileName:_mobImg.name,mimeType:_mobImg.type,base64:b64});
+        }catch(e2){}
+      }
+      document.getElementById('mobSuccess').classList.add('show');
+      cc();
+    }else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ في الإرسال',true);}
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i>إرسال البلاغ';
+}
+function openUpd(tid){S.tid=tid;['upd-st','upd-sol','upd-not'].forEach(id=>document.getElementById(id).value='');openM('ovUpd');}
+async function subUpd(){const st=document.getElementById('upd-st').value,sol=document.getElementById('upd-sol').value.trim(),note=document.getElementById('upd-not').value.trim();try{const r=await api('tickets.update',{ticketId:S.tid,status:st,solution:sol,notes:note});if(r&&r.success){toast('✅ '+r.message);closeM('ovUpd');cc();loadTickets();loadDashboard();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function doClaim(tid){try{const r=await api('tickets.claim',{ticketId:tid});if(r&&r.success){toast('✅ '+r.message);cc();loadTickets();loadDashboard();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function doUnasgn(tid){if(!confirm('إلغاء تعيين هذا البلاغ؟'))return;try{const r=await api('tickets.unassign',{ticketId:tid});if(r&&r.success){toast('✅ '+r.message);cc();loadTickets();}else toast(r?r.message:'خطأ',true);}catch(e){}}
+async function openAsgn(tid){S.tid=tid;const users=S.users.length?S.users:await fetchUsers();const it=users.filter(u=>['it','admin','it_manager','tech'].includes(u.role)&&u.active);document.getElementById('asgn-sl').innerHTML=it.map(u=>`<option value="${esc(u.id)}">${esc(u.firstName)} ${esc(u.lastName)} — ${ROLE_L[u.role]}</option>`).join('');openM('ovAsgn');}
+async function subAsgn(){const aid=document.getElementById('asgn-sl').value;try{const r=await api('tickets.assign',{ticketId:S.tid,assigneeId:aid});if(r&&r.success){toast('✅ '+r.message);closeM('ovAsgn');cc();loadTickets();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function openHelp(tid){S.tid=tid;const users=S.users.length?S.users:await fetchUsers();const others=users.filter(u=>['it','admin','it_manager'].includes(u.role)&&u.id!==S.user.id);document.getElementById('hlp-sl').innerHTML=others.map(u=>`<option value="${esc(u.id)}">${esc(u.firstName)} ${esc(u.lastName)}</option>`).join('');openM('ovHelp');}
+async function subHelp(){const hid=document.getElementById('hlp-sl').value,hn=document.getElementById('hlp-not').value.trim();try{const r=await api('tickets.help',{ticketId:S.tid,helperId:hid,helpNotes:hn});if(r&&r.success){toast('✅ '+r.message);closeM('ovHelp');cc();loadTickets();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+function closeMobSuccess(){document.getElementById('mobSuccess').classList.remove('show');document.querySelectorAll('.prob-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('mn-d').value='';document.getElementById('mn-p').value='';removeMobImg();mobTab('mb-home',0);loadUserHome();}
+
+// ══════════════════════════════════════════
+//  REPORTS
+// ══════════════════════════════════════════
+async function loadReports(){const c=gc('dashboard');const src=c||(await api('stats.dashboard').then(r=>r&&r.success?r:null).catch(()=>null));if(!src)return;const{stats,byPriority,itPerformance,daily}=src;mkChart('cSt2','doughnut',['جديدة','معينة','قيد المعالجة','تم الحل'],[stats.open,stats.assigned,stats.inProgress,stats.closed],['#3b82f6','#f59e0b','#06b6d4','#10b981']);mkChart('cPr2','pie',['عاجلة','عالية','متوسطة','منخفضة'],[byPriority['عاجلة'],byPriority['عالية'],byPriority['متوسطة'],byPriority['منخفضة']],['#ef4444','#f59e0b','#3b82f6','#8b5cf6']);if(daily&&daily.length)mkChart('cDy','line',daily.map(d=>d.d),daily.map(d=>d.c),['#6366f1']);if(itPerformance&&itPerformance.length)mkChart('cTm','bar',itPerformance.map(p=>p.name),itPerformance.map(p=>p.solved),['#10b981']);const rate=stats.total?Math.round(stats.closed/stats.total*100):0;document.getElementById('r-sum').innerHTML=[{l:'معدل الإنجاز',v:rate+'%',c:'var(--in)',bg:'var(--in-l)',ic:'fa-percentage'},{l:'محلولة',v:stats.closed,c:'var(--gr-d)',bg:'var(--gr-l)',ic:'fa-check-circle'},{l:'متأخرة',v:stats.overdue,c:'#b91c1c',bg:'var(--re-l)',ic:'fa-clock'}].map(s=>`<div class="sc" style="--sc:${s.c};--sc-bg:${s.bg}"><div class="sc-ic"><i class="fas ${s.ic}"></i></div><div class="sc-n">${s.v}</div><div class="sc-l">${s.l}</div></div>`).join('');}
+
+// ══════════════════════════════════════════
+//  USERS
+// ══════════════════════════════════════════
+async function fetchUsers(){try{const r=await api('users.list');if(r&&r.success){S.users=r.users;return r.users;}}catch(e){}return[];}
+async function loadUsers(){document.getElementById('uTbody').innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px"><span class="spin spin-d"></span></td></tr>';const users=await fetchUsers();renderUsers(users);}
+function filterUsers(){const q=document.getElementById('uQ').value.toLowerCase();renderUsers(S.users.filter(u=>(u.empId+u.firstName+u.lastName+u.dept).toLowerCase().includes(q)));}
+function renderUsers(list){const tbody=document.getElementById('uTbody');if(!list.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--sl)">لا يوجد موظفون</td></tr>';return;}tbody.innerHTML=list.map(u=>`<tr style="${!u.active?'opacity:.55':''}"><td><strong style="color:var(--in);font-family:monospace;font-size:11px">${esc(u.empId)}</strong></td><td><div style="display:flex;align-items:center;gap:7px"><div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--in),var(--pu));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;flex-shrink:0">${esc((u.firstName[0]||'')+(u.lastName[0]||''))}</div>${esc(u.firstName)} ${esc(u.lastName)}</div></td><td style="font-size:11px">${esc(u.dept)}</td><td><span class="badge ${ROLE_CL[u.role]||'role-user'}" style="font-size:9px"><i class="fas ${ROLE_IC[u.role]||'fa-user'}" style="margin-left:3px"></i>${ROLE_L[u.role]||u.role}</span></td><td><span class="badge ${u.active?'b-ac':'b-in'}">${u.active?'نشط':'معطل'}</span></td><td style="font-size:10px;color:var(--sl)">${esc(u.lastLogin)||'—'}</td><td><div style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn btn-w btn-sm" onclick="openPwModal('${esc(u.id)}','${esc(u.firstName+' '+u.lastName)}')"><i class="fas fa-key"></i>رمز</button><button class="btn ${u.active?'btn-d':'btn-s'} btn-sm" onclick="togUser('${esc(u.id)}')"><i class="fas ${u.active?'fa-ban':'fa-check'}"></i>${u.active?'تعطيل':'تفعيل'}</button><button class="btn btn-d btn-sm" onclick="delUser('${esc(u.id)}','${esc(u.firstName+' '+u.lastName)}')"><i class="fas fa-trash-alt"></i></button></div></td></tr>`).join('');}
+function onRoleChange(role){const row=document.getElementById('email-row');if(!row)return;row.style.display=['it','admin','manager','it_manager'].includes(role)?'':'none';}
+async function subUser(){const f=document.getElementById('nu-f').value.trim(),l=document.getElementById('nu-l').value.trim(),id=document.getElementById('nu-id').value.trim().toUpperCase(),ph=document.getElementById('nu-ph').value.trim(),dp=document.getElementById('nu-dp').value,ro=document.getElementById('nu-ro').value,pw=document.getElementById('nu-pw').value,em=document.getElementById('nu-em').value.trim();if(!f||!l||!id||!ph||!dp){toast('أكمل جميع الحقول',true);return;}if(!pw){toast('ادخل كلمة المرور',true);return;}try{const pwHash=await sha256(pw);const r=await api('users.add',{firstName:f,lastName:l,empId:id,phone:ph,dept:dp,role:ro,pwHash,notifyEmail:em});if(r&&r.success){
+    // نتيجة المطابقة التلقائية لليوزر
+    let msg=r.message;
+    if(r.autoMatch&&r.autoMatch.matched){
+      toast('✅ '+msg,false);
+      // أظهر إشعار المطابقة
+      setTimeout(()=>toast(`🌐 تم ربط يوزر الإنترنت: ${r.autoMatch.internetUser} (${r.autoMatch.confidence}% تطابق)`,false),2000);
+    } else if(r.autoMatch&&r.autoMatch.ambiguous){
+      toast('✅ '+msg,false);
+      setTimeout(()=>toast('⚠️ يوجد أسماء متشابهة — عيّن اليوزر يدوياً من قسم يوزرات الإنترنت',true),2000);
+    } else {
+      toast('✅ '+msg);
+    }
+    S.users=[];['nu-f','nu-l','nu-id','nu-ph','nu-pw','nu-em'].forEach(id2=>{const el=document.getElementById(id2);if(el)el.value='';});document.getElementById('nu-ro').value='user';onRoleChange('user');goTab('users',document.querySelector('[data-t="users"]'));}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+function openPwModal(uid,name){S.pwUid=uid;document.getElementById('pwModalName').textContent='تغيير رمز: '+name;document.getElementById('pw-new').value='';document.getElementById('pwModal').classList.add('open');}
+function closePwModal(){document.getElementById('pwModal').classList.remove('open');S.pwUid=null;}
+async function submitPwReset(){const np=document.getElementById('pw-new').value;if(!np||np.length<4){toast('كلمة المرور قصيرة',true);return;}try{const pwHash=await sha256(np);const r=await api('users.resetPw',{id:S.pwUid,pwHash});if(r&&r.success){toast('✅ '+r.message);closePwModal();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function togUser(uid){try{const r=await api('users.toggle',{id:uid});if(r&&r.success){toast('✅ '+r.message);S.users=[];loadUsers();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function delUser(uid,name){if(!confirm('⚠️ حذف نهائي لـ '+name+'؟'))return;try{const r=await api('users.delete',{id:uid});if(r&&r.success){toast('🗑️ '+r.message);S.users=[];loadUsers();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+
+// ══════════════════════════════════════════
+//  NOTIFICATIONS
+// ══════════════════════════════════════════
+async function reqNotifPerm(){if(!('Notification' in window))return;if(Notification.permission==='default')await Notification.requestPermission();}
+function showBrNotif(title,body,tid){if(Notification.permission!=='granted')return;const n=new Notification(title,{body});n.onclick=()=>{window.focus();if(tid){const t=S.tickets.find(x=>x.id===tid);if(t)openDetail(tid);}};setTimeout(()=>n.close(),8000);}
+async function pollNotifs(){const u=S.user;if(!u||!['it','admin','it_manager'].includes(u.role))return;try{const r=await api('notifications.check',{since:S.lastCheck});if(r&&r.success&&r.newTickets&&r.newTickets.length>0){S.lastCheck=r.timestamp;r.newTickets.forEach(t=>{showBrNotif('🔔 بلاغ جديد — '+t.problemType,'من: '+t.requesterName,t.id);S.notifs.unshift(t);if(S.notifs.length>15)S.notifs.pop();});updNB();}}catch(e){}}
+function updNB(){const nb=document.getElementById('nb2');if(nb)nb.style.display=S.notifs.length?'block':'none';}
+function toggleNP(){const p=document.getElementById('npanel');p.classList.toggle('open');if(p.classList.contains('open'))renderNP();}
+function renderNP(){const el=document.getElementById('npList');if(!S.notifs.length){el.innerHTML='<div class="np-empty">لا توجد إشعارات</div>';return;}el.innerHTML=S.notifs.slice(0,10).map(t=>`<div class="np-item" onclick="openDetail('${esc(t.id)}')"><div class="np-ic"><i class="fas fa-ticket-alt"></i></div><div><div class="np-tx">${esc(t.problemType)}</div><div class="np-sb">${esc(t.requesterName)}</div></div></div>`).join('');}
+function clearNP(){S.notifs=[];updNB();document.getElementById('npList').innerHTML='<div class="np-empty">تم مسح الإشعارات</div>';}
+document.addEventListener('click',e=>{const btn=document.getElementById('bellBtn'),p=document.getElementById('npanel');if(btn&&p&&!btn.contains(e.target))p.classList.remove('open');});
+
+// ══════════════════════════════════════════
+//  CHARTS
+// ══════════════════════════════════════════
+function mkChart(id,type,labels,data,colors){const cv=document.getElementById(id);if(!cv)return;if(S.charts[id]){try{S.charts[id].destroy();}catch(e){}}const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{family:'Cairo',size:10}},position:'bottom'}},scales:{}};if(type==='bar'||type==='line'){opts.scales={x:{grid:{color:'#f1f5f9'},ticks:{color:'#94a3b8',font:{family:'Cairo',size:9}}},y:{grid:{color:'#f1f5f9'},ticks:{color:'#94a3b8',font:{family:'Cairo',size:9}},beginAtZero:true}};}if(type==='line'){S.charts[id]=new Chart(cv,{type,data:{labels,datasets:[{data,borderColor:colors[0],backgroundColor:colors[0]+'20',fill:true,tension:.4,pointRadius:3}]},options:opts});return;}S.charts[id]=new Chart(cv,{type,data:{labels,datasets:[{data,backgroundColor:colors.map(c=>c+'30'),borderColor:colors,borderWidth:2}]},options:opts});}
+
+// ══════════════════════════════════════════
+//  AI CHAT — ADVANCED + SELF-LEARNING
+// ══════════════════════════════════════════
+async function fetchITKnowledge(){
+  try{
+    const r=await api('tickets.list',{status:'تم حل البلاغ',limit:50});
+    if(!r||!r.success)return'';
+    const solved=r.tickets.filter(t=>t.solution&&t.solution.trim().length>15);
+    if(!solved.length)return'';
+    // تحليل الأنماط وبناء قاعدة معرفة ذكية
+    const byType={};
+    solved.forEach(t=>{
+      const key=t.problemType+(t.deviceId?'|'+t.deviceId:'');
+      if(!byType[key])byType[key]={count:0,solutions:[],device:t.deviceId||'',type:t.problemType};
+      byType[key].count++;
+      if(byType[key].solutions.length<3)byType[key].solutions.push(t.solution);
+    });
+    const knowledge=Object.values(byType)
+      .sort((a,b)=>b.count-a.count)
+      .slice(0,15)
+      .map(g=>`[${g.type}${g.device?' | '+DEVICE_LABELS[g.device]:''}] — حدث ${g.count} مرة — أفضل الحلول: ${g.solutions.join(' / ')}`)
+      .join('\n');
+    return knowledge;
+  }catch(e){return'';}
+}
+
+function buildAISystem(deviceLabel,knowledge){
+  return `أنت مساعد تقني ذكي متخصص بـ ${deviceLabel} في شركة عراقية.
+
+## تعلمت من حلول فريق IT الحقيقية:
+${knowledge||'لا توجد حلول مسجلة بعد — استخدم خبرتك العامة'}
+
+## قواعد الأمان (صارمة — لا استثناء):
+- ممنوع ذكر أي عنوان IP أو subnet أو gateway أو تكوين شبكي داخلي
+- ممنوع ذكر كلمات مرور أو بيانات دخول أو حسابات إدارية
+- ممنوع ذكر أسماء سيرفرات أو نطاقات داخلية
+- إذا سأل عن هذه المعلومات: قل "هذه المعلومات تختص بها تقنية المعلومات مباشرة"
+
+## أسلوب الرد:
+- اللهجة العراقية البسيطة فقط
+- كل رد: تشخيص مختصر + خطوة عملية واحدة + سؤال للتأكد
+- اعتمد أولاً على الحلول المُسجَّلة من فريق IT إذا وجد نمط مشابه
+- أضف نصيحة وقائية إذا توفرت
+- بعد 6 خطوات فاشلة أو مشكلة معقدة: اقترح فوراً تسجيل بلاغ بـ [TICKET]`;
+}
+
+function updateAIDots(ctx){
+  const rem=MAX_AI-AI[ctx].count;
+  const dotsId=ctx==='desk'?'deskAiDots':'mobAiDots';
+  const barId=ctx==='desk'?'deskAiLimitBar':'mobAiLimitBar';
+  const dotsEl=document.getElementById(dotsId),barEl=document.getElementById(barId);
+  if(!dotsEl)return;
+  barEl.style.display='flex';
+  dotsEl.innerHTML=Array.from({length:MAX_AI},(_,i)=>{
+    let cls='ai-dot-ind';
+    if(i<AI[ctx].count){
+      if(i===MAX_AI-1)cls+=' danger';
+      else if(i>=MAX_AI-2)cls+=' warn';
+      else cls+=' used';
+    }
+    return`<div class="${cls}" title="رسالة ${i+1}"></div>`;
+  }).join('');
+}
+
+function pickAIDev(el,device,ctx){
+  const selId=ctx==='desk'?'deskAiDevSel':'mobAiDevSel';
+  document.querySelectorAll('#'+selId+' .ai-dev-chip').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  AI[ctx].device=device;AI[ctx].conv=[];AI[ctx].count=0;AI[ctx].sys='';
+  const label=DEVICE_LABELS[device]||device;
+  const msgsId=ctx==='desk'?'deskAiMsgs':'mobAiMsgs';
+  const msgsEl=document.getElementById(msgsId);
+  if(msgsEl)msgsEl.innerHTML='<div class="ai-msg sys">⏳ جارٍ تحميل معرفة فريق IT وتحليل الحلول...</div>';
+  const inp=document.getElementById(ctx==='desk'?'deskAiInp':'mobAiInp');
+  const snd=document.getElementById(ctx==='desk'?'deskAiSend':'mobAiSend');
+  if(ctx==='mob'){const st=document.getElementById('mobAiStatus');if(st)st.textContent=label;}
+
+  fetchITKnowledge().then(knowledge=>{
+    AI[ctx].sys=buildAISystem(label,knowledge);
+    if(msgsEl)msgsEl.innerHTML='';
+    if(knowledge){
+      const lines=knowledge.split('\n').length;
+      appendAIMsg(ctx,'learn',`✅ تم تحليل ${lines} نمط مشكلة من سجلات IT وإضافتها لمعرفتي`);
+    }
+    const first=`أهلاً! أنا المساعد الذكي المتخصص بـ ${label}.\n${knowledge?'📚 اطلعت على حلول فريق IT الحقيقية وجاهز أساعدك.':'🔧 جاهز أساعدك بخبرتي التقنية.'}\n\n⚡ عندك ${MAX_AI} رسائل — إذا ما انحلت المشكلة سأقترح بلاغ فوري.\n\nشو المشكلة اللي عندك؟`;
+    AI[ctx].conv=[{role:'assistant',content:first}];
+    appendAIMsg(ctx,'bot',first);
+    updateAIDots(ctx);
+    if(inp){inp.disabled=false;inp.placeholder='صف مشكلتك...';}
+    if(snd)snd.disabled=false;
+    if(inp)inp.focus();
+  });
+}
+
+function appendAIMsg(ctx,type,text,showBtn){
+  const msgsId=ctx==='desk'?'deskAiMsgs':'mobAiMsgs';
+  const el=document.getElementById(msgsId);if(!el)return;
+  const div=document.createElement('div');
+  div.className='ai-msg '+type;
+  div.innerHTML=esc(text).replace(/\n/g,'<br>');
+  el.appendChild(div);
+  if(showBtn){
+    const btn=document.createElement('button');
+    btn.className='ai-ticket-btn';
+    btn.innerHTML='<i class="fas fa-paper-plane"></i>سجّل بلاغاً الآن';
+    btn.onclick=()=>{
+      if(ctx==='mob'){document.querySelectorAll('.mb-tab').forEach(t=>t.style.display='none');document.getElementById('mb-new').style.display='block';}
+      else goTab('newTicket',document.querySelector('[data-t="newTicket"]'));
+    };
+    el.appendChild(btn);
+  }
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendAIMsg(ctx){
+  const inpId=ctx==='desk'?'deskAiInp':'mobAiInp';
+  const sndId=ctx==='desk'?'deskAiSend':'mobAiSend';
+  const inp=document.getElementById(inpId),snd=document.getElementById(sndId);
+  if(!inp||AI[ctx].busy)return;
+  const text=inp.value.trim();
+  if(!text)return;
+  if(!AI[ctx].device){toast('اختر نوع الجهاز أولاً',true);return;}
+  if(AI[ctx].count>=MAX_AI){
+    appendAIMsg(ctx,'sys','⛔ وصلت للحد الأقصى ('+MAX_AI+' رسائل)');
+    appendAIMsg(ctx,'bot','المشكلة تحتاج فريق IT مباشرة.',true);
+    if(inp)inp.disabled=true;if(snd)snd.disabled=true;return;
+  }
+  inp.value='';if(inp.tagName==='TEXTAREA')inp.style.height='auto';
+  AI[ctx].conv.push({role:'user',content:AI[ctx].device+' | '+text});
+  AI[ctx].count++;
+  appendAIMsg(ctx,'user',text);
+  updateAIDots(ctx);
+  if(AI[ctx].count===MAX_AI-1)appendAIMsg(ctx,'sys','⚠️ تبقت لك رسالة واحدة فقط — إذا لم تُحل المشكلة سيُقترح بلاغ.');
+  const msgsEl=document.getElementById(ctx==='desk'?'deskAiMsgs':'mobAiMsgs');
+  const typing=document.createElement('div');
+  typing.className='ai-typing';
+  typing.innerHTML='<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-right:6px;font-size:11px">يفكر...</span>';
+  msgsEl.appendChild(typing);msgsEl.scrollTop=msgsEl.scrollHeight;
+  AI[ctx].busy=true;if(snd)snd.disabled=true;if(inp)inp.disabled=true;
+  try{
+    const r=await api('ai.chat',{messages:AI[ctx].conv,systemOverride:AI[ctx].sys});
+    typing.remove();
+    if(r&&r.success){
+      AI[ctx].conv.push({role:'assistant',content:r.reply});
+      const forceTicket=AI[ctx].count>=MAX_AI||r.submitTicket;
+      appendAIMsg(ctx,'bot',r.reply,forceTicket);
+      if(AI[ctx].count>=MAX_AI){if(inp)inp.disabled=true;if(snd)snd.disabled=true;}
+    }else appendAIMsg(ctx,'sys','⚠️ '+(r?r.message:'خطأ في الاتصال'));
+  }catch(e){typing.remove();appendAIMsg(ctx,'sys','⚠️ تعذر الوصول للمساعد');}
+  AI[ctx].busy=false;
+  if(AI[ctx].count<MAX_AI){if(snd)snd.disabled=false;if(inp){inp.disabled=false;inp.focus();}}
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+
+function resetAI(ctx){
+  AI[ctx]={conv:[],device:'',busy:false,count:0,sys:''};
+  const selId=ctx==='desk'?'deskAiDevSel':'mobAiDevSel';
+  document.querySelectorAll('#'+selId+' .ai-dev-chip').forEach(b=>b.classList.remove('selected'));
+  const msgsEl=document.getElementById(ctx==='desk'?'deskAiMsgs':'mobAiMsgs');
+  if(msgsEl)msgsEl.innerHTML='<div class="ai-msg sys">👋 اختر نوع الجهاز للبدء</div>';
+  const inp=document.getElementById(ctx==='desk'?'deskAiInp':'mobAiInp');
+  const snd=document.getElementById(ctx==='desk'?'deskAiSend':'mobAiSend');
+  if(inp){inp.value='';inp.disabled=true;}if(snd)snd.disabled=true;
+  const bar=document.getElementById(ctx==='desk'?'deskAiLimitBar':'mobAiLimitBar');if(bar)bar.style.display='none';
+  if(ctx==='mob'){const st=document.getElementById('mobAiStatus');if(st)st.textContent='اختر نوع الجهاز';}
+}
+
+// ══════════════════════════════════════════
+//  MOBILE SUPPORT
+// ══════════════════════════════════════════
+async function openMobGuidelines(){document.querySelectorAll('.mb-tab').forEach(t=>t.style.display='none');document.getElementById('mb-guidelines').style.display='block';const el=document.getElementById('mobGuideList');if(!el)return;el.innerHTML=skel(3);try{const r=await api('guidelines.list');if(!r||!r.success)return;const colors={'تحذير':'#ef4444','مهم':'#f59e0b','معلومة':'#3b82f6'};el.innerHTML=r.guidelines.map(g=>`<div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;border-right:4px solid ${colors[g.priority]||'var(--in)'};border:1px solid var(--border);border-right-width:4px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="font-size:22px">${esc(g.icon)}</div><div><div style="font-size:7px;font-weight:700;text-transform:uppercase;color:${colors[g.priority]||'var(--in)'};margin-bottom:3px">${esc(g.priority)}</div><div style="font-size:13px;font-weight:800;margin-bottom:5px">${esc(g.title)}</div><div style="font-size:12px;color:var(--sl);line-height:1.7">${esc(g.content)}</div></div></div></div>`).join('');}catch(e){}}
+async function openMobManual(device){document.querySelectorAll('.mb-tab').forEach(t=>t.style.display='none');document.getElementById('mb-manual').style.display='block';await loadMobManual(device||'');}
+async function loadMobManual(device){const el=document.getElementById('mobManualList');if(!el)return;el.innerHTML=skel(3);try{const r=await api('manual.list',{device:device||''});if(!r||!r.success){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--sl)">تعذر التحميل</div>';return;}if(!r.entries.length){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--sl)">لا توجد أدلة</div>';return;}el.innerHTML=r.entries.map((m,i)=>`<div style="background:var(--card);border-radius:14px;margin-bottom:10px;border:1px solid var(--border);overflow:hidden"><div onclick="tME('mm${i}')" style="padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer"><div style="font-size:22px">${esc(m.icon)}</div><div style="flex:1"><div style="font-size:13px;font-weight:800">${esc(m.title)}</div></div><i class="fas fa-chevron-down" id="mmci${i}" style="color:var(--sl);font-size:12px"></i></div><div id="mm${i}" style="display:none;padding:0 16px 14px;border-top:1px solid var(--bg2)">${m.steps.map((s,si)=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg2)"><div style="width:22px;height:22px;border-radius:50%;background:var(--in);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">${si+1}</div><div style="font-size:12px;line-height:1.7">${esc(s)}</div></div>`).join('')}</div></div>`).join('');}catch(e){}}
+function tME(id){const el=document.getElementById(id);if(!el)return;const idx=id.replace('mm','');const ic=document.getElementById('mmci'+idx);const open=el.style.display==='none';el.style.display=open?'block':'none';if(ic)ic.className='fas fa-chevron-'+(open?'up':'down');}
+function switchMobDev(btn,device){document.querySelectorAll('#mobManualDevRow .dev-chip').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');loadMobManual(device);}
+function openMobAI(){document.querySelectorAll('.mb-tab').forEach(t=>t.style.display='none');document.getElementById('mb-ai').style.display='block';resetAI('mob');}
+
+// ══════════════════════════════════════════
+//  GUIDELINES
+// ══════════════════════════════════════════
+async function loadGuidelinesTab(){const el=document.getElementById('guideList');if(!el)return;el.innerHTML=skel(3);const btn=document.getElementById('addGuideBtn');if(btn){const canEdit=S.user&&['it','it_manager','admin'].includes(S.user.role);btn.style.display=canEdit?'':'none';}try{const r=await api('guidelines.list');if(r&&r.success)renderGuideList(r.guidelines,el);}catch(e){}}
+function renderGuideList(list,el){const colors={'تحذير':'var(--re)','مهم':'var(--am)','معلومة':'var(--bl)'};const isAdm=S.user&&['it','it_manager','admin'].includes(S.user.role);if(!list.length){el.innerHTML='<div class="empty"><i class="fas fa-shield-alt"></i><h3>لا توجد توجيهات</h3></div>';return;}el.innerHTML=list.map(g=>`<div class="gcard" style="border-right-color:${colors[g.priority]||'var(--in)'}"><div class="gcard-top"><div class="gcard-ic">${esc(g.icon)}</div><div class="gcard-body"><div class="gcard-ttl">${esc(g.title)}</div><div class="gcard-cnt">${esc(g.content)}</div>${isAdm?`<div class="gcard-acts"><button class="btn btn-w btn-sm" onclick="openGuideModal('${esc(g.id)}')"><i class="fas fa-edit"></i>تعديل</button><button class="btn btn-d btn-sm" onclick="deleteGuide('${esc(g.id)}')"><i class="fas fa-trash"></i>حذف</button></div>`:''}</div></div></div>`).join('');}
+function openGuideModal(id){document.getElementById('gm-id').value=id||'';document.getElementById('guideModalTitle').textContent=id?'تعديل التوجيه':'إضافة توجيه';if(!id){['gm-title','gm-content'].forEach(i=>document.getElementById(i).value='');document.getElementById('gm-icon').value='⚠️';document.getElementById('gm-priority').value='مهم';}openM('ovAddGuide');}
+function pickGuideIcon(el,icon){document.querySelectorAll('#ovAddGuide .dev-chip').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');document.getElementById('gm-icon').value=icon;}
+async function subGuide(){const id=document.getElementById('gm-id').value,t=document.getElementById('gm-title').value.trim(),c=document.getElementById('gm-content').value.trim(),icon=document.getElementById('gm-icon').value||'⚠️',pri=document.getElementById('gm-priority').value;if(!t||!c){toast('أدخل العنوان والمحتوى',true);return;}try{const r=id?await api('guidelines.update',{id,title:t,content:c,icon,priority:pri}):await api('guidelines.add',{title:t,content:c,icon,priority:pri});if(r&&r.success){toast('✅ '+r.message);closeM('ovAddGuide');loadGuidelinesTab();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function deleteGuide(id){if(!confirm('حذف هذا التوجيه؟'))return;try{const r=await api('guidelines.delete',{id});if(r&&r.success){toast('🗑️ '+r.message);loadGuidelinesTab();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+
+// ══════════════════════════════════════════
+//  MANUAL
+// ══════════════════════════════════════════
+let _manCache=null,_curDev='';
+async function loadManualTab(device){_curDev=device||'';const el=document.getElementById('manualList');if(!el)return;el.innerHTML=skel(3);const canEdit=S.user&&['it','it_manager','admin'].includes(S.user.role);const btn=document.getElementById('addManualBtn');if(btn)btn.style.display=canEdit?'':'none';try{const r=await api('manual.list',{device:_curDev});if(r&&r.success){_manCache=r.entries;renderManualList(r.entries,el,canEdit);}}catch(e){}}
+function switchDeskDev(btn,device){document.querySelectorAll('#deskDevTabs .dev-tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');loadManualTab(device);}
+function renderManualList(list,el,isAdm){if(!list.length){el.innerHTML='<div class="empty"><i class="fas fa-book"></i><h3>لا توجد أدلة</h3></div>';return;}el.innerHTML=list.map((m,i)=>`<div class="mentry"><div class="mentry-hdr" onclick="tDE('meb${i}','mec${i}')"><div class="mentry-ic">${esc(m.icon)}</div><div class="mentry-info"><div class="mentry-ttl">${esc(m.title)}</div><div class="mentry-sub">${esc(m.problemType||'')}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${isAdm?`<button class="btn btn-w btn-sm" onclick="event.stopPropagation();openManualModal('${esc(m.id)}')"><i class="fas fa-edit"></i></button>`:''}<i class="fas fa-chevron-down" id="mec${i}" style="color:var(--sl);font-size:11px"></i></div></div><div class="mentry-body" id="meb${i}">${isAdm?`<button class="btn btn-d btn-sm" style="margin:10px 0" onclick="deleteManual('${esc(m.id)}')"><i class="fas fa-trash"></i>حذف</button>`:''}<div>${m.steps.map((s,si)=>`<div class="step-item"><div class="step-num">${si+1}</div><div class="step-tx">${esc(s)}</div></div>`).join('')}</div></div></div>`).join('');}
+function tDE(bodyId,icId){const body=document.getElementById(bodyId),ic=document.getElementById(icId);if(!body)return;const open=body.classList.toggle('open');if(ic)ic.className='fas fa-chevron-'+(open?'up':'down');}
+let _mSteps=[];
+function addStep(){_mSteps.push('');renderStepsList();}
+function removeStep(idx){_mSteps.splice(idx,1);renderStepsList();}
+function renderStepsList(){const el=document.getElementById('stepsList');if(!el)return;el.innerHTML=_mSteps.map((s,i)=>`<div class="step-row"><div style="width:22px;height:22px;border-radius:50%;background:var(--in);color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div><input value="${esc(s)}" placeholder="الخطوة ${i+1}..." oninput="_mSteps[${i}]=this.value"/><button onclick="removeStep(${i})"><i class="fas fa-times"></i></button></div>`).join('');}
+function pickManualIcon(el,icon){document.querySelectorAll('#ovAddManual .dev-chip').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');document.getElementById('mm-icon').value=icon;}
+function openManualModal(id){_mSteps=[];document.getElementById('mm-id').value=id||'';document.getElementById('manualModalTitle').textContent=id?'تعديل الدليل':'إضافة دليل';if(id&&_manCache){const e=_manCache.find(m=>m.id===id);if(e){['mm-title','mm-desc'].forEach(fid=>document.getElementById(fid).value=e[fid.replace('mm-','')]||'');document.getElementById('mm-device').value=e.device||'desktop';document.getElementById('mm-prob').value=e.problemType||'';document.getElementById('mm-icon').value=e.icon||'💻';_mSteps=[...(e.steps||[])];}else _mSteps=['','',''];}else{['mm-title','mm-desc'].forEach(fid=>document.getElementById(fid).value='');_mSteps=['','',''];}renderStepsList();openM('ovAddManual');}
+async function subManual(){const id=document.getElementById('mm-id').value,t=document.getElementById('mm-title').value.trim(),dev=document.getElementById('mm-device').value,prob=document.getElementById('mm-prob').value,desc=document.getElementById('mm-desc').value.trim(),icon=document.getElementById('mm-icon').value||'💻',steps=_mSteps.map(s=>s.trim()).filter(Boolean);if(!t||!dev){toast('العنوان ونوع الجهاز مطلوبان',true);return;}if(!steps.length){toast('أضف خطوة واحدة على الأقل',true);return;}try{const r=id?await api('manual.update',{id,title:t,device:dev,problemType:prob,description:desc,steps,icon}):await api('manual.add',{title:t,device:dev,problemType:prob,description:desc,steps,icon});if(r&&r.success){toast('✅ '+r.message);closeM('ovAddManual');_manCache=null;loadManualTab(_curDev);}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function deleteManual(id){if(!confirm('حذف هذا الدليل؟'))return;try{const r=await api('manual.delete',{id});if(r&&r.success){toast('🗑️ '+r.message);_manCache=null;loadManualTab(_curDev);}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+
+// ══════════════════════════════════════════
+//  DEPTS
+// ══════════════════════════════════════════
+async function loadDepts(){try{const r=await api('depts.list');if(r&&r.success){DEPTS=r.depts;const sel=document.getElementById('nu-dp');if(sel)sel.innerHTML='<option value="">اختر القسم...</option>'+DEPTS.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');const el=document.getElementById('deptList');if(el){if(!DEPTS.length){el.innerHTML='<div class="empty"><i class="fas fa-building"></i><h3>لا توجد أقسام</h3></div>';return;}el.innerHTML=DEPTS.map(d=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;background:var(--card)"><span style="font-size:13px;font-weight:600"><i class="fas fa-building" style="color:var(--in);margin-left:8px"></i>${esc(d)}</span><button class="btn btn-d btn-sm" onclick="deleteDept('${esc(d)}')"><i class="fas fa-trash-alt"></i></button></div>`).join('');}}}catch(e){}}
+async function addDept(){const name=document.getElementById('dept-new').value.trim();if(!name){toast('اكتب اسم القسم',true);return;}try{const r=await api('depts.add',{name});if(r&&r.success){toast('✅ '+r.message);document.getElementById('dept-new').value='';await loadDepts();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+async function deleteDept(name){if(!confirm('حذف قسم: '+name+'؟'))return;try{const r=await api('depts.delete',{name});if(r&&r.success){toast('🗑️ '+r.message);await loadDepts();}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ',true);}}
+
+// ══════════════════════════════════════════
+//  DEVICES
+// ══════════════════════════════════════════
+let _attachFile=null,_attachTid=null;
+function openAttachModal(tid){_attachTid=tid;_attachFile=null;document.getElementById('attachFile').value='';document.getElementById('attachPreviewArea').innerHTML='';document.getElementById('uploadBtn').disabled=true;openM('ovAttach');}
+function handleFileSelect(input){const file=input.files[0];if(!file)return;if(file.size>3*1024*1024){toast('حجم الملف كبير جداً — الحد 3MB',true);input.value='';return;}_attachFile=file;document.getElementById('uploadBtn').disabled=false;const preview=document.getElementById('attachPreviewArea');preview.innerHTML='';if(file.type.startsWith('image/')){const img=document.createElement('img');img.className='attach-preview';img.src=URL.createObjectURL(file);preview.appendChild(img);}else{const d=document.createElement('div');d.style.cssText='padding:10px;background:var(--bg2);border-radius:8px;font-size:12px;color:var(--sl)';d.innerHTML='🎬 '+esc(file.name);preview.appendChild(d);}}
+function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
+async function submitAttach(){if(!_attachFile||!_attachTid)return;const btn=document.getElementById('uploadBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>رفع...';try{const b64=await fileToBase64(_attachFile);const r=await api('tickets.attach',{ticketId:_attachTid,fileName:_attachFile.name,mimeType:_attachFile.type,base64:b64});if(r&&r.success){toast('✅ تم رفع الملف');closeM('ovAttach');}else toast(r?r.message:'خطأ',true);}catch(e){toast('خطأ في رفع الملف',true);}btn.disabled=false;btn.innerHTML='<i class="fas fa-cloud-upload-alt"></i>رفع';}
+
+// ══════════════════════════════════════════
+//  DEVICE WORKFLOW — FULL SYSTEM
+// ══════════════════════════════════════════
+async function loadDevices(){
+  const el=document.getElementById('devList'),status=(document.getElementById('dev-filter')||{}).value||'all';
+  if(!el)return;el.innerHTML=skel(3);
+  try{const r=await api('devices.list',{status});if(!r||!r.success){el.innerHTML='<div class="empty"><i class="fas fa-laptop-medical"></i><h3>تعذر التحميل</h3></div>';return;}renderDevList(r.devices,el);}
+  catch(e){el.innerHTML='<div class="empty"><i class="fas fa-exclamation-circle"></i><h3>خطأ</h3></div>';}
+}
+
+// مرحلة 1: IT يستلم الجهاز من الموظف
+async function doCheckin(){
+  const tid=document.getElementById('ci-tid').value.trim(),
+        type=document.getElementById('ci-type').value,
+        desc=document.getElementById('ci-desc').value.trim(),
+        owner=document.getElementById('ci-owner').value.trim(),
+        dept=document.getElementById('ci-dept').value.trim(),
+        notes=document.getElementById('ci-notes').value.trim();
+  if(!tid||!type){toast('رقم البلاغ ونوع الجهاز مطلوبان',true);return;}
+  try{
+    const r=await api('devices.checkin',{ticketId:tid,deviceType:type,deviceDesc:desc,ownerName:owner,ownerDept:dept,notes});
+    if(r&&r.success){
+      toast('✅ تم تسجيل الاستلام — رقم الجهاز: '+r.devId);
+      ['ci-tid','ci-desc','ci-owner','ci-dept','ci-notes'].forEach(id=>document.getElementById(id).value='');
+      loadDevices();
+    }else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ في التسجيل',true);}
+}
+
+// مرحلة 2: IT يسلّم الجهاز للفني
+async function openSendTech(devId){
+  document.getElementById('st-devid').value=devId;
+  document.getElementById('st-notes').value='';
+  // جلب قائمة الفنيين
+  const users=S.users.length?S.users:await fetchUsers();
+  const techs=users.filter(u=>u.role==='tech'&&u.active);
+  if(!techs.length){toast('لا يوجد فنيون نشطون في النظام',true);return;}
+  document.getElementById('st-tech').innerHTML=techs.map(u=>`<option value="${esc(u.id)}">${esc(u.firstName)} ${esc(u.lastName)}</option>`).join('');
+  openM('ovSendTech');
+}
+async function subSendTech(){
+  const devId=document.getElementById('st-devid').value,
+        techId=document.getElementById('st-tech').value,
+        notes=document.getElementById('st-notes').value.trim();
+  try{
+    const r=await api('devices.sendToTech',{devId,techId,notes});
+    if(r&&r.success){toast('✅ '+r.message);closeM('ovSendTech');loadDevices();}
+    else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ',true);}
+}
+
+// مرحلة 3: الفني يسجّل نتيجة الصيانة
+async function subTechRepair(){
+  const devId=document.getElementById('tr-devid').value.trim(),
+        result=document.getElementById('tr-result').value,
+        work=document.getElementById('tr-work').value.trim(),
+        reason=document.getElementById('tr-reason').value.trim(),
+        ready=document.getElementById('tr-ready').value;
+  if(!devId||!work){toast('رقم الجهاز وتفاصيل العمل مطلوبان',true);return;}
+  try{
+    const r=await api('devices.techRepair',{devId,result,workDone:work,failReason:reason,readyForPickup:ready==='yes'});
+    if(r&&r.success){
+      toast('✅ '+r.message);
+      ['tr-devid','tr-work','tr-reason'].forEach(id=>document.getElementById(id).value='');
+      loadDevices();
+    }else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ',true);}
+}
+
+// مرحلة 4: IT يستلم من الفني
+function openReceiveBackSafe(devId, encodedData){
+  try{
+    const techResultData = JSON.parse(decodeURIComponent(encodedData));
+    openReceiveBack(devId, techResultData);
+  }catch(e){ openReceiveBack(devId, {}); }
+}
+
+async function openReceiveBack(devId,techResultData){
+  document.getElementById('rb-devid').value=devId;
+  document.getElementById('rb-itNotes').value='';
+  const resultEl=document.getElementById('rb-techResult');
+  if(techResultData){
+    const cls=techResultData.result==='fixed'?'var(--gr-l)':techResultData.result==='failed'?'var(--re-l)':'var(--am-l)';
+    const ic=techResultData.result==='fixed'?'✅':techResultData.result==='failed'?'❌':'⚠️';
+    resultEl.style.background=cls;
+    resultEl.innerHTML=`<strong>${ic} نتيجة الفني:</strong> ${esc(techResultData.resultLabel||techResultData.result)}<br><strong>العمل المنجز:</strong> ${esc(techResultData.workDone||'—')}<br>${techResultData.failReason?`<strong>السبب:</strong> ${esc(techResultData.failReason)}`:''}`;
+  }
+  openM('ovReceiveBack');
+}
+async function subReceiveBack(){
+  const devId=document.getElementById('rb-devid').value,
+        notes=document.getElementById('rb-itNotes').value.trim();
+  try{
+    const r=await api('devices.receiveFromTech',{devId,itNotes:notes});
+    if(r&&r.success){toast('✅ '+r.message);closeM('ovReceiveBack');loadDevices();}
+    else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ',true);}
+}
+
+// مرحلة 5: IT يسلّم للموظف (إغلاق نهائي)
+function openFinalDeliverSafe(devId, encodedData){
+  try{
+    const summaryData = JSON.parse(decodeURIComponent(encodedData));
+    openFinalDeliver(devId, summaryData);
+  }catch(e){ openFinalDeliver(devId, {}); }
+}
+
+async function openFinalDeliver(devId,summaryData){
+  document.getElementById('fd-devid').value=devId;
+  document.getElementById('fd-notes').value='';
+  const sumEl=document.getElementById('fd-summary');
+  if(summaryData){
+    sumEl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div><div style="font-size:9px;color:var(--sl);font-weight:700">صاحب الجهاز</div><strong>${esc(summaryData.ownerName||'—')}</strong></div>
+      <div><div style="font-size:9px;color:var(--sl);font-weight:700">القسم</div><strong>${esc(summaryData.ownerDept||'—')}</strong></div>
+      <div><div style="font-size:9px;color:var(--sl);font-weight:700">نوع الجهاز</div><strong>${esc(summaryData.deviceDesc||summaryData.deviceType||'—')}</strong></div>
+      <div><div style="font-size:9px;color:var(--sl);font-weight:700">نتيجة الصيانة</div><strong>${esc(summaryData.techResult||'—')}</strong></div>
+    </div>`;
+  }
+  openM('ovFinalDeliver');
+}
+async function subFinalDeliver(){
+  const devId=document.getElementById('fd-devid').value,
+        condition=document.getElementById('fd-condition').value,
+        notes=document.getElementById('fd-notes').value.trim();
+  try{
+    const r=await api('devices.finalDeliver',{devId,condition,notes});
+    if(r&&r.success){toast('✅ '+r.message+' — تم إغلاق البلاغ');closeM('ovFinalDeliver');cc();loadDevices();loadTickets();}
+    else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ',true);}
+}
+
+// عرض قائمة الأجهزة — الـ workflow الكامل
+function renderDevList(list,el){
+  if(!list.length){el.innerHTML='<div class="empty"><i class="fas fa-laptop-medical"></i><h3>لا توجد أجهزة</h3></div>';return;}
+  const u=S.user;
+  const isIT=u&&['it','it_manager','admin'].includes(u.role);
+  const isTech=u&&u.role==='tech';
+  const DI2={laptop:'💻',desktop:'🖥️',printer:'🖨️',phone:'📱',other:'🔧'};
+  const stageColors={
+    'عند IT':'#3b82f6',
+    'عند الفني':'#f59e0b',
+    'أُنجز — بانتظار IT':'#8b5cf6',
+    'جاهز للتسليم':'#10b981',
+    'مُسلَّم':'#64748b'
+  };
+  el.innerHTML=list.map(d=>{
+    const icon=DI2[d.deviceType]||'🔧';
+    const stageColor=stageColors[d.status]||'#6366f1';
+    let actions='';
+    // مرحلة 1→2: IT يسلّم للفني
+    if(isIT&&d.status==='عند IT'){
+      actions=`<button class="btn btn-w btn-sm" onclick="openSendTech('${esc(d.devId)}')"><i class="fas fa-share"></i>تسليم للفني</button>`;
+    }
+    // مرحلة 3: الفني يسجّل النتيجة (يملأ النموذج في الأعلى)
+    if(isTech&&d.status==='عند الفني'&&d.techId===u.id){
+      actions=`<button class="btn btn-w btn-sm" onclick="prefillTechRepair('${esc(d.devId)}')"><i class="fas fa-wrench"></i>تسجيل نتيجة الصيانة</button>`;
+    }
+    // مرحلة 4: IT يستلم من الفني
+    if(isIT&&d.status==='أُنجز — بانتظار IT'){
+      // نخزن البيانات بـ data attribute بدل JSON inline
+      const rb_data = encodeURIComponent(JSON.stringify({result:d.techResult,resultLabel:d.techResultLabel,workDone:d.workDone,failReason:d.failReason}));
+      actions=`<button class="btn btn-p btn-sm" onclick="openReceiveBackSafe('${esc(d.devId)}','${rb_data}')"><i class="fas fa-box-open"></i>استلام من الفني</button>`;
+    }
+    // مرحلة 5: IT يسلّم للموظف
+    if(isIT&&d.status==='جاهز للتسليم'){
+      const fd_data = encodeURIComponent(JSON.stringify({ownerName:d.ownerName,ownerDept:d.ownerDept,deviceDesc:d.deviceDesc,deviceType:d.deviceType,techResult:d.techResultLabel}));
+      actions=`<button class="btn btn-s btn-sm" onclick="openFinalDeliverSafe('${esc(d.devId)}','${fd_data}')"><i class="fas fa-handshake"></i>تسليم للموظف وإغلاق</button>`;
+    }
+
+    // مؤشر المرحلة
+    const stageNum={'عند IT':1,'عند الفني':2,'أُنجز — بانتظار IT':3,'جاهز للتسليم':4,'مُسلَّم':5};
+    const sn=stageNum[d.status]||1;
+    const stageBar=Array.from({length:5},(_,i)=>`<div style="width:${i===4?'100%':'calc(100% + 4px)'};height:4px;border-radius:3px;background:${i<sn?stageColor:'var(--border)'}"></div>`).join('');
+
+    return`<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;border-right:4px solid ${stageColor};box-shadow:var(--sh)">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+  <div style="flex:1;min-width:0">
+    <div style="font-size:10px;color:var(--sl);font-family:monospace;margin-bottom:4px">${esc(d.devId)} · بلاغ: ${esc(d.ticketId||'—')}</div>
+    <div style="font-size:14px;font-weight:800">${icon} ${esc(d.deviceDesc||d.deviceType)}</div>
+    <div style="font-size:11px;color:var(--sl);margin-top:5px;display:flex;gap:12px;flex-wrap:wrap">
+      <span><i class="fas fa-user" style="color:var(--in)"></i> ${esc(d.ownerName||'—')}</span>
+      <span><i class="fas fa-building" style="color:var(--in)"></i> ${esc(d.ownerDept||'—')}</span>
+      ${d.techName?`<span><i class="fas fa-wrench" style="color:var(--am)"></i> ${esc(d.techName)}</span>`:''}
+    </div>
+    ${d.techResultLabel?`<div style="margin-top:6px;font-size:11px;padding:4px 10px;border-radius:6px;background:${d.techResult==='fixed'?'var(--gr-l)':d.techResult==='failed'?'var(--re-l)':'var(--am-l)'};display:inline-flex;align-items:center;gap:4px">
+      ${d.techResult==='fixed'?'✅':d.techResult==='failed'?'❌':'⚠️'} ${esc(d.techResultLabel)}
+      ${d.workDone?` — ${esc(d.workDone.slice(0,60))}${d.workDone.length>60?'...':''}`:''}</div>`:''
+    }
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+    <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;background:${stageColor}20;color:${stageColor};border:1px solid ${stageColor}40">${esc(d.status)}</span>
+    ${actions}
+  </div>
+</div>
+<!-- Progress bar -->
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:8px">
+  ${Array.from({length:5},(_,i)=>`<div style="height:3px;border-radius:3px;background:${i<sn?stageColor:'var(--border)'}"></div>`).join('')}
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:3px">
+  ${['عند IT','عند الفني','قيد الصيانة','عند IT ✓','تسليم'].map((l,i)=>`<div style="font-size:8px;text-align:center;color:${i<sn?stageColor:'var(--sl)'}${i===sn-1?';font-weight:700':''}">${l}</div>`).join('')}
+</div>
+${d.checkinAt?`<div style="font-size:9px;color:var(--sl);margin-top:6px">استُلم: ${esc(d.checkinAt)}${d.sentToTechAt?' · أُرسل للفني: '+esc(d.sentToTechAt):''}${d.techDoneAt?' · انتهى الفني: '+esc(d.techDoneAt):''}</div>`:''
+}
+</div>`;
+  }).join('');
+}
+
+// تعبئة نموذج الفني تلقائياً
+function prefillTechRepair(devId){
+  const inp=document.getElementById('tr-devid');
+  if(inp)inp.value=devId;
+  // انتقل لقسم الفني
+  document.getElementById('techRepairSection').scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════
+//  INTERNET USERS SYSTEM
+// ══════════════════════════════════════════
+let _iuCache=[];
+
+async function loadInternetUsers(){
+  const tbody=document.getElementById('iuTbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px"><span class="spin spin-d"></span></td></tr>';
+  try{
+    const r=await api('internetUsers.list');
+    if(!r||!r.success){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--sl)">تعذر التحميل</td></tr>';return;}
+    _iuCache=r.users;
+    renderIUsers(r.users,tbody);
+  }catch(e){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--sl)">خطأ في التحميل</td></tr>';}
+}
+
+function filterIUsers(){
+  const q=(document.getElementById('iu-q')||{}).value||'';
+  const tbody=document.getElementById('iuTbody');
+  if(!tbody)return;
+  renderIUsers(_iuCache.filter(u=>(u.empId+u.name+u.dept+u.internetUser).toLowerCase().includes(q.toLowerCase())),tbody);
+}
+
+function renderIUsers(list,tbody){
+  if(!list||!list.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--sl)">لا توجد بيانات — أضف يوزراً أعلاه</td></tr>';return;}
+  tbody.innerHTML=list.map(u=>`<tr>
+    <td><strong style="font-family:monospace;color:var(--in);font-size:11px">${esc(u.empId)}</strong></td>
+    <td style="font-size:12px;font-weight:600">${esc(u.name||'—')}</td>
+    <td style="font-size:11px;color:var(--sl)">${esc(u.dept||'—')}</td>
+    <td><div style="display:flex;align-items:center;gap:6px">
+      <div style="width:8px;height:8px;border-radius:50%;background:${u.internetUser?'var(--gr-d)':'var(--re)'}"></div>
+      <span style="font-family:monospace;font-size:12px;font-weight:700;color:${u.internetUser?'var(--gr-d)':'var(--re)'}">${esc(u.internetUser||'غير مُعيَّن')}</span>
+    </div></td>
+    <td style="font-size:10px;color:var(--sl)">${esc(u.updatedAt||'—')}</td>
+    <td><button class="btn btn-w btn-sm" onclick="editInternetUser('${esc(u.empId)}','${esc(u.internetUser||'')}')"><i class="fas fa-edit"></i>تعديل</button></td>
+  </tr>`).join('');
+}
+
+function editInternetUser(empId,currentUser){
+  const eidEl=document.getElementById('iu-eid'),uEl=document.getElementById('iu-user');
+  if(eidEl)eidEl.value=empId;
+  if(uEl)uEl.value=currentUser;
+  document.getElementById('iu-eid').scrollIntoView({behavior:'smooth'});
+  if(uEl)uEl.focus();
+}
+
+async function subInternetUser(){
+  const empId=(document.getElementById('iu-eid').value||'').trim().toUpperCase();
+  const internetUser=(document.getElementById('iu-user').value||'').trim().toLowerCase();
+  if(!empId||!internetUser){toast('رقم البصمة واليوزر مطلوبان',true);return;}
+  try{
+    const r=await api('internetUsers.set',{empId,internetUser});
+    if(r&&r.success){
+      toast('✅ '+r.message);
+      document.getElementById('iu-eid').value='';
+      document.getElementById('iu-user').value='';
+      loadInternetUsers();
+    }else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ',true);}
+}
+
+// ══════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════
+
+function animN(id,target){const el=document.getElementById(id);if(!el)return;let c=parseInt(el.textContent)||0;if(c===target)return;const step=Math.ceil(Math.abs(target-c)/20);const t=setInterval(()=>{c=Math.min(c+step,target);el.textContent=c;if(c>=target)clearInterval(t);},35);}
+function skel(n){return Array(n).fill('<div class="skel skel-c"></div>').join('');}
+function openM(id){const el=document.getElementById(id);if(el)el.classList.add('open');}
+function closeM(id){const el=document.getElementById(id);if(el)el.classList.remove('open');}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.ov.open').forEach(o=>o.classList.remove('open'));closePwModal();}});
+function selProb(el,val){document.querySelectorAll('.prob-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');document.getElementById('mn-p').value=val;}
+function selPri(el,val){document.querySelectorAll('.pri-btn').forEach(b=>b.className='pri-btn');el.classList.add('sel-'+val);document.getElementById('mn-pri').value=val;}
+function selDev(el,val){document.querySelectorAll('.dev-row .dev-chip').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');document.getElementById('mn-di').value=val;}
+let _tt;
+function toast(msg,isErr){const el=document.getElementById('toast');el.innerHTML=isErr?`<i class="fas fa-times-circle"></i>${esc(msg)}`:`<i class="fas fa-check-circle"></i>${esc(msg)}`;el.className='show'+(isErr?' terr':' tok');clearTimeout(_tt);_tt=setTimeout(()=>el.className='',3500);}
+
+
+// ══════════════════════════════════════════
+//  ميزات جديدة v10.1
+// ══════════════════════════════════════════
+
+// حذف بلاغ (أدمن فقط)
+async function deleteTicket(tid){
+  if(S.user&&S.user.role!=='admin'){toast('غير مصرح — أدمن فقط',true);return;}
+  if(!confirm('⚠️ حذف البلاغ '+tid+' نهائياً؟\nهذا الإجراء لا يمكن التراجع عنه.'))return;
+  try{
+    const r=await api('tickets.delete',{ticketId:tid});
+    if(r&&r.success){toast('🗑️ '+r.message);cc();loadTickets();loadDashboard();}
+    else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ في الحذف',true);}
+}
+
+// البحث عن يوزر برقم البصمة (IT فقط)
+async function searchInternetUser(){
+  const empId=(document.getElementById('iu-search-id')||{}).value||'';
+  if(!empId.trim()){toast('ادخل رقم البصمة',true);return;}
+  const resEl=document.getElementById('iu-search-result');
+  if(resEl)resEl.innerHTML='<span class="spin spin-d"></span>';
+  try{
+    const r=await api('internetUsers.search',{empId:empId.trim()});
+    if(!r||!r.success){if(resEl)resEl.innerHTML='<div style="color:var(--re);font-size:12px;padding:8px">❌ '+esc(r?r.message:'خطأ')+'</div>';return;}
+    const iuColor=r.internetUser?'var(--gr-d)':'var(--re)';
+    const confBadge=r.confidence>0?`<span style="font-size:10px;background:var(--gr-l);color:var(--gr-d);padding:2px 8px;border-radius:12px;border:1px solid #a7f3d0">${r.confidence}% تطابق</span>`:'';
+    if(resEl)resEl.innerHTML=`
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;margin-top:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:11px;color:var(--sl);margin-bottom:3px">الاسم</div>
+            <strong style="font-size:13px">${esc(r.fullName)}</strong>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--sl);margin-bottom:3px">القسم</div>
+            <strong style="font-size:13px">${esc(r.dept||'—')}</strong>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--sl);margin-bottom:3px">يوزر الإنترنت</div>
+            <strong style="font-size:15px;font-family:monospace;color:${iuColor}">${esc(r.internetUser||'غير مُعيَّن')}</strong>
+            ${confBadge}
+          </div>
+          ${r.internetUser?`<button class="btn btn-w btn-sm" onclick="editInternetUser('${esc(r.empId)}','${esc(r.internetUser||'')}')"><i class="fas fa-edit"></i>تعديل</button>`:`<button class="btn btn-p btn-sm" onclick="editInternetUser('${esc(r.empId)}','')"><i class="fas fa-plus"></i>تعيين</button>`}
+        </div>
+      </div>`;
+  }catch(e){if(resEl)resEl.innerHTML='<div style="color:var(--re);font-size:12px;padding:8px">❌ خطأ في البحث</div>';}
+}
+
+// عرض يوزر الإنترنت لكل الأدوار (مو بس user)
+async function loadMyInfoForAllRoles(){
+  const u=S.user;if(!u)return;
+  try{
+    const r=await api('user.myInfo');
+    if(r&&r.success&&r.internetUser){
+      // تحديث أي عنصر يعرض اليوزر
+      document.querySelectorAll('.user-internet-badge').forEach(el=>{
+        el.textContent=r.internetUser;el.style.display='';
+      });
+    }
+  }catch(e){}
+}
+
+
+// ══════════════════════════════════════════
+//  الموظف العادي — واجهة الديسكتوب
+// ══════════════════════════════════════════
+async function loadDeskUserHome(){
+  const u=S.user;if(!u)return;
+  const ini=(u.firstName[0]||'')+(u.lastName[0]||'');
+  const setT=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
+  setT('desk-user-av',ini);
+  setT('desk-user-name',u.firstName+' '+u.lastName);
+  setT('desk-user-dept',u.dept+' — '+ROLE_L[u.role]);
+  // يوزر الإنترنت
+  try{
+    const r=await api('user.myInfo');
+    if(r&&r.success){
+      setT('desk-user-iuser',r.internetUser||'غير مُعيَّن');
+      setT('du-total',r.ticketCount||'0');
+    }
+  }catch(e){}
+  // الإحصائيات والبلاغات الأخيرة
+  try{
+    const r=await api('stats.user');
+    if(r&&r.success){
+      setT('du-total',r.stats.total);
+      setT('du-open',r.stats.open);
+      setT('du-prog',r.stats.inProgress);
+      setT('du-done',r.stats.closed);
+      // آخر البلاغات
+      const el=document.getElementById('desk-user-tickets');
+      if(el){
+        if(!r.recent.length){el.innerHTML='<div class="empty"><i class="fas fa-clipboard"></i><h3>لا توجد بلاغات بعد</h3></div>';return;}
+        const colors={'جديدة':'var(--bl)','معينة':'var(--am)','قيد المعالجة':'var(--cy)','تم حل البلاغ':'var(--gr-d)'};
+        el.innerHTML=r.recent.map(t=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg2)">
+          <div style="width:4px;height:36px;border-radius:4px;background:${colors[t.status]||'var(--in)'};flex-shrink:0"></div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700">${esc(t.problemType)}</div><div style="font-size:10px;color:var(--sl)">${esc(t.id)} · ${esc(t.createdAt)}</div></div>
+          <span class="badge ${SB[t.status]||'b-op'}">${esc(t.status)}</span>
+        </div>`).join('');
+      }
+    }
+  }catch(e){}
+}
+
+async function loadDeskUserTickets(){
+  const st=(document.getElementById('utd-st')||{}).value||'all';
+  const el=document.getElementById('desk-user-tlist');
+  if(!el)return;el.innerHTML=skel(3);
+  try{
+    const r=await api('tickets.list',{status:st});
+    if(!r||!r.success)return;
+    const colors={'جديدة':'var(--bl)','معينة':'var(--am)','قيد المعالجة':'var(--cy)','تم حل البلاغ':'var(--gr-d)'};
+    if(!r.tickets.length){el.innerHTML='<div class="empty"><i class="fas fa-clipboard"></i><h3>لا توجد بلاغات</h3></div>';return;}
+    el.innerHTML=r.tickets.map(t=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bg2);cursor:pointer" onclick="openDetail('${esc(t.id)}')">
+      <div style="width:4px;height:44px;border-radius:4px;background:${colors[t.status]||'var(--in)'};flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700">${esc(t.problemType)}</div>
+        <div style="font-size:10px;color:var(--sl);margin-top:2px">${esc(t.id)} · ${esc(t.createdAt)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <span class="badge ${SB[t.status]||'b-op'}">${esc(t.status)}</span>
+        <span class="badge ${PB[t.priority]||'b-md'}" style="font-size:9px">${esc(t.priority)}</span>
+      </div>
+    </div>`).join('');
+  }catch(e){}
+}
+
+// رفع صورة بالديسكتوب للموظف العادي
+let _deskImg=null;
+function onDeskImgSelect(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>3*1024*1024){toast('حجم الصورة كبير — الحد 3MB',true);input.value='';return;}
+  _deskImg=file;
+  const preview=document.getElementById('utd-img-preview');
+  if(preview){
+    preview.style.display='block';
+    preview.innerHTML=`<div style="display:flex;align-items:center;gap:8px;background:var(--gr-l);border:1px solid #a7f3d0;border-radius:8px;padding:8px 12px">
+      <img src="${URL.createObjectURL(file)}" style="width:40px;height:40px;border-radius:6px;object-fit:cover"/>
+      <div style="flex:1;font-size:11px;font-weight:700">${esc(file.name)}</div>
+      <button onclick="_deskImg=null;document.getElementById('utd-img').value='';document.getElementById('utd-img-preview').style.display='none'" style="background:var(--re-l);border:1px solid #fecaca;color:var(--re);border-radius:6px;padding:3px 8px;font-size:10px"><i class="fas fa-times"></i></button>
+    </div>`;
+  }
+}
+
+async function subDeskUserTicket(){
+  const p=document.getElementById('utd-p').value,
+        pri=document.getElementById('utd-pri').value,
+        d=document.getElementById('utd-d').value.trim(),
+        di=document.getElementById('utd-di').value;
+  if(!p||!d){toast('نوع المشكلة والوصف مطلوبان',true);return;}
+  try{
+    const r=await api('tickets.create',{problemType:p,priority:pri,description:d,deviceId:di});
+    if(r&&r.success){
+      toast('✅ تم إرسال البلاغ — رقم: '+r.ticketId);
+      // رفع الصورة إذا موجودة
+      if(_deskImg){
+        try{const b64=await fileToBase64(_deskImg);await api('tickets.attach',{ticketId:r.ticketId,fileName:_deskImg.name,mimeType:_deskImg.type,base64:b64});}catch(e2){}
+        _deskImg=null;
+      }
+      cc();
+      ['utd-p','utd-d','utd-di'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      goTab('myTicketsDesk',document.querySelector('[data-t="myTicketsDesk"]'));
+      loadDeskUserTickets();
+    }else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ في الإرسال',true);}
+}
+
+// تحميل بيانات الرئيسية عند الانتقال للـ tab
+const _origGoTab = goTab;
+
+// ══════════════════════════════════════════
+//  الفني — تقارير ويوزر الإنترنت وإرسال بلاغ
+// ══════════════════════════════════════════
+async function loadTechStats(){
+  // يوزر الإنترنت للفني
+  try{
+    const r=await api('user.myInfo');
+    if(r&&r.success&&r.internetUser){
+      const card=document.getElementById('tech-iuser-card');
+      const val=document.getElementById('tech-iuser-val');
+      if(card)card.style.display='flex';
+      if(val)val.textContent=r.internetUser;
+    }
+  }catch(e){}
+
+  // الإحصائيات
+  try{
+    const r=await api('stats.tech');
+    if(r&&r.success){
+      const setN=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v??'0';};
+      setN('ts-total',r.stats.total);
+      setN('ts-fixed',r.stats.fixed);
+      setN('ts-pending',r.stats.pending);
+      setN('ts-delivered',r.stats.delivered);
+
+      // آخر الأجهزة
+      const el=document.getElementById('tech-recent-devices');
+      if(el){
+        if(!r.recent||!r.recent.length){
+          el.innerHTML='<div class="empty"><i class="fas fa-laptop-medical"></i><h3>لا توجد أجهزة بعد</h3></div>';
+        }else{
+          const DI2={laptop:'💻',desktop:'🖥️',printer:'🖨️',phone:'📱',other:'🔧'};
+          const resColors={fixed:'var(--gr-d)',partial:'var(--am)',failed:'var(--re)',needs_parts:'var(--cy)'};
+          el.innerHTML=r.recent.map(d=>`
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bg2)">
+              <div style="width:40px;height:40px;border-radius:10px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${DI2[d.deviceType]||'🔧'}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:700">${esc(d.deviceDesc||d.deviceType||'جهاز')}</div>
+                <div style="font-size:10px;color:var(--sl);margin-top:2px">${esc(d.ownerName)} · ${esc(d.ownerDept)} · ${esc(d.checkinAt)}</div>
+                ${d.workDone?`<div style="font-size:10px;color:var(--sl);margin-top:2px">✏️ ${esc(d.workDone.slice(0,60))}</div>`:''}
+              </div>
+              <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;background:${d.status==='مُسلَّم'?'var(--gr-l)':d.status==='عند الفني'?'var(--am-l)':'var(--bl-l)'};color:${d.status==='مُسلَّم'?'var(--gr-d)':d.status==='عند الفني'?'#92400e':'#1d4ed8'}">${esc(d.status)}</span>
+            </div>`).join('');
+        }
+      }
+    }
+  }catch(e){console.error('loadTechStats',e);}
+}
+
+async function subTechTicket(){
+  const p=document.getElementById('tt-p').value,
+        pri=document.getElementById('tt-pri').value,
+        d=document.getElementById('tt-d').value.trim(),
+        di=document.getElementById('tt-di').value;
+  if(!p||!d){toast('نوع المشكلة والوصف مطلوبان',true);return;}
+  try{
+    const r=await api('tickets.create',{problemType:p,priority:pri,description:d,deviceId:di});
+    if(r&&r.success){
+      toast('✅ تم إرسال البلاغ — '+r.ticketId);
+      cc();
+      ['tt-p','tt-d','tt-di'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    }else toast(r?r.message:'خطأ',true);
+  }catch(e){toast('خطأ في الإرسال',true);}
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+window.addEventListener('load',()=>checkSession());
+</script>
+</body>
+</html>
