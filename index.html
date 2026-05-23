@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<title>IT Help Desk</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:#f0f4f8;color:#1e293b;direction:rtl}
+:root{
+  --primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#7c3aed;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;--info:#06b6d4;
+  --sidebar-w:260px;--header-h:60px;
+}
+
+/* ===== LOGIN ===== */
+#loginPage{min-height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#7c3aed 100%);display:flex;align-items:center;justify-content:center}
+.login-card{background:#fff;border-radius:20px;padding:40px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo i{font-size:48px;color:var(--primary)}
+.login-logo h2{font-size:22px;color:#1e293b;margin-top:8px;font-weight:700}
+.login-logo p{font-size:13px;color:#64748b;margin-top:4px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.form-group input,.form-group select{width:100%;padding:11px 14px;border:2px solid #e2e8f0;border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:.2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary)}
+.btn-login{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-login:hover{background:var(--primary-dark)}
+.login-error{color:#ef4444;font-size:13px;text-align:center;margin-top:8px;display:none}
+
+/* ===== APP LAYOUT ===== */
+#appPage{display:none;min-height:100vh}
+.app-layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#1e3a5f 0%,#1a3354 100%);color:#fff;display:flex;flex-direction:column;position:fixed;top:0;right:0;height:100vh;z-index:100;transition:.3s}
+.sidebar-header{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-header h3{font-size:16px;font-weight:700;color:#fff}
+.sidebar-header p{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.sidebar-user{padding:16px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.user-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.user-info{flex:1}
+.user-info .name{font-size:13px;font-weight:600}
+.user-info .role{font-size:11px;color:rgba(255,255,255,.6)}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0}
+.nav-section{padding:8px 16px 4px;font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;transition:.2s;border-radius:8px;margin:2px 8px;font-size:13px;color:rgba(255,255,255,.8)}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:var(--primary);color:#fff}
+.nav-item i{width:18px;text-align:center;font-size:14px}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.1)}
+.btn-logout{width:100%;padding:9px;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fca5a5;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;transition:.2s}
+.btn-logout:hover{background:rgba(239,68,68,.4)}
+
+/* MAIN AREA */
+.main-area{margin-right:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.top-bar{height:var(--header-h);background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+.top-bar-title{font-size:18px;font-weight:700;color:#1e293b}
+.top-bar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{position:relative;background:none;border:none;cursor:pointer;font-size:18px;color:#64748b;padding:6px}
+.notif-badge{position:absolute;top:2px;left:2px;background:#ef4444;color:#fff;font-size:9px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.page-content{padding:24px;flex:1}
+
+/* TAB PAGES */
+.tab-page{display:none}
+.tab-page.active{display:block}
+
+/* CARDS */
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:700;color:#1e293b}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+.stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;gap:16px}
+.stat-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0}
+.stat-info .val{font-size:26px;font-weight:700;color:#1e293b;line-height:1}
+.stat-info .lbl{font-size:12px;color:#64748b;margin-top:4px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8fafc;color:#64748b;font-weight:600;padding:10px 12px;text-align:right;border-bottom:2px solid #e2e8f0}
+td{padding:10px 12px;border-bottom:1px solid #f1f5f9;color:#374151}
+tr:hover td{background:#f8fafc}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-open{background:#dbeafe;color:#1d4ed8}
+.badge-progress{background:#fef3c7;color:#d97706}
+.badge-done{background:#d1fae5;color:#065f46}
+.badge-closed{background:#f1f5f9;color:#475569}
+.badge-overdue{background:#fee2e2;color:#b91c1c}
+.badge-high{background:#fee2e2;color:#b91c1c}
+.badge-med{background:#fef3c7;color:#d97706}
+.badge-low{background:#d1fae5;color:#065f46}
+.badge-info{background:#e0f2fe;color:#0369a1}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#059669}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#dc2626}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-warning:hover{background:#d97706}
+.btn-secondary{background:#f1f5f9;color:#374151;border:1px solid #e2e8f0}
+.btn-secondary:hover{background:#e2e8f0}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;transition:.2s;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.field textarea{resize:vertical;min-height:80px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-header{padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-size:16px;font-weight:700}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;line-height:1}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;gap:10px;justify-content:flex-end}
+
+/* AI CHAT */
+.ai-chat-wrap{display:flex;flex-direction:column;height:520px}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:#f8fafc;border-radius:12px;margin-bottom:12px}
+.ai-msg{display:flex;gap:10px;align-items:flex-start}
+.ai-msg.user{flex-direction:row-reverse}
+.ai-bubble{max-width:75%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
+.ai-msg.bot .ai-bubble{background:#fff;border:1px solid #e2e8f0;color:#1e293b}
+.ai-msg.user .ai-bubble{background:var(--primary);color:#fff}
+.ai-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ai-msg.bot .ai-avatar{background:#e0f2fe;color:#0369a1}
+.ai-msg.user .ai-avatar{background:var(--primary-dark);color:#fff}
+.ai-input-row{display:flex;gap:8px}
+.ai-input-row input{flex:1;padding:10px 14px;border:2px solid #e2e8f0;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;outline:none}
+.ai-input-row input:focus{border-color:var(--primary)}
+.ai-counter{font-size:11px;color:#64748b;text-align:center;margin-top:6px}
+
+/* DEVICE WORKFLOW */
+.device-stages{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.stage-btn{padding:8px 16px;border-radius:20px;border:2px solid #e2e8f0;background:#fff;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;color:#64748b}
+.stage-btn.active{border-color:var(--primary);background:var(--primary);color:#fff}
+.stage-btn.done{border-color:var(--success);background:#d1fae5;color:#065f46}
+
+/* MOBILE */
+.mob-hdr2{display:none;background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:12px 16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.mob-hdr2 h3{font-size:16px;font-weight:700}
+.mob-body{display:none;padding:16px;padding-bottom:80px}
+.mob-bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:100;padding:8px 0;padding-bottom:env(safe-area-inset-bottom)}
+.mob-bnav-items{display:flex;justify-content:space-around}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 12px;cursor:pointer;color:#94a3b8;font-size:10px;font-weight:600;transition:.2s}
+.mob-nav-item.active{color:var(--primary)}
+.mob-nav-item i{font-size:20px}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.chart-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.chart-card canvas{max-height:220px}
+
+/* PROGRESS BAR */
+.progress-wrap{background:#f1f5f9;border-radius:20px;height:8px;overflow:hidden}
+.progress-bar{height:100%;border-radius:20px;transition:.4s}
+
+/* ALERT */
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.alert-info{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd}
+.alert-success{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
+.alert-warning{background:#fef3c7;color:#d97706;border:1px solid #fde68a}
+.alert-danger{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-area{margin-right:0}
+  .top-bar{display:none}
+  .page-content{display:none}
+  .mob-hdr2{display:flex}
+  .mob-body{display:block}
+  .mob-bnav{display:block}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-card{padding:14px}
+  .stat-icon{width:40px;height:40px;font-size:18px}
+  .stat-info .val{font-size:20px}
+}
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:1fr}
+}
+
+/* INTERNET USERS */
+.inet-quota{display:flex;gap:6px;flex-wrap:wrap}
+.quota-chip{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:2px solid #e2e8f0;background:#fff;transition:.2s}
+.quota-chip.sel{border-color:var(--primary);background:var(--primary);color:#fff}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:#94a3b8}
+.loading i{font-size:24px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 20px;color:#94a3b8}
+.empty-state i{font-size:48px;margin-bottom:12px;display:block}
+.empty-state p{font-size:14px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+/* TICKET DETAIL */
+.ticket-timeline{padding:0;list-style:none}
+.tl-item{display:flex;gap:12px;padding-bottom:16px;position:relative}
+.tl-item::before{content:'';position:absolute;right:15px;top:28px;bottom:0;width:2px;background:#e2e8f0}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#64748b}
+.tl-dot.open{background:#dbeafe;color:#1d4ed8}
+.tl-dot.done{background:#d1fae5;color:#065f46}
+.tl-content .tl-title{font-size:13px;font-weight:600;color:#1e293b}
+.tl-content .tl-time{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* TECH STATS */
+.tech-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;transition:.2s;border:2px solid transparent}
+.tech-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+
+/* PRINT */
+@media print{
+  .sidebar,.top-bar,.mob-hdr2,.mob-bnav{display:none!important}
+  .main-area{margin:0!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <i class="fas fa-headset"></i>
+      <h2>IT Help Desk</h2>
+      <p>نظام دعم تقنية المعلومات</p>
+    </div>
+    <div class="form-group">
+      <label>الرقم الوظيفي</label>
+      <input type="text" id="empId" placeholder="أدخل الرقم الوظيفي" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label>كلمة المرور</label>
+      <input type="password" id="empPass" placeholder="أدخل كلمة المرور" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div class="form-group">
+      <label>نوع الحساب</label>
+      <select id="loginRole">
+        <option value="admin">مدير النظام / موظف IT</option>
+        <option value="user">موظف (مستخدم)</option>
+      </select>
+    </div>
+    <button class="btn-login" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> دخول</button>
+    <div class="login-error" id="loginErr">بيانات الدخول غير صحيحة</div>
+  </div>
+</div>
+
+<!-- ===== APP PAGE ===== -->
+<div id="appPage">
+  <!-- SIDEBAR -->
+  <div class="app-layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h3><i class="fas fa-headset"></i> IT Help Desk</h3>
+        <p>نظام دعم تقنية المعلومات</p>
+      </div>
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sideAvatar">م</div>
+        <div class="user-info">
+          <div class="name" id="sideName">مستخدم</div>
+          <div class="role" id="sideRole">موظف</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="sidebarNav">
+        <!-- filled by JS -->
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+      </div>
+    </div>
+
+    <!-- MAIN AREA -->
+    <div class="main-area">
+      <div class="top-bar">
+        <span class="top-bar-title" id="topBarTitle">لوحة التحكم</span>
+        <div class="top-bar-right">
+          <button class="notif-btn" title="الإشعارات">
+            <i class="fas fa-bell"></i>
+            <span class="notif-badge" id="notifBadge">0</span>
+          </button>
+          <span id="topBarUser" style="font-size:13px;color:#64748b"></span>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <!-- DASHBOARD -->
+        <div class="tab-page" id="tab-dashboard">
+          <div class="stats-grid" id="dashStats"></div>
+          <div class="charts-grid" id="dashCharts">
+            <div class="chart-card"><div class="card-title" style="margin-bottom:12px">التذاكر حسب الحالة</div><canvas id="chartStatus"></canvas></div>
+            <div class="chart-card"><div class="card-title" style="margin-bottom:12px">التذاكر حسب الأولوية</div><canvas id="chartPriority"></canvas></div>
+            <div class="chart-card"><div class="card-title" style="margin-bottom:12px">التذاكر الأسبوعية</div><canvas id="chartWeekly"></canvas></div>
+            <div class="chart-card"><div class="card-title" style="margin-bottom:12px">التذاكر حسب القسم</div><canvas id="chartDept"></canvas></div>
+          </div>
+        </div>
+
+        <!-- TICKETS -->
+        <div class="tab-page" id="tab-tickets">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-ticket-alt"></i> جميع التذاكر</span>
+              <button class="btn btn-primary btn-sm" onclick="goTab('newTicket')"><i class="fas fa-plus"></i> تذكرة جديدة</button>
+            </div>
+            <div class="table-wrap" id="ticketsTableWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- OVERDUE -->
+        <div class="tab-page" id="tab-overdue">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i> التذاكر المتأخرة</span>
+            </div>
+            <div class="table-wrap" id="overdueTableWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- REPORTS -->
+        <div class="tab-page" id="tab-reports">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-chart-bar"></i> التقارير</span></div>
+            <div id="reportsContent"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- NEW TICKET -->
+        <div class="tab-page" id="tab-newTicket">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-plus-circle"></i> إنشاء تذكرة جديدة</span></div>
+            <div class="form-row">
+              <div class="field"><label>الموظف / المبلّغ</label><input type="text" id="nt_emp" placeholder="اسم الموظف"/></div>
+              <div class="field"><label>الرقم الوظيفي</label><input type="text" id="nt_empid" placeholder="الرقم الوظيفي"/></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>القسم</label><input type="text" id="nt_dept" placeholder="القسم"/></div>
+              <div class="field"><label>الأولوية</label>
+                <select id="nt_priority">
+                  <option value="عالية">عالية</option>
+                  <option value="متوسطة" selected>متوسطة</option>
+                  <option value="منخفضة">منخفضة</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>نوع المشكلة</label>
+                <select id="nt_type">
+                  <option>مشكلة طباعة</option>
+                  <option>مشكلة شبكة</option>
+                  <option>مشكلة جهاز</option>
+                  <option>مشكلة برنامج</option>
+                  <option>مشكلة بريد إلكتروني</option>
+                  <option>طلب صيانة</option>
+                  <option>أخرى</option>
+                </select>
+              </div>
+              <div class="field"><label>رقم الأصل (اختياري)</label><input type="text" id="nt_asset" placeholder="رقم الأصل"/></div>
+            </div>
+            <div class="field" style="margin-bottom:16px"><label>وصف المشكلة</label><textarea id="nt_desc" rows="4" placeholder="اكتب وصفاً تفصيلياً للمشكلة..."></textarea></div>
+            <button class="btn btn-primary" onclick="submitNewTicket()"><i class="fas fa-paper-plane"></i> إرسال التذكرة</button>
+          </div>
+        </div>
+
+        <!-- USERS -->
+        <div class="tab-page" id="tab-users">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-users"></i> إدارة المستخدمين</span>
+              <button class="btn btn-primary btn-sm" onclick="goTab('newUser')"><i class="fas fa-user-plus"></i> مستخدم جديد</button>
+            </div>
+            <div class="table-wrap" id="usersTableWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- NEW USER -->
+        <div class="tab-page" id="tab-newUser">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-user-plus"></i> إضافة مستخدم جديد</span></div>
+            <div class="form-row">
+              <div class="field"><label>الاسم الكامل</label><input type="text" id="nu_name" placeholder="الاسم الكامل"/></div>
+              <div class="field"><label>الرقم الوظيفي</label><input type="text" id="nu_id" placeholder="الرقم الوظيفي"/></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>القسم</label><input type="text" id="nu_dept" placeholder="القسم"/></div>
+              <div class="field"><label>البريد الإلكتروني</label><input type="email" id="nu_email" placeholder="example@company.com"/></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><label>الدور</label>
+                <select id="nu_role">
+                  <option value="user">موظف</option>
+                  <option value="tech">فني</option>
+                  <option value="admin">مدير</option>
+                </select>
+              </div>
+              <div class="field"><label>كلمة المرور</label><input type="password" id="nu_pass" placeholder="كلمة المرور"/></div>
+            </div>
+            <button class="btn btn-primary" onclick="submitNewUser()"><i class="fas fa-save"></i> حفظ المستخدم</button>
+          </div>
+        </div>
+
+        <!-- DEPARTMENTS -->
+        <div class="tab-page" id="tab-depts">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-building"></i> الأقسام</span></div>
+            <div id="deptsContent"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- GUIDELINES -->
+        <div class="tab-page" id="tab-view-guidelines">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-book"></i> دليل الاستخدام والإرشادات</span></div>
+            <div id="guidelinesContent">
+              <div class="alert alert-info"><i class="fas fa-info-circle"></i> قواعد وإرشادات استخدام نظام IT Help Desk</div>
+              <h4 style="margin-bottom:10px;color:#1e293b">1. قواعد رفع التذاكر</h4>
+              <ul style="padding-right:20px;color:#374151;font-size:14px;line-height:2">
+                <li>يجب وصف المشكلة بدقة وتفصيل كافٍ</li>
+                <li>تحديد الأولوية بشكل صحيح (عالية فقط للحالات الطارئة)</li>
+                <li>إرفاق رقم الأصل عند الإمكان</li>
+                <li>متابعة حالة التذكرة بانتظام</li>
+              </ul>
+              <h4 style="margin:16px 0 10px;color:#1e293b">2. أوقات الاستجابة المعيارية</h4>
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <tr><th style="background:#f8fafc;padding:8px;text-align:right;border:1px solid #e2e8f0">الأولوية</th><th style="background:#f8fafc;padding:8px;text-align:right;border:1px solid #e2e8f0">وقت الاستجابة</th><th style="background:#f8fafc;padding:8px;text-align:right;border:1px solid #e2e8f0">وقت الحل</th></tr>
+                <tr><td style="padding:8px;border:1px solid #e2e8f0"><span class="badge badge-high">عالية</span></td><td style="padding:8px;border:1px solid #e2e8f0">30 دقيقة</td><td style="padding:8px;border:1px solid #e2e8f0">4 ساعات</td></tr>
+                <tr><td style="padding:8px;border:1px solid #e2e8f0"><span class="badge badge-med">متوسطة</span></td><td style="padding:8px;border:1px solid #e2e8f0">2 ساعة</td><td style="padding:8px;border:1px solid #e2e8f0">24 ساعة</td></tr>
+                <tr><td style="padding:8px;border:1px solid #e2e8f0"><span class="badge badge-low">منخفضة</span></td><td style="padding:8px;border:1px solid #e2e8f0">24 ساعة</td><td style="padding:8px;border:1px solid #e2e8f0">72 ساعة</td></tr>
+              </table>
+              <h4 style="margin:16px 0 10px;color:#1e293b">3. سياسة استخدام الأجهزة</h4>
+              <ul style="padding-right:20px;color:#374151;font-size:14px;line-height:2">
+                <li>يُحظر تثبيت برامج غير مرخصة</li>
+                <li>الحفاظ على سرية بيانات الدخول</li>
+                <li>الإبلاغ الفوري عن أي عطل أو مشكلة</li>
+                <li>عدم مشاركة الأجهزة مع أشخاص غير مخولين</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANUAL -->
+        <div class="tab-page" id="tab-view-manual">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-file-alt"></i> الدليل التشغيلي</span></div>
+            <div id="manualContent">
+              <div class="alert alert-success"><i class="fas fa-check-circle"></i> الدليل التشغيلي الكامل لقسم تقنية المعلومات</div>
+              <h4 style="margin-bottom:10px;color:#1e293b">إجراءات استلام وتسليم الأجهزة</h4>
+              <ol style="padding-right:20px;color:#374151;font-size:14px;line-height:2.2">
+                <li>استلام الجهاز وتسجيل بياناته في النظام (الاستلام الأولي)</li>
+                <li>فحص الجهاز وتحديد نوع العطل</li>
+                <li>إرسال الجهاز للفني المختص مع تسجيل البيانات</li>
+                <li>إجراء الصيانة اللازمة وتسجيل التفاصيل</li>
+                <li>استلام الجهاز بعد الإصلاح والتحقق من الجودة</li>
+                <li>تسليم الجهاز للموظف مع توقيع الاستلام</li>
+              </ol>
+              <h4 style="margin:16px 0 10px;color:#1e293b">إجراءات إدارة شبكة الإنترنت</h4>
+              <ul style="padding-right:20px;color:#374151;font-size:14px;line-height:2">
+                <li>تسجيل جميع مستخدمي الإنترنت في النظام</li>
+                <li>تحديد الحصة المناسبة لكل مستخدم حسب احتياجاته</li>
+                <li>مراقبة استهلاك البيانات بشكل دوري</li>
+                <li>إيقاف أو تعليق حسابات المخالفين</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI DESK -->
+        <div class="tab-page" id="tab-ai-desk">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-robot"></i> مساعد AI - دعم تقني ذكي</span></div>
+            <div class="ai-chat-wrap">
+              <div class="ai-messages" id="aiMessages">
+                <div class="ai-msg bot">
+                  <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                  <div class="ai-bubble">مرحباً! أنا مساعدك التقني الذكي. يمكنني مساعدتك في حل المشاكل التقنية الشائعة. كيف يمكنني مساعدتك اليوم؟</div>
+                </div>
+              </div>
+              <div class="ai-input-row">
+                <input type="text" id="aiInput" placeholder="اكتب سؤالك التقني هنا..." onkeydown="if(event.key==='Enter')sendAiMsg()"/>
+                <button class="btn btn-primary" onclick="sendAiMsg()"><i class="fas fa-paper-plane"></i></button>
+              </div>
+              <div class="ai-counter" id="aiCounter">الرسائل المتبقية: <strong id="aiLeft">7</strong> / 7</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEVICES -->
+        <div class="tab-page" id="tab-devices">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-laptop"></i> إدارة الأجهزة - سير العمل</span>
+              <button class="btn btn-primary btn-sm" onclick="openCheckin()"><i class="fas fa-plus"></i> استلام جهاز</button>
+            </div>
+            <div class="device-stages">
+              <button class="stage-btn active" onclick="loadDeviceStage(0,this)">الكل</button>
+              <button class="stage-btn" onclick="loadDeviceStage(1,this)"><i class="fas fa-inbox"></i> استلام أولي</button>
+              <button class="stage-btn" onclick="loadDeviceStage(2,this)"><i class="fas fa-tools"></i> لدى الفني</button>
+              <button class="stage-btn" onclick="loadDeviceStage(3,this)"><i class="fas fa-wrench"></i> قيد الإصلاح</button>
+              <button class="stage-btn" onclick="loadDeviceStage(4,this)"><i class="fas fa-check-circle"></i> جاهز للتسليم</button>
+              <button class="stage-btn" onclick="loadDeviceStage(5,this)"><i class="fas fa-handshake"></i> مُسلَّم</button>
+            </div>
+            <div class="table-wrap" id="devicesTableWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- INTERNET USERS -->
+        <div class="tab-page" id="tab-internet-users">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-wifi"></i> إدارة مستخدمي الإنترنت</span>
+              <button class="btn btn-primary btn-sm" onclick="openNewInetUser()"><i class="fas fa-plus"></i> مستخدم جديد</button>
+            </div>
+            <div class="table-wrap" id="inetUsersTableWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- TECH STATS -->
+        <div class="tab-page" id="tab-tech-stats">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-chart-line"></i> إحصائيات الفنيين</span></div>
+            <div class="tech-grid" id="techStatsGrid"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- TECH TICKET (tech/user view) -->
+        <div class="tab-page" id="tab-tech-ticket">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-ticket-alt"></i> تذاكري المسندة</span></div>
+            <div class="table-wrap" id="techTicketWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- USER HOME -->
+        <div class="tab-page" id="tab-userHome">
+          <div class="stats-grid" id="userHomeStats"></div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-ticket-alt"></i> تذاكري</span>
+              <button class="btn btn-primary btn-sm" onclick="goTab('newTicketDesk')"><i class="fas fa-plus"></i> تذكرة جديدة</button>
+            </div>
+            <div class="table-wrap" id="myTicketsTable"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+        <!-- NEW TICKET DESK (user) -->
+        <div class="tab-page" id="tab-newTicketDesk">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-plus-circle"></i> طلب دعم تقني</span></div>
+            <div class="form-row">
+              <div class="field"><label>نوع المشكلة</label>
+                <select id="ntd_type">
+                  <option>مشكلة طباعة</option>
+                  <option>مشكلة شبكة</option>
+                  <option>مشكلة جهاز</option>
+                  <option>مشكلة برنامج</option>
+                  <option>مشكلة بريد إلكتروني</option>
+                  <option>طلب صيانة</option>
+                  <option>أخرى</option>
+                </select>
+              </div>
+              <div class="field"><label>الأولوية</label>
+                <select id="ntd_priority">
+                  <option value="عالية">عالية</option>
+                  <option value="متوسطة" selected>متوسطة</option>
+                  <option value="منخفضة">منخفضة</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:16px"><label>وصف المشكلة</label><textarea id="ntd_desc" rows="4" placeholder="صف مشكلتك بالتفصيل..."></textarea></div>
+            <button class="btn btn-primary" onclick="submitDeskTicket()"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
+          </div>
+        </div>
+
+        <!-- MY TICKETS DESK -->
+        <div class="tab-page" id="tab-myTicketsDesk">
+          <div class="card">
+            <div class="card-header"><span class="card-title"><i class="fas fa-list"></i> جميع طلباتي</span></div>
+            <div class="table-wrap" id="myTicketsDeskWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+          </div>
+        </div>
+
+      </div><!-- /page-content -->
+    </div><!-- /main-area -->
+  </div><!-- /app-layout -->
+
+  <!-- MOBILE -->
+  <div class="mob-hdr2">
+    <h3 id="mobTitle"><i class="fas fa-headset"></i> IT Help Desk</h3>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="mobUserName" style="font-size:12px;opacity:.8"></span>
+      <button onclick="doLogout()" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 10px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer">خروج</button>
+    </div>
+  </div>
+  <div class="mob-body" id="mobBody">
+    <!-- filled by goTab -->
+  </div>
+  <div class="mob-bnav">
+    <div class="mob-bnav-items" id="mobBnav">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div><!-- /appPage -->
+
+<!-- ===== MODALS ===== -->
+<!-- Device Checkin Modal -->
+<div class="modal-overlay" id="modalCheckin">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-inbox"></i> استلام جهاز جديد</h3>
+      <button class="modal-close" onclick="closeModal('modalCheckin')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="field"><label>اسم الموظف</label><input type="text" id="ci_emp" placeholder="اسم الموظف"/></div>
+        <div class="field"><label>الرقم الوظيفي</label><input type="text" id="ci_empid" placeholder="الرقم الوظيفي"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>نوع الجهاز</label>
+          <select id="ci_type">
+            <option>حاسوب مكتبي</option>
+            <option>حاسوب محمول</option>
+            <option>طابعة</option>
+            <option>شاشة</option>
+            <option>جهاز لوحي</option>
+            <option>أخرى</option>
+          </select>
+        </div>
+        <div class="field"><label>رقم الأصل</label><input type="text" id="ci_asset" placeholder="رقم الأصل"/></div>
+      </div>
+      <div class="field" style="margin-bottom:16px"><label>وصف العطل</label><textarea id="ci_fault" rows="3" placeholder="وصف العطل أو المشكلة..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalCheckin')">إلغاء</button>
+      <button class="btn btn-primary" onclick="doCheckin()"><i class="fas fa-save"></i> تسجيل الاستلام</button>
+    </div>
+  </div>
+</div>
+
+<!-- Send to Tech Modal -->
+<div class="modal-overlay" id="modalSendTech">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-tools"></i> إرسال للفني</h3>
+      <button class="modal-close" onclick="closeModal('modalSendTech')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="st_deviceId"/>
+      <div class="form-row">
+        <div class="field"><label>اسم الفني</label><input type="text" id="st_tech" placeholder="اسم الفني المختص"/></div>
+        <div class="field"><label>تاريخ الإرسال</label><input type="date" id="st_date"/></div>
+      </div>
+      <div class="field" style="margin-bottom:16px"><label>ملاحظات</label><textarea id="st_notes" rows="3" placeholder="ملاحظات الإرسال..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalSendTech')">إلغاء</button>
+      <button class="btn btn-primary" onclick="subTechRepair()"><i class="fas fa-paper-plane"></i> إرسال</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receive Back Modal -->
+<div class="modal-overlay" id="modalReceiveBack">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-check-circle"></i> استلام الجهاز بعد الإصلاح</h3>
+      <button class="modal-close" onclick="closeModal('modalReceiveBack')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="rb_deviceId"/>
+      <div class="field" style="margin-bottom:16px"><label>تفاصيل الإصلاح</label><textarea id="rb_repair" rows="3" placeholder="ما الذي تم إصلاحه..."></textarea></div>
+      <div class="field" style="margin-bottom:16px"><label>حالة الجهاز بعد الإصلاح</label>
+        <select id="rb_status">
+          <option value="جاهز">جاهز للتسليم</option>
+          <option value="جزئي">إصلاح جزئي</option>
+          <option value="مرفوض">لم يتم الإصلاح</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalReceiveBack')">إلغاء</button>
+      <button class="btn btn-success" onclick="subReceiveBack()"><i class="fas fa-check"></i> تأكيد الاستلام</button>
+    </div>
+  </div>
+</div>
+
+<!-- Final Deliver Modal -->
+<div class="modal-overlay" id="modalFinalDeliver">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-handshake"></i> تسليم الجهاز للموظف</h3>
+      <button class="modal-close" onclick="closeModal('modalFinalDeliver')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="fd_deviceId"/>
+      <div class="field" style="margin-bottom:16px"><label>ملاحظات التسليم</label><textarea id="fd_notes" rows="3" placeholder="ملاحظات التسليم النهائي..."></textarea></div>
+      <div class="alert alert-success"><i class="fas fa-info-circle"></i> سيتم إغلاق ملف هذا الجهاز بعد التسليم</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalFinalDeliver')">إلغاء</button>
+      <button class="btn btn-success" onclick="subFinalDeliver()"><i class="fas fa-handshake"></i> تأكيد التسليم</button>
+    </div>
+  </div>
+</div>
+
+<!-- Internet User Modal -->
+<div class="modal-overlay" id="modalInetUser">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-wifi"></i> مستخدم إنترنت جديد</h3>
+      <button class="modal-close" onclick="closeModal('modalInetUser')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="field"><label>اسم المستخدم</label><input type="text" id="iu_name" placeholder="الاسم الكامل"/></div>
+        <div class="field"><label>الرقم الوظيفي</label><input type="text" id="iu_id" placeholder="الرقم الوظيفي"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>القسم</label><input type="text" id="iu_dept" placeholder="القسم"/></div>
+        <div class="field"><label>رقم IP (اختياري)</label><input type="text" id="iu_ip" placeholder="192.168.1.x"/></div>
+      </div>
+      <div class="field" style="margin-bottom:12px"><label>الحصة الشهرية</label>
+        <div class="inet-quota">
+          <span class="quota-chip sel" onclick="selQuota(this,'10GB')">10 GB</span>
+          <span class="quota-chip" onclick="selQuota(this,'20GB')">20 GB</span>
+          <span class="quota-chip" onclick="selQuota(this,'50GB')">50 GB</span>
+          <span class="quota-chip" onclick="selQuota(this,'100GB')">100 GB</span>
+          <span class="quota-chip" onclick="selQuota(this,'غير محدود')">غير محدود</span>
+        </div>
+        <input type="hidden" id="iu_quota" value="10GB"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalInetUser')">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitInetUser()"><i class="fas fa-save"></i> حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Toast -->
+<div id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#1e293b;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:9999;transition:.3s;opacity:0;pointer-events:none;white-space:nowrap"></div>
+
+<script>
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+var APP = {
+  role: '',       // admin | tech | user
+  empId: '',
+  empName: '',
+  dept: '',
+  currentTab: '',
+  tickets: [],
+  devices: [],
+  inetUsers: [],
+  users: [],
+  aiMsgsLeft: 7,
+  charts: {},
+  inetQuota: '10GB'
+};
+
+// Demo data
+var DEMO_TICKETS = [
+  {id:'TK-001',emp:'أحمد محمد',empid:'1001',dept:'المالية',type:'مشكلة طباعة',priority:'عالية',status:'مفتوحة',date:'2026-05-20',desc:'الطابعة لا تستجيب'},
+  {id:'TK-002',emp:'سارة علي',empid:'1002',dept:'الموارد البشرية',type:'مشكلة شبكة',priority:'متوسطة',status:'قيد المعالجة',date:'2026-05-21',desc:'انقطاع الإنترنت'},
+  {id:'TK-003',emp:'خالد يوسف',empid:'1003',dept:'العمليات',type:'مشكلة برنامج',priority:'منخفضة',status:'مغلقة',date:'2026-05-19',desc:'خطأ في Excel'},
+  {id:'TK-004',emp:'منى سعد',empid:'1004',dept:'المبيعات',type:'مشكلة جهاز',priority:'عالية',status:'مفتوحة',date:'2026-05-18',desc:'الجهاز لا يشتغل'},
+  {id:'TK-005',emp:'عمر حسين',empid:'1005',dept:'الإدارة',type:'طلب صيانة',priority:'متوسطة',status:'قيد المعالجة',date:'2026-05-22',desc:'صيانة دورية'},
+];
+
+var DEMO_DEVICES = [
+  {id:'DV-001',emp:'أحمد محمد',empid:'1001',type:'حاسوب محمول',asset:'AST-100',fault:'الشاشة تومض',stage:1,date:'2026-05-20'},
+  {id:'DV-002',emp:'سارة علي',empid:'1002',type:'طابعة',asset:'AST-101',fault:'ورق عالق',stage:2,tech:'محمد الفني',date:'2026-05-21'},
+  {id:'DV-003',emp:'خالد يوسف',empid:'1003',type:'حاسوب مكتبي',asset:'AST-102',fault:'لا يشتغل',stage:4,date:'2026-05-19'},
+  {id:'DV-004',emp:'منى سعد',empid:'1004',type:'شاشة',asset:'AST-103',fault:'خطوط على الشاشة',stage:5,date:'2026-05-18'},
+];
+
+var DEMO_INET = [
+  {id:'IN-001',name:'أحمد محمد',empid:'1001',dept:'المالية',ip:'192.168.1.10',quota:'50GB',used:'23GB',status:'نشط'},
+  {id:'IN-002',name:'سارة علي',empid:'1002',dept:'الموارد البشرية',ip:'192.168.1.11',quota:'20GB',used:'18GB',status:'نشط'},
+  {id:'IN-003',name:'خالد يوسف',empid:'1003',dept:'العمليات',ip:'192.168.1.12',quota:'10GB',used:'10GB',status:'موقوف'},
+];
+
+var DEMO_USERS = [
+  {id:'USR-001',name:'مدير النظام',empid:'admin',dept:'IT',role:'admin',email:'admin@company.com',status:'نشط'},
+  {id:'USR-002',name:'محمد الفني',empid:'tech1',dept:'IT',role:'tech',email:'tech1@company.com',status:'نشط'},
+  {id:'USR-003',name:'أحمد محمد',empid:'1001',dept:'المالية',role:'user',email:'ahmed@company.com',status:'نشط'},
+];
+
+// AI knowledge base
+var AI_KB = {
+  'طابعة': 'لمشاكل الطابعة: تأكد من توصيل الكابل وتشغيل الطابعة، تحقق من وجود ورق وحبر كافٍ، أعد تشغيل الطابعة والحاسوب، تحقق من قائمة الطباعة وامسح المهام العالقة.',
+  'print': 'لمشاكل الطباعة: تأكد أن الطابعة الافتراضية صحيحة، تحقق من الاتصال بالشبكة، أعد تثبيت درايفر الطابعة.',
+  'نت': 'لمشاكل الإنترنت: تحقق من توصيل كابل الشبكة، أعد تشغيل الراوتر، جرب ipconfig /release ثم ipconfig /renew في CMD، تواصل مع IT إذا استمرت المشكلة.',
+  'شبكة': 'لمشاكل الشبكة: تأكد من إضاءة مؤشر الشبكة على الجهاز، جرب فتح موقع آخر، تحقق من إعدادات الـ IP، أعد تشغيل محول الشبكة.',
+  'إنترنت': 'تحقق من: 1) توصيل كابل الشبكة 2) إعدادات الـ IP التلقائية 3) إعادة تشغيل الجهاز 4) التواصل مع IT لفحص الاتصال.',
+  'باسورد': 'لإعادة تعيين كلمة المرور: تواصل مع قسم IT مباشرة مع إحضار الهوية الوظيفية. لا يمكن إعادة تعيين كلمة المرور عبر هذا النظام لأسباب أمنية.',
+  'كلمة مرور': 'لإعادة تعيين كلمة المرور تواصل مع IT مع الهوية الوظيفية.',
+  'بطيء': 'لتسريع الجهاز: أغلق البرامج غير الضرورية، تحقق من مهام الخلفية في Task Manager، تأكد أن القرص الصلب لديه مساحة كافية (20% على الأقل)، قد تحتاج لزيادة الـ RAM.',
+  'فيروس': 'عند الاشتباه بفيروس: افصل الجهاز عن الشبكة فوراً، لا تفتح أي ملفات، تواصل مع IT فوراً لفحص الجهاز بمضاد الفيروسات.',
+  'شاشة': 'لمشاكل الشاشة: تحقق من توصيل كابل الشاشة، جرب شاشة أخرى، تحقق من إعدادات الدقة في Windows، قد تحتاج لتحديث درايفر الشاشة.',
+  'اوتلوك': 'لمشاكل Outlook: تأكد من الاتصال بالإنترنت، أعد تشغيل Outlook، تحقق من إعدادات الحساب، جرب حذف ملف OST وإعادة المزامنة.',
+  'بريد': 'لمشاكل البريد الإلكتروني: تحقق من الاتصال بالشبكة، تأكد أن صندوق الوارد ليس ممتلئاً، راجع إعدادات الـ SMTP/IMAP مع IT.',
+  'اكسل': 'لمشاكل Excel: احفظ الملف وأعد فتحه، جرب فتح Excel في الوضع الآمن (مع Ctrl)، تحقق من تحديثات Office، أو تواصل مع IT.',
+  'ويندوز': 'لمشاكل Windows: تأكد من تثبيت التحديثات، جرب System Restore لنقطة استعادة سابقة، تحقق من سلامة الملفات بـ sfc /scannow في CMD كمسؤول.',
+};
+
+var AI_DEFAULT = 'شكراً على سؤالك. هذه المشكلة قد تحتاج لتدخل الفني. يُنصح بفتح تذكرة دعم من قسم "التذاكر" لمتابعتها بشكل رسمي، أو التواصل مع فريق IT مباشرة على الرقم الداخلي.';
+
+// ============================================================
+// AUTH
+// ============================================================
+function doLogin() {
+  var id = document.getElementById('empId').value.trim();
+  var pass = document.getElementById('empPass').value.trim();
+  var role = document.getElementById('loginRole').value;
+  if (!id || !pass) { showLoginErr('الرجاء إدخال جميع البيانات'); return; }
+
+  // Demo auth
+  var ok = false;
+  if (role === 'admin' && id === 'admin' && pass === 'admin123') { ok = true; APP.empName = 'مدير النظام'; APP.role = 'admin'; }
+  else if (role === 'admin' && id === 'tech1' && pass === 'tech123') { ok = true; APP.empName = 'محمد الفني'; APP.role = 'tech'; }
+  else if (role === 'user' && pass.length >= 3) { ok = true; APP.empName = 'موظف - ' + id; APP.role = 'user'; }
+
+  if (!ok) { showLoginErr('بيانات الدخول غير صحيحة'); return; }
+
+  APP.empId = id;
+  document.getElementById('loginErr').style.display = 'none';
+  enterApp();
+}
+
+function showLoginErr(msg) {
+  var el = document.getElementById('loginErr');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function enterApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appPage').style.display = 'block';
+  document.getElementById('sideName').textContent = APP.empName;
+  document.getElementById('sideRole').textContent = APP.role === 'admin' ? 'مدير النظام' : APP.role === 'tech' ? 'فني IT' : 'موظف';
+  document.getElementById('sideAvatar').textContent = APP.empName.charAt(0);
+  document.getElementById('topBarUser').textContent = APP.empName;
+  document.getElementById('mobUserName').textContent = APP.empName;
+  buildNav();
+  // Default tab
+  if (APP.role === 'user') goTab('userHome');
+  else goTab('dashboard');
+}
+
+function doLogout() {
+  APP.role = ''; APP.empId = ''; APP.empName = '';
+  document.getElementById('appPage').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('empId').value = '';
+  document.getElementById('empPass').value = '';
+}
+
+// ============================================================
+// NAV BUILDING
+// ============================================================
+var NAV_ADMIN = [
+  {section: 'الرئيسية'},
+  {id:'dashboard', label:'لوحة التحكم', icon:'fas fa-tachometer-alt'},
+  {section: 'التذاكر'},
+  {id:'tickets', label:'جميع التذاكر', icon:'fas fa-ticket-alt'},
+  {id:'overdue', label:'التذاكر المتأخرة', icon:'fas fa-exclamation-triangle'},
+  {id:'newTicket', label:'تذكرة جديدة', icon:'fas fa-plus-circle'},
+  {id:'reports', label:'التقارير', icon:'fas fa-chart-bar'},
+  {section: 'الإدارة'},
+  {id:'users', label:'المستخدمون', icon:'fas fa-users'},
+  {id:'depts', label:'الأقسام', icon:'fas fa-building'},
+  {id:'tech-stats', label:'إحصائيات الفنيين', icon:'fas fa-chart-line'},
+  {section: 'الأجهزة والشبكة'},
+  {id:'devices', label:'إدارة الأجهزة', icon:'fas fa-laptop'},
+  {id:'internet-users', label:'مستخدمو الإنترنت', icon:'fas fa-wifi'},
+  {section: 'المساعدة'},
+  {id:'ai-desk', label:'مساعد AI', icon:'fas fa-robot'},
+  {id:'view-guidelines', label:'الإرشادات', icon:'fas fa-book'},
+  {id:'view-manual', label:'الدليل التشغيلي', icon:'fas fa-file-alt'},
+];
+
+var NAV_TECH = [
+  {section: 'الرئيسية'},
+  {id:'dashboard', label:'لوحة التحكم', icon:'fas fa-tachometer-alt'},
+  {section: 'التذاكر'},
+  {id:'tech-ticket', label:'تذاكري المسندة', icon:'fas fa-ticket-alt'},
+  {id:'tickets', label:'جميع التذاكر', icon:'fas fa-list'},
+  {section: 'الأجهزة'},
+  {id:'devices', label:'إدارة الأجهزة', icon:'fas fa-laptop'},
+  {section: 'المساعدة'},
+  {id:'ai-desk', label:'مساعد AI', icon:'fas fa-robot'},
+];
+
+var NAV_USER = [
+  {section: 'الرئيسية'},
+  {id:'userHome', label:'الرئيسية', icon:'fas fa-home'},
+  {section: 'طلباتي'},
+  {id:'newTicketDesk', label:'طلب دعم جديد', icon:'fas fa-plus-circle'},
+  {id:'myTicketsDesk', label:'جميع طلباتي', icon:'fas fa-list'},
+  {section: 'المساعدة'},
+  {id:'ai-desk', label:'مساعد AI', icon:'fas fa-robot'},
+  {id:'view-guidelines', label:'الإرشادات', icon:'fas fa-book'},
+];
+
+var MOB_NAV_ADMIN = [
+  {id:'dashboard',label:'الرئيسية',icon:'fas fa-home'},
+  {id:'tickets',label:'التذاكر',icon:'fas fa-ticket-alt'},
+  {id:'devices',label:'الأجهزة',icon:'fas fa-laptop'},
+  {id:'internet-users',label:'الإنترنت',icon:'fas fa-wifi'},
+  {id:'ai-desk',label:'AI',icon:'fas fa-robot'},
+];
+var MOB_NAV_USER = [
+  {id:'userHome',label:'الرئيسية',icon:'fas fa-home'},
+  {id:'newTicketDesk',label:'طلب جديد',icon:'fas fa-plus-circle'},
+  {id:'myTicketsDesk',label:'طلباتي',icon:'fas fa-list'},
+  {id:'ai-desk',label:'AI',icon:'fas fa-robot'},
+];
+
+function buildNav() {
+  var navList = APP.role === 'admin' ? NAV_ADMIN : APP.role === 'tech' ? NAV_TECH : NAV_USER;
+  var mobList = APP.role === 'user' ? MOB_NAV_USER : MOB_NAV_ADMIN;
+  var html = '';
+  navList.forEach(function(item) {
+    if (item.section) { html += '<div class="nav-section">'+item.section+'</div>'; }
+    else { html += '<div class="nav-item" id="nav-'+item.id+'" onclick="goTab(\''+item.id+'\')"><i class="'+item.icon+'"></i><span>'+item.label+'</span></div>'; }
+  });
+  document.getElementById('sidebarNav').innerHTML = html;
+
+  var mobHtml = '';
+  mobList.forEach(function(item) {
+    mobHtml += '<div class="mob-nav-item" id="mobnav-'+item.id+'" onclick="mobTab(\''+item.id+'\')"><i class="'+item.icon+'"></i><span>'+item.label+'</span></div>';
+  });
+  document.getElementById('mobBnav').innerHTML = mobHtml;
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
+function goTab(id) {
+  APP.currentTab = id;
+  // Hide all tabs
+  document.querySelectorAll('.tab-page').forEach(function(el){ el.classList.remove('active'); });
+  var tab = document.getElementById('tab-'+id);
+  if (tab) tab.classList.add('active');
+  // Update sidebar active
+  document.querySelectorAll('.nav-item').forEach(function(el){ el.classList.remove('active'); });
+  var navItem = document.getElementById('nav-'+id);
+  if (navItem) navItem.classList.add('active');
+  // Update top bar title
+  var titles = {
+    dashboard:'لوحة التحكم',tickets:'التذاكر',overdue:'التذاكر المتأخرة',
+    reports:'التقارير',newTicket:'تذكرة جديدة',users:'المستخدمون',
+    newUser:'مستخدم جديد',depts:'الأقسام','view-guidelines':'الإرشادات',
+    'view-manual':'الدليل التشغيلي','ai-desk':'مساعد AI',devices:'إدارة الأجهزة',
+    'internet-users':'مستخدمو الإنترنت','tech-stats':'إحصائيات الفنيين',
+    'tech-ticket':'تذاكري','userHome':'الرئيسية','newTicketDesk':'طلب دعم',
+    'myTicketsDesk':'طلباتي'
+  };
+  document.getElementById('topBarTitle').textContent = titles[id] || id;
+  document.getElementById('mobTitle').innerHTML = '<i class="fas fa-headset"></i> ' + (titles[id] || id);
+  // Load content
+  loadTabContent(id);
+  // Scroll top
+  window.scrollTo(0,0);
+}
+
+function mobTab(id) {
+  goTab(id);
+  document.querySelectorAll('.mob-nav-item').forEach(function(el){ el.classList.remove('active'); });
+  var el = document.getElementById('mobnav-'+id);
+  if (el) el.classList.add('active');
+}
+
+function loadTabContent(id) {
+  switch(id) {
+    case 'dashboard': loadDashboard(); break;
+    case 'tickets': loadTickets(); break;
+    case 'overdue': loadOverdue(); break;
+    case 'reports': loadReports(); break;
+    case 'users': loadUsers(); break;
+    case 'depts': loadDepts(); break;
+    case 'devices': loadDevices(); break;
+    case 'internet-users': loadInetUsers(); break;
+    case 'tech-stats': loadTechStats(); break;
+    case 'tech-ticket': loadTechTickets(); break;
+    case 'userHome': loadUserHome(); break;
+    case 'myTicketsDesk': loadMyTickets(); break;
+  }
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function loadDashboard() {
+  var tickets = DEMO_TICKETS;
+  var open = tickets.filter(function(t){ return t.status==='مفتوحة'; }).length;
+  var inprog = tickets.filter(function(t){ return t.status==='قيد المعالجة'; }).length;
+  var closed = tickets.filter(function(t){ return t.status==='مغلقة'; }).length;
+  var overdue = tickets.filter(function(t){ return t.status==='مفتوحة' && daysDiff(t.date) > 2; }).length;
+
+  document.getElementById('notifBadge').textContent = open + overdue;
+
+  document.getElementById('dashStats').innerHTML =
+    statCard('fas fa-ticket-alt', tickets.length, 'إجمالي التذاكر', '#2563eb') +
+    statCard('fas fa-door-open', open, 'مفتوحة', '#ef4444') +
+    statCard('fas fa-spinner', inprog, 'قيد المعالجة', '#f59e0b') +
+    statCard('fas fa-check-circle', closed, 'مغلقة', '#10b981') +
+    statCard('fas fa-clock', overdue, 'متأخرة', '#7c3aed') +
+    statCard('fas fa-laptop', DEMO_DEVICES.length, 'أجهزة مسجلة', '#06b6d4');
+
+  setTimeout(function() { renderCharts(tickets); }, 100);
+  renderMobContent();
+}
+
+function statCard(icon, val, lbl, color) {
+  return '<div class="stat-card"><div class="stat-icon" style="background:'+color+'"><i class="'+icon+'"></i></div><div class="stat-info"><div class="val">'+val+'</div><div class="lbl">'+lbl+'</div></div></div>';
+}
+
+function daysDiff(dateStr) {
+  var d = new Date(dateStr);
+  var now = new Date();
+  return Math.floor((now - d) / 86400000);
+}
+
+function renderCharts(tickets) {
+  // Status chart
+  var ctx1 = document.getElementById('chartStatus');
+  if (!ctx1) return;
+  if (APP.charts.status) APP.charts.status.destroy();
+  APP.charts.status = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: ['مفتوحة', 'قيد المعالجة', 'مغلقة'],
+      datasets: [{ data: [
+        tickets.filter(function(t){return t.status==='مفتوحة';}).length,
+        tickets.filter(function(t){return t.status==='قيد المعالجة';}).length,
+        tickets.filter(function(t){return t.status==='مغلقة';}).length,
+      ], backgroundColor: ['#ef4444','#f59e0b','#10b981'], borderWidth: 2 }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Cairo' } } } } }
+  });
+
+  // Priority chart
+  var ctx2 = document.getElementById('chartPriority');
+  if (APP.charts.priority) APP.charts.priority.destroy();
+  APP.charts.priority = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: ['عالية', 'متوسطة', 'منخفضة'],
+      datasets: [{ label: 'عدد التذاكر', data: [
+        tickets.filter(function(t){return t.priority==='عالية';}).length,
+        tickets.filter(function(t){return t.priority==='متوسطة';}).length,
+        tickets.filter(function(t){return t.priority==='منخفضة';}).length,
+      ], backgroundColor: ['#ef4444','#f59e0b','#10b981'] }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+
+  // Weekly chart
+  var ctx3 = document.getElementById('chartWeekly');
+  if (APP.charts.weekly) APP.charts.weekly.destroy();
+  APP.charts.weekly = new Chart(ctx3, {
+    type: 'line',
+    data: {
+      labels: ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'],
+      datasets: [{ label: 'تذاكر', data: [2,4,3,5,3,4], borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,.1)', fill: true, tension: 0.4 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Dept chart
+  var ctx4 = document.getElementById('chartDept');
+  if (APP.charts.dept) APP.charts.dept.destroy();
+  var depts = {}; tickets.forEach(function(t){ depts[t.dept] = (depts[t.dept]||0)+1; });
+  APP.charts.dept = new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(depts),
+      datasets: [{ label: 'تذاكر', data: Object.values(depts), backgroundColor: '#7c3aed' }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+}
+
+// ============================================================
+// TICKETS
+// ============================================================
+function loadTickets() {
+  var html = buildTicketsTable(DEMO_TICKETS, true);
+  document.getElementById('ticketsTableWrap').innerHTML = html;
+  renderMobContent();
+}
+
+function loadOverdue() {
+  var overdue = DEMO_TICKETS.filter(function(t){ return t.status !== 'مغلقة' && daysDiff(t.date) > 2; });
+  document.getElementById('overdueTableWrap').innerHTML = overdue.length ?
+    buildTicketsTable(overdue, true) :
+    '<div class="empty-state"><i class="fas fa-check-circle" style="color:#10b981"></i><p>لا توجد تذاكر متأخرة</p></div>';
+  renderMobContent();
+}
+
+function buildTicketsTable(tickets, showActions) {
+  if (!tickets.length) return '<div class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد تذاكر</p></div>';
+  var html = '<table><thead><tr><th>رقم التذكرة</th><th>الموظف</th><th>القسم</th><th>النوع</th><th>الأولوية</th><th>الحالة</th><th>التاريخ</th>';
+  if (showActions) html += '<th>إجراءات</th>';
+  html += '</tr></thead><tbody>';
+  tickets.forEach(function(t) {
+    html += '<tr>' +
+      '<td><strong>'+t.id+'</strong></td>' +
+      '<td>'+t.emp+'</td>' +
+      '<td>'+t.dept+'</td>' +
+      '<td>'+t.type+'</td>' +
+      '<td>'+priorityBadge(t.priority)+'</td>' +
+      '<td>'+statusBadge(t.status)+'</td>' +
+      '<td>'+t.date+'</td>';
+    if (showActions) {
+      html += '<td><button class="btn btn-xs btn-primary" onclick="viewTicket(\''+t.id+'\')"><i class="fas fa-eye"></i></button> ';
+      if (APP.role !== 'user') html += '<button class="btn btn-xs btn-success" onclick="closeTicket(\''+t.id+'\')"><i class="fas fa-check"></i></button>';
+      html += '</td>';
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+function priorityBadge(p) {
+  var cls = p==='عالية'?'badge-high':p==='متوسطة'?'badge-med':'badge-low';
+  return '<span class="badge '+cls+'">'+p+'</span>';
+}
+
+function statusBadge(s) {
+  var cls = s==='مفتوحة'?'badge-open':s==='قيد المعالجة'?'badge-progress':s==='مغلقة'?'badge-closed':'badge-overdue';
+  return '<span class="badge '+cls+'">'+s+'</span>';
+}
+
+function viewTicket(id) {
+  showToast('عرض التذكرة: ' + id);
+}
+
+function closeTicket(id) {
+  var t = DEMO_TICKETS.find(function(x){ return x.id === id; });
+  if (t) { t.status = 'مغلقة'; loadTickets(); showToast('تم إغلاق التذكرة ' + id); }
+}
+
+function submitNewTicket() {
+  var emp = document.getElementById('nt_emp').value.trim();
+  var empid = document.getElementById('nt_empid').value.trim();
+  var dept = document.getElementById('nt_dept').value.trim();
+  var priority = document.getElementById('nt_priority').value;
+  var type = document.getElementById('nt_type').value;
+  var desc = document.getElementById('nt_desc').value.trim();
+  if (!emp || !desc) { showToast('الرجاء إدخال اسم الموظف والوصف'); return; }
+  var newId = 'TK-' + String(DEMO_TICKETS.length + 1).padStart(3,'0');
+  DEMO_TICKETS.unshift({ id:newId, emp:emp, empid:empid, dept:dept, type:type, priority:priority, status:'مفتوحة', date:todayStr(), desc:desc });
+  ['nt_emp','nt_empid','nt_dept','nt_desc'].forEach(function(id){ document.getElementById(id).value=''; });
+  showToast('تم إنشاء التذكرة ' + newId + ' بنجاح');
+  goTab('tickets');
+}
+
+function submitDeskTicket() {
+  var type = document.getElementById('ntd_type').value;
+  var priority = document.getElementById('ntd_priority').value;
+  var desc = document.getElementById('ntd_desc').value.trim();
+  if (!desc) { showToast('الرجاء كتابة وصف المشكلة'); return; }
+  var newId = 'TK-' + String(DEMO_TICKETS.length + 1).padStart(3,'0');
+  DEMO_TICKETS.unshift({ id:newId, emp:APP.empName, empid:APP.empId, dept:'', type:type, priority:priority, status:'مفتوحة', date:todayStr(), desc:desc });
+  document.getElementById('ntd_desc').value = '';
+  showToast('تم إرسال طلبك بنجاح - رقم التذكرة: ' + newId);
+  goTab('myTicketsDesk');
+}
+
+function loadReports() {
+  var tickets = DEMO_TICKETS;
+  var open = tickets.filter(function(t){return t.status==='مفتوحة';}).length;
+  var prog = tickets.filter(function(t){return t.status==='قيد المعالجة';}).length;
+  var closed = tickets.filter(function(t){return t.status==='مغلقة';}).length;
+  document.getElementById('reportsContent').innerHTML =
+    '<div class="stats-grid">' +
+    statCard('fas fa-folder-open', tickets.length, 'إجمالي التذاكر', '#2563eb') +
+    statCard('fas fa-door-open', open, 'مفتوحة', '#ef4444') +
+    statCard('fas fa-hourglass-half', prog, 'قيد المعالجة', '#f59e0b') +
+    statCard('fas fa-check-double', closed, 'مغلقة', '#10b981') +
+    '</div>' +
+    '<div class="alert alert-info" style="margin-top:12px"><i class="fas fa-info-circle"></i> لتصدير التقارير المفصلة يرجى التواصل مع مدير النظام</div>';
+  renderMobContent();
+}
+
+// ============================================================
+// USERS
+// ============================================================
+function loadUsers() {
+  var html = '<table><thead><tr><th>الرقم</th><th>الاسم</th><th>الرقم الوظيفي</th><th>القسم</th><th>الدور</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>';
+  DEMO_USERS.forEach(function(u) {
+    html += '<tr><td>'+u.id+'</td><td>'+u.name+'</td><td>'+u.empid+'</td><td>'+u.dept+'</td><td>'+roleBadge(u.role)+'</td><td><span class="badge badge-done">'+u.status+'</span></td><td><button class="btn btn-xs btn-secondary" onclick="showToast(\'تعديل: '+u.name+'\')"><i class="fas fa-edit"></i></button></td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('usersTableWrap').innerHTML = html;
+  renderMobContent();
+}
+
+function roleBadge(r) {
+  var map = {admin:'badge-high',tech:'badge-info',user:'badge-low'};
+  var lbl = {admin:'مدير',tech:'فني',user:'موظف'};
+  return '<span class="badge '+(map[r]||'badge-info')+'">'+(lbl[r]||r)+'</span>';
+}
+
+function submitNewUser() {
+  var name = document.getElementById('nu_name').value.trim();
+  var id = document.getElementById('nu_id').value.trim();
+  if (!name || !id) { showToast('الرجاء إدخال الاسم والرقم الوظيفي'); return; }
+  DEMO_USERS.push({ id:'USR-'+String(DEMO_USERS.length+1).padStart(3,'0'), name:name, empid:id, dept:document.getElementById('nu_dept').value, role:document.getElementById('nu_role').value, email:document.getElementById('nu_email').value, status:'نشط' });
+  ['nu_name','nu_id','nu_dept','nu_email','nu_pass'].forEach(function(x){document.getElementById(x).value='';});
+  showToast('تم إضافة المستخدم بنجاح');
+  goTab('users');
+}
+
+function loadDepts() {
+  var depts = ['المالية','الموارد البشرية','العمليات','المبيعات','الإدارة','IT','اللوجستيات'];
+  var html = '<div class="stats-grid">';
+  depts.forEach(function(d){
+    var count = DEMO_TICKETS.filter(function(t){return t.dept===d;}).length;
+    html += '<div class="stat-card"><div class="stat-icon" style="background:#7c3aed"><i class="fas fa-building"></i></div><div class="stat-info"><div class="val">'+count+'</div><div class="lbl">'+d+'</div></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('deptsContent').innerHTML = html;
+  renderMobContent();
+}
+
+// ============================================================
+// DEVICES
+// ============================================================
+function loadDevices() { loadDeviceStage(0, null); }
+
+function loadDeviceStage(stage, btn) {
+  if (btn) {
+    document.querySelectorAll('.stage-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  var devices = stage === 0 ? DEMO_DEVICES : DEMO_DEVICES.filter(function(d){ return d.stage === stage; });
+  var stageNames = {1:'استلام أولي',2:'لدى الفني',3:'قيد الإصلاح',4:'جاهز للتسليم',5:'مُسلَّم'};
+  var html = '<table><thead><tr><th>رقم الجهاز</th><th>الموظف</th><th>النوع</th><th>رقم الأصل</th><th>العطل</th><th>المرحلة</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody>';
+  if (!devices.length) { document.getElementById('devicesTableWrap').innerHTML = '<div class="empty-state"><i class="fas fa-laptop"></i><p>لا توجد أجهزة في هذه المرحلة</p></div>'; return; }
+  devices.forEach(function(d) {
+    var stageName = stageNames[d.stage] || '-';
+    var stageColor = d.stage===1?'badge-open':d.stage===2||d.stage===3?'badge-progress':d.stage===4?'badge-info':'badge-done';
+    html += '<tr><td><strong>'+d.id+'</strong></td><td>'+d.emp+'</td><td>'+d.type+'</td><td>'+d.asset+'</td><td>'+d.fault+'</td><td><span class="badge '+stageColor+'">'+stageName+'</span></td><td>'+d.date+'</td><td>';
+    if (d.stage === 1) html += '<button class="btn btn-xs btn-primary" onclick="openSendTech(\''+d.id+'\')"><i class="fas fa-tools"></i> إرسال للفني</button>';
+    if (d.stage === 2) html += '<button class="btn btn-xs btn-warning" onclick="openReceiveBack(\''+d.id+'\')"><i class="fas fa-check"></i> استلام بعد الإصلاح</button>';
+    if (d.stage === 4) html += '<button class="btn btn-xs btn-success" onclick="openFinalDeliver(\''+d.id+'\')"><i class="fas fa-handshake"></i> تسليم للموظف</button>';
+    if (d.stage === 5) html += '<span style="color:#10b981;font-size:12px"><i class="fas fa-check-circle"></i> مكتمل</span>';
+    html += '</td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('devicesTableWrap').innerHTML = html;
+  renderMobContent();
+}
+
+function openCheckin() { document.getElementById('modalCheckin').classList.add('open'); }
+
+function doCheckin() {
+  var emp = document.getElementById('ci_emp').value.trim();
+  var empid = document.getElementById('ci_empid').value.trim();
+  var type = document.getElementById('ci_type').value;
+  var asset = document.getElementById('ci_asset').value.trim();
+  var fault = document.getElementById('ci_fault').value.trim();
+  if (!emp || !fault) { showToast('الرجاء إدخال البيانات المطلوبة'); return; }
+  var newId = 'DV-' + String(DEMO_DEVICES.length + 1).padStart(3,'0');
+  DEMO_DEVICES.push({ id:newId, emp:emp, empid:empid, type:type, asset:asset||'-', fault:fault, stage:1, date:todayStr() });
+  ['ci_emp','ci_empid','ci_asset','ci_fault'].forEach(function(id){ document.getElementById(id).value=''; });
+  closeModal('modalCheckin');
+  loadDevices();
+  showToast('تم تسجيل استلام الجهاز ' + newId);
+}
+
+function openSendTech(id) {
+  document.getElementById('st_deviceId').value = id;
+  document.getElementById('st_date').value = todayStr();
+  document.getElementById('modalSendTech').classList.add('open');
+}
+
+function subTechRepair() {
+  var id = document.getElementById('st_deviceId').value;
+  var tech = document.getElementById('st_tech').value.trim();
+  if (!tech) { showToast('الرجاء إدخال اسم الفني'); return; }
+  var d = DEMO_DEVICES.find(function(x){ return x.id === id; });
+  if (d) { d.stage = 2; d.tech = tech; }
+  closeModal('modalSendTech');
+  loadDevices();
+  showToast('تم إرسال الجهاز للفني: ' + tech);
+}
+
+function openReceiveBack(id) {
+  document.getElementById('rb_deviceId').value = id;
+  document.getElementById('modalReceiveBack').classList.add('open');
+}
+
+function subReceiveBack() {
+  var id = document.getElementById('rb_deviceId').value;
+  var status = document.getElementById('rb_status').value;
+  var d = DEMO_DEVICES.find(function(x){ return x.id === id; });
+  if (d) { d.stage = status === 'جاهز' ? 4 : 3; }
+  closeModal('modalReceiveBack');
+  loadDevices();
+  showToast('تم تسجيل استلام الجهاز بعد الإصلاح');
+}
+
+function openFinalDeliver(id) {
+  document.getElementById('fd_deviceId').value = id;
+  document.getElementById('modalFinalDeliver').classList.add('open');
+}
+
+function subFinalDeliver() {
+  var id = document.getElementById('fd_deviceId').value;
+  var d = DEMO_DEVICES.find(function(x){ return x.id === id; });
+  if (d) { d.stage = 5; }
+  closeModal('modalFinalDeliver');
+  loadDevices();
+  showToast('تم تسليم الجهاز للموظف بنجاح');
+}
+
+// ============================================================
+// INTERNET USERS
+// ============================================================
+function loadInetUsers() {
+  var html = '<table><thead><tr><th>الرقم</th><th>الاسم</th><th>الرقم الوظيفي</th><th>القسم</th><th>IP</th><th>الحصة</th><th>المستخدم</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody>';
+  DEMO_INET.forEach(function(u) {
+    var pct = parseInt(u.used) / parseInt(u.quota) * 100 || 0;
+    var color = pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#10b981';
+    html += '<tr><td>'+u.id+'</td><td>'+u.name+'</td><td>'+u.empid+'</td><td>'+u.dept+'</td><td dir="ltr">'+u.ip+'</td><td>'+u.quota+'</td>' +
+      '<td><div class="progress-wrap" style="width:80px"><div class="progress-bar" style="width:'+Math.min(pct,100)+'%;background:'+color+'"></div></div><span style="font-size:11px;color:#64748b">'+u.used+'</span></td>' +
+      '<td><span class="badge '+(u.status==='نشط'?'badge-done':'badge-overdue')+'">'+u.status+'</span></td>' +
+      '<td><button class="btn btn-xs '+(u.status==='نشط'?'btn-danger':'btn-success')+'" onclick="toggleInetUser(\''+u.id+'\')"><i class="fas '+(u.status==='نشط'?'fa-ban':'fa-check')+'"></i></button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('inetUsersTableWrap').innerHTML = html;
+  renderMobContent();
+}
+
+function openNewInetUser() { document.getElementById('modalInetUser').classList.add('open'); }
+
+function selQuota(el, val) {
+  document.querySelectorAll('.quota-chip').forEach(function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+  document.getElementById('iu_quota').value = val;
+  APP.inetQuota = val;
+}
+
+function submitInetUser() {
+  var name = document.getElementById('iu_name').value.trim();
+  var id = document.getElementById('iu_id').value.trim();
+  if (!name || !id) { showToast('الرجاء إدخال الاسم والرقم الوظيفي'); return; }
+  DEMO_INET.push({ id:'IN-'+String(DEMO_INET.length+1).padStart(3,'0'), name:name, empid:id, dept:document.getElementById('iu_dept').value, ip:document.getElementById('iu_ip').value||'-', quota:APP.inetQuota, used:'0GB', status:'نشط' });
+  ['iu_name','iu_id','iu_dept','iu_ip'].forEach(function(x){ document.getElementById(x).value=''; });
+  closeModal('modalInetUser');
+  loadInetUsers();
+  showToast('تم إضافة مستخدم الإنترنت بنجاح');
+}
+
+function toggleInetUser(id) {
+  var u = DEMO_INET.find(function(x){ return x.id === id; });
+  if (u) { u.status = u.status === 'نشط' ? 'موقوف' : 'نشط'; loadInetUsers(); showToast('تم تغيير حالة المستخدم'); }
+}
+
+// ============================================================
+// TECH STATS
+// ============================================================
+function loadTechStats() {
+  var techs = [{name:'محمد الفني',tickets:12,done:9,avg:'2.3 ساعة'},{name:'علي الصيانة',tickets:8,done:8,avg:'1.8 ساعة'},{name:'فهد التقني',tickets:15,done:11,avg:'3.1 ساعة'}];
+  var html = '';
+  techs.forEach(function(t) {
+    var pct = Math.round(t.done / t.tickets * 100);
+    html += '<div class="tech-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><strong>'+t.name+'</strong><span class="badge badge-info">فني</span></div>' +
+      '<div style="font-size:12px;color:#64748b;margin-bottom:6px">التذاكر: '+t.tickets+' | منجز: '+t.done+' | متوسط الحل: '+t.avg+'</div>' +
+      '<div class="progress-wrap"><div class="progress-bar" style="width:'+pct+'%;background:#2563eb"></div></div>' +
+      '<div style="font-size:11px;color:#64748b;margin-top:4px">الإنجاز: '+pct+'%</div></div>';
+  });
+  document.getElementById('techStatsGrid').innerHTML = html;
+  renderMobContent();
+}
+
+function loadTechTickets() {
+  var myTickets = DEMO_TICKETS.slice(0, 3);
+  document.getElementById('techTicketWrap').innerHTML = buildTicketsTable(myTickets, true);
+  renderMobContent();
+}
+
+// ============================================================
+// USER HOME
+// ============================================================
+function loadUserHome() {
+  var myTickets = DEMO_TICKETS.filter(function(t){ return t.empid === APP.empId; });
+  var open = myTickets.filter(function(t){ return t.status==='مفتوحة'; }).length;
+  var prog = myTickets.filter(function(t){ return t.status==='قيد المعالجة'; }).length;
+  var closed = myTickets.filter(function(t){ return t.status==='مغلقة'; }).length;
+  document.getElementById('userHomeStats').innerHTML =
+    statCard('fas fa-ticket-alt', myTickets.length, 'إجمالي طلباتي', '#2563eb') +
+    statCard('fas fa-door-open', open, 'مفتوحة', '#ef4444') +
+    statCard('fas fa-spinner', prog, 'قيد المعالجة', '#f59e0b') +
+    statCard('fas fa-check-circle', closed, 'مغلقة', '#10b981');
+  document.getElementById('myTicketsTable').innerHTML = myTickets.length ?
+    buildTicketsTable(myTickets, false) :
+    '<div class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد طلبات. اضغط "طلب دعم جديد" للبدء</p></div>';
+  renderMobContent();
+}
+
+function loadMyTickets() {
+  var myTickets = DEMO_TICKETS.filter(function(t){ return t.empid === APP.empId; });
+  document.getElementById('myTicketsDeskWrap').innerHTML = myTickets.length ?
+    buildTicketsTable(myTickets, false) :
+    '<div class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد طلبات سابقة</p></div>';
+  renderMobContent();
+}
+
+// ============================================================
+// AI CHAT
+// ============================================================
+function sendAiMsg() {
+  if (APP.aiMsgsLeft <= 0) { showToast('لقد استنفذت حد الرسائل (7 رسائل)'); return; }
+  var input = document.getElementById('aiInput');
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  APP.aiMsgsLeft--;
+  document.getElementById('aiLeft').textContent = APP.aiMsgsLeft;
+
+  // Add user message
+  addAiMsg(msg, 'user');
+
+  // Find response
+  setTimeout(function() {
+    var reply = AI_DEFAULT;
+    var msgLower = msg.toLowerCase();
+    for (var key in AI_KB) {
+      if (msgLower.indexOf(key) !== -1 || msg.indexOf(key) !== -1) {
+        reply = AI_KB[key];
+        break;
+      }
+    }
+    if (APP.aiMsgsLeft === 0) reply += '\n\n⚠️ لقد وصلت للحد الأقصى من الرسائل. لمزيد من المساعدة، افتح تذكرة دعم رسمية.';
+    addAiMsg(reply, 'bot');
+  }, 600);
+}
+
+function addAiMsg(text, type) {
+  var container = document.getElementById('aiMessages');
+  var div = document.createElement('div');
+  div.className = 'ai-msg ' + type;
+  var icon = type === 'bot' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
+  div.innerHTML = '<div class="ai-avatar">'+icon+'</div><div class="ai-bubble">'+text.replace(/\n/g,'<br>')+'</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ============================================================
+// MOBILE CONTENT MIRROR
+// ============================================================
+function renderMobContent() {
+  var desktopContent = document.getElementById('tab-' + APP.currentTab);
+  if (desktopContent) {
+    var mobBody = document.getElementById('mobBody');
+    mobBody.innerHTML = desktopContent.innerHTML;
+  }
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(function(){
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(100px)';
+  }, 3000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ============================================================
+// GOOGLE APPS SCRIPT INTEGRATION (stub)
+// ============================================================
+function gasRun(fn, params, onSuccess, onError) {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    var runner = google.script.run
+      .withSuccessHandler(onSuccess || function(){})
+      .withFailureHandler(onError || function(e){ showToast('خطأ: ' + e.message); });
+    runner[fn](params);
+  } else {
+    // Demo mode - simulate success
+    if (onSuccess) setTimeout(function(){ onSuccess({success:true}); }, 300);
+  }
+}
+
+// Init: show login
+document.getElementById('loginPage').style.display = 'flex';
+document.getElementById('appPage').style.display = 'none';
+</script>
+</body>
+</html>
