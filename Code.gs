@@ -595,19 +595,22 @@ function handleTicketsList(data,user){
   var tickets=[],now48=new Date(Date.now()-48*3600*1000);
   for(var i=allData.length-1;i>=0;i--){
     var r=allData[i];
-    function g(ci){return r[ci]!==undefined?String(r[ci]||'').trim():'';}
-    var tid=g(COL_TICKETS.id);if(!tid||tid.indexOf('TKT')<0)continue;
-    var reqId=g(COL_TICKETS.requesterId);
+    var tid=r[COL_TICKETS.id]!==undefined?String(r[COL_TICKETS.id]||'').trim():'';
+    if(!tid||tid.indexOf('TKT')<0)continue;
+    var reqId=String(r[COL_TICKETS.requesterId]||'').trim();
     if(!isIT&&!isMgr){if(reqId!==user.empId&&reqId!==user.id&&String(reqId)!==String(user.empId))continue;}
-    var status=g(COL_TICKETS.status),priority=g(COL_TICKETS.priority),created=g(COL_TICKETS.createdAt);
+    var status=String(r[COL_TICKETS.status]||'').trim(),priority=String(r[COL_TICKETS.priority]||'').trim(),created=String(r[COL_TICKETS.createdAt]||'').trim();
     if(statusF!=='all'&&status!==statusF)continue;
     if(priorityF!=='all'&&priority!==priorityF)continue;
     var isOverdue=false;
     if(status!=='تم حل البلاغ'&&created){try{var pp=created.split(/[\/\s:]/),d2=new Date(pp[2],pp[1]-1,pp[0]);if(d2<now48)isOverdue=true;}catch(e2){}}
     if(overdueOnly&&!isOverdue)continue;
-    var desc=g(COL_TICKETS.description);
-    if(q&&!(tid+g(COL_TICKETS.problemType)+desc+g(COL_TICKETS.requesterName)+g(COL_TICKETS.requesterDept)).toLowerCase().includes(q))continue;
-    tickets.push({id:tid,problemType:g(COL_TICKETS.problemType),priority:priority||'متوسطة',deviceId:g(COL_TICKETS.deviceId),desc:desc,status:status||'جديدة',requesterId:reqId,requesterName:g(COL_TICKETS.requesterName),requesterDept:g(COL_TICKETS.requesterDept),assignedId:g(COL_TICKETS.assignedId),assignedName:g(COL_TICKETS.assignedName),solution:'',notes:'',createdAt:created,updatedAt:created,solvedAt:status==='تم حل البلاغ'?created:'',history:[],isOverdue:isOverdue,helpRequested:false});
+    var desc=String(r[COL_TICKETS.description]||'').trim();
+    var probType=String(r[COL_TICKETS.problemType]||'').trim();
+    var reqName=String(r[COL_TICKETS.requesterName]||'').trim();
+    var reqDept=String(r[COL_TICKETS.requesterDept]||'').trim();
+    if(q&&!(tid+probType+desc+reqName+reqDept).toLowerCase().includes(q))continue;
+    tickets.push({id:tid,problemType:probType,priority:priority||'متوسطة',deviceId:String(r[COL_TICKETS.deviceId]||'').trim(),desc:desc,status:status||'جديدة',requesterId:reqId,requesterName:reqName,requesterDept:reqDept,assignedId:String(r[COL_TICKETS.assignedId]||'').trim(),assignedName:String(r[COL_TICKETS.assignedName]||'').trim(),solution:'',notes:'',createdAt:created,updatedAt:created,solvedAt:status==='تم حل البلاغ'?created:'',history:[],isOverdue:isOverdue,helpRequested:false});
     if(limitN>0&&tickets.length>=limitN)break;
   }
   return ok({tickets:tickets});
@@ -793,15 +796,41 @@ function updateDeviceField(devId,updates){var sh=ensureDeviceSheet(),d=sh.getDat
 // ══════ USERS ══════
 function handleUsersList(user){
   if(ROLES_ADMIN.indexOf(user.role)<0&&ROLES_IT.indexOf(user.role)<0)return fail('غير مصرح');
-  var sh=getSheet(SH_USERS),allData=sh.getDataRange().getValues(),rh=allData[0];
-  function ci(k){return findColIndex(rh,k);}
+  var sh=getSheet(SH_USERS),allData=sh.getDataRange().getValues();
+  if(allData.length<2)return ok({users:[]});
+  var rh=allData[0];
+  // نحسب الـ indexes مرة واحدة خارج الـ loop
+  var idIdx    = findColIndex(rh,'id');
+  var empIdx   = findColIndex(rh,'empId');
+  var fnIdx    = findColIndex(rh,'firstName');
+  var lnIdx    = findColIndex(rh,'lastName');
+  var deptIdx  = findColIndex(rh,'dept');
+  var roleIdx  = findColIndex(rh,'role');
+  var phoneIdx = findColIndex(rh,'phone');
+  var acIdx    = findColIndex(rh,'active');
+  var llIdx    = findColIndex(rh,'lastLogin');
+  var caIdx    = findColIndex(rh,'createdAt');
+
+  function getCell(row, idx){ return idx>=0?String(row[idx]||'').trim():''; }
+
   var users=[];
   for(var i=1;i<allData.length;i++){
     var r=allData[i];
-    function g(k){var c=ci(k);return c>=0?String(r[c]||'').trim():'';}
-    var empId=g('empId');if(!empId)continue;
-    var acIdx=ci('active'),av=acIdx>=0?r[acIdx]:true;
-    users.push({id:g('id')||('USR-'+empId),empId:empId,firstName:g('firstName'),lastName:g('lastName'),dept:g('dept'),role:g('role')||'user',phone:g('phone'),active:av===true||String(av).toUpperCase()==='TRUE',lastLogin:g('lastLogin'),createdAt:g('createdAt')});
+    var empId=getCell(r,empIdx);
+    if(!empId)continue;
+    var av=acIdx>=0?r[acIdx]:true;
+    users.push({
+      id:       getCell(r,idIdx)||('USR-'+empId),
+      empId:    empId,
+      firstName:getCell(r,fnIdx),
+      lastName: getCell(r,lnIdx),
+      dept:     getCell(r,deptIdx),
+      role:     getCell(r,roleIdx)||'user',
+      phone:    getCell(r,phoneIdx),
+      active:   av===true||String(av).toUpperCase()==='TRUE',
+      lastLogin:getCell(r,llIdx),
+      createdAt:getCell(r,caIdx)
+    });
   }
   return ok({users:users});
 }
