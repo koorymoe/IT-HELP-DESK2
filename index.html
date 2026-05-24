@@ -371,7 +371,38 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 .dev-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;border-right:4px solid var(--in);box-shadow:var(--sh)}
 .steps-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}.step-row{display:flex;gap:6px;align-items:center}.step-row input{flex:1}
 .step-row button{width:28px;height:28px;border-radius:6px;background:var(--re-l);color:var(--re);border:1px solid #fecaca;flex-shrink:0;font-size:12px}
-@media(max-width:600px){.fg{grid-template-columns:1fr}.fg-f{grid-column:1}.cr{grid-template-columns:1fr}.content{padding:14px}.sg{grid-template-columns:repeat(2,1fr)}.ig{grid-template-columns:1fr}}
+@media(max-width:600px){
+  .fg{grid-template-columns:1fr}
+  .fg-f{grid-column:1}
+  .cr{grid-template-columns:1fr}
+  .content{padding:10px}
+  .sg{grid-template-columns:repeat(2,1fr)}
+  .ig{grid-template-columns:1fr}
+  .card{padding:14px 12px;border-radius:12px}
+  .card-h{font-size:.95rem;padding:0 0 12px}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:500px;font-size:.8rem}
+  th,td{padding:8px 6px}
+  .btn,.btn-sm{font-size:.8rem;padding:7px 12px}
+  .modal{max-width:100vw!important;margin:8px;border-radius:14px}
+  .guide-card{padding:12px}
+  .dev-tabs,.dev-tab-btn{font-size:.78rem}
+  .dev-tab-btn{padding:5px 10px}
+}
+@media(max-width:480px){
+  .content{padding:8px}
+  .card{padding:12px 10px}
+  .sg{grid-template-columns:1fr 1fr}
+  table{font-size:.75rem}
+  .modal{margin:4px;border-radius:12px}
+  h2,h3{font-size:1rem}
+}
+@media(min-width:601px) and (max-width:900px){
+  .content{padding:16px}
+  .card{padding:18px 16px}
+  .sg{grid-template-columns:repeat(2,1fr)}
+  table{font-size:.85rem}
+}
 </style>
 </head>
 <body>
@@ -1480,7 +1511,7 @@ async function loadMobManual(devName){
   try{
     const r=await api('manual.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد محتوى</p>';return;}
-    const items=(r.entries||r.items||[]).filter(i=>!devName||i.deviceType===devName);
+    const items=(r.entries||r.items||[]).filter(i=>!devName||i.device===devName);
     if(!items.length){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد محتوى لهذا الجهاز</p>';return;}
     el.innerHTML=items.map(i=>`<div class="guide-card" onclick="openManualModal('${esc(i.id)}')"><i class="${esc(i.icon||'fas fa-book')}"></i><span>${esc(i.title)}</span></div>`).join('');
   }catch(e){el.innerHTML='<p style="color:red">خطأ في التحميل</p>';}
@@ -1506,15 +1537,34 @@ async function loadGuidelinesTab(){
 }
 function renderGuideList(items){
   const el=document.getElementById('guideList');if(!el)return;
+  const isAdmin=S.user&&['admin','it_manager'].includes(S.user.role);
+  const addBtn=document.getElementById('addGuideBtn');if(addBtn)addBtn.style.display=isAdmin?'':'none';
   if(!items.length){el.innerHTML='<p style="opacity:.5;text-align:center;padding:32px">لا يوجد إرشادات بعد</p>';return;}
-  el.innerHTML=items.map(i=>`<div class="guide-card">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <i class="${esc(i.icon||'fas fa-info-circle')}" style="font-size:1.4rem;color:var(--in)"></i>
-      <strong>${esc(i.title)}</strong>
-      ${['admin','it_manager'].includes(S.user?.role)?`<button class="btn-sm btn-danger" style="margin-right:auto" onclick="deleteGuide('${esc(i.id)}')"><i class="fas fa-trash"></i></button>`:''}
+  el.innerHTML=items.map(i=>`
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start">
+    <div style="width:44px;height:44px;border-radius:12px;background:var(--in-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem">
+      <i class="${esc(i.icon||'fas fa-shield-alt')}" style="color:var(--in)"></i>
     </div>
-    <p style="opacity:.75;font-size:.9rem;margin:0">${esc(i.content)}</p>
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <strong style="font-size:1rem">${esc(i.title)}</strong>
+        <span style="font-size:.72rem;background:var(--am-l);color:var(--am);padding:2px 8px;border-radius:20px;font-weight:700">${esc(i.priority||'مهم')}</span>
+      </div>
+      <p style="margin:0;opacity:.75;font-size:.88rem;line-height:1.7">${esc(i.content)}</p>
+    </div>
+    ${isAdmin?`<div style="display:flex;gap:6px;flex-shrink:0">
+      <button class="btn-sm" onclick="editGuide('${esc(i.id)}','${esc(i.title)}','${esc(i.content)}','${esc(i.icon||'')}','${esc(i.priority||'')}')" title="تعديل"><i class="fas fa-edit"></i></button>
+      <button class="btn-sm btn-danger" onclick="deleteGuide('${esc(i.id)}')" title="حذف"><i class="fas fa-trash"></i></button>
+    </div>`:''}
   </div>`).join('');
+}
+function editGuide(id,title,content,icon,priority){
+  document.getElementById('gm-id').value=id;
+  document.getElementById('gm-title').value=title;
+  document.getElementById('gm-content').value=content;
+  if(document.getElementById('gm-icon'))document.getElementById('gm-icon').value=icon;
+  document.getElementById('guideModalTitle').textContent='تعديل توجيه';
+  openM('ovAddGuide');
 }
 function openGuideModal(){
   document.getElementById('guide-ic-sel').value='fas fa-shield-alt';
@@ -1527,12 +1577,15 @@ function pickGuideIcon(ic){
   document.querySelectorAll('.ic-opt').forEach(b=>b.classList.toggle('selected',b.dataset.ic===ic));
 }
 async function subGuide(e){
-  e.preventDefault();
-  const title=document.getElementById('guide-title').value.trim(),content=document.getElementById('guide-content').value.trim(),icon=document.getElementById('guide-ic-sel').value;
+  if(e&&e.preventDefault)e.preventDefault();
+  const id=document.getElementById('gm-id').value;
+  const title=document.getElementById('gm-title').value.trim(),content=document.getElementById('gm-content').value.trim();
+  const icon=(document.getElementById('gm-icon')||{value:'⚠️'}).value||'⚠️';
   if(!title||!content){toast('يرجى ملء جميع الحقول',true);return;}
   try{
-    const r=await api('guidelines.add',{title,content,icon});
-    if(r&&r.success){toast('✅ تمت الإضافة');closeM('ovAddGuide');loadGuidelinesTab();}
+    const action=id?'guidelines.update':'guidelines.add';
+    const r=await api(action,{id,title,content,icon});
+    if(r&&r.success){toast('✅ '+(id?'تم التعديل':'تمت الإضافة'));document.getElementById('gm-id').value='';document.getElementById('guideModalTitle').textContent='إضافة توجيه';closeM('ovAddGuide');loadGuidelinesTab();}
     else toast(r?r.message:'خطأ',true);
   }catch(err){toast('خطأ',true);}
 }
@@ -1556,10 +1609,10 @@ async function loadManualTab(){
     renderManualList(r.entries||r.items||[]);
   }catch(e){el.innerHTML='<p style="color:red">خطأ</p>';}
 }
-function switchDeskDev(name,btn){
-  document.querySelectorAll('.desk-dev-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  loadManualForDev(name);
+function switchDeskDev(btn,name){
+  document.querySelectorAll('.dev-tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  loadManualForDev(name||'');
 }
 async function loadManualForDev(devName){
   const el=document.getElementById('manualList');if(!el)return;
@@ -1567,19 +1620,32 @@ async function loadManualForDev(devName){
   try{
     const r=await api('manual.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد</p>';return;}
-    renderManualList((r.entries||r.items||[]).filter(i=>!devName||i.deviceType===devName));
+    renderManualList((r.entries||r.items||[]).filter(i=>!devName||i.device===devName));
   }catch(e){el.innerHTML='<p style="color:red">خطأ</p>';}
 }
 function renderManualList(items){
   const el=document.getElementById('manualList');if(!el)return;
+  const isAdmin=S.user&&['admin','it_manager'].includes(S.user.role);
   if(!items.length){el.innerHTML='<p style="opacity:.5;text-align:center;padding:32px">لا يوجد بعد</p>';return;}
-  el.innerHTML=items.map(i=>`<div class="guide-card">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-      <i class="${esc(i.icon||'fas fa-book')}" style="font-size:1.4rem;color:var(--pu)"></i>
-      <strong>${esc(i.title)}</strong>
-      ${['admin','it_manager'].includes(S.user?.role)?`<button class="btn-sm btn-danger" style="margin-right:auto" onclick="deleteManual('${esc(i.id)}')"><i class="fas fa-trash"></i></button>`:''}
+  const devLabel={'desktop':'🖥️ الحاسبة','laptop':'💻 لابتوب','printer':'🖨️ طابعة','network':'🌐 شبكة','phone':'📱 هاتف','other':'🔧 أخرى'};
+  el.innerHTML=items.map(i=>`
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:12px">
+    <div style="display:flex;align-items:flex-start;gap:14px">
+      <div style="width:44px;height:44px;border-radius:12px;background:var(--pu-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem">
+        <i class="${esc(i.icon||'fas fa-book')}" style="color:var(--pu)"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+          <strong style="font-size:1rem">${esc(i.title)}</strong>
+          ${i.device?`<span style="font-size:.72rem;background:var(--pu-l);color:var(--pu);padding:2px 8px;border-radius:20px;font-weight:700">${devLabel[i.device]||esc(i.device)}</span>`:''}
+        </div>
+        ${i.desc?`<p style="margin:0 0 10px;opacity:.65;font-size:.85rem">${esc(i.desc)}</p>`:''}
+        ${i.steps&&i.steps.length?`<ol style="margin:0;padding-right:20px;padding-left:0">${i.steps.map(s=>`<li style="opacity:.8;font-size:.88rem;margin-bottom:6px;line-height:1.6">${esc(s)}</li>`).join('')}</ol>`:''}
+      </div>
+      ${isAdmin?`<div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="btn-sm btn-danger" onclick="deleteManual('${esc(i.id)}')" title="حذف"><i class="fas fa-trash"></i></button>
+      </div>`:''}
     </div>
-    ${i.steps&&i.steps.length?`<ol style="margin:0;padding-right:20px">${i.steps.map(s=>`<li style="opacity:.75;font-size:.9rem;margin-bottom:4px">${esc(s)}</li>`).join('')}</ol>`:''}
   </div>`).join('');
 }
 function tDE(id){document.querySelectorAll('.desk-expand').forEach(e=>{if(e.id===id)e.classList.toggle('open');else e.classList.remove('open');});}

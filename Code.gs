@@ -949,7 +949,7 @@ function handleDeptsDelete(data,user){
 }
 
 // ══════ AI CHAT ══════
-var AI_MODEL='claude-sonnet-4-20250514';
+var AI_MODEL='claude-3-5-haiku-20241022';
 function getITKnowledge(){try{var sh=getSheet(SH_TICKETS),allData=sh.getDataRange().getValues(),byType={};allData.forEach(function(r){var tid=String(r[COL_TICKETS.id]||'').trim();if(!tid||tid.indexOf('TKT')<0)return;if(String(r[COL_TICKETS.status]||'')!=='تم حل البلاغ')return;var desc=String(r[COL_TICKETS.description]||'').trim(),prob=String(r[COL_TICKETS.problemType]||'').trim(),dev=String(r[COL_TICKETS.deviceId]||'').trim();if(!prob||!desc)return;var key=prob+(dev?'|'+dev:'');if(!byType[key])byType[key]={count:0,desc:[],type:prob,device:dev};byType[key].count++;if(byType[key].desc.length<2)byType[key].desc.push(desc.slice(0,100));});var lines=Object.values(byType).sort(function(a,b){return b.count-a.count;}).slice(0,10).map(function(g){return '['+g.type+(g.device?' | '+g.device:'')+'] حدث '+g.count+' مرة';});return lines.length?lines.join('\n'):'';}catch(e){return '';}}
 function handleAIChat(data,user){
   var messages=data.messages||[],systemOverride=data.systemOverride||'';
