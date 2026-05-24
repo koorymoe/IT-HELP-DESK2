@@ -464,6 +464,27 @@ function route(action,data,user){
     case 'depts.list':              return handleDeptsList();
     case 'depts.add':               return handleDeptsAdd(data,user);
     case 'depts.delete':            return handleDeptsDelete(data,user);
+    // aliases للفرونت
+    case 'departments.list':        return handleDeptsList();
+    case 'departments.add':         return handleDeptsAdd(data,user);
+    case 'departments.delete':      return handleDeptsDelete(data,user);
+    case 'internet.users.list':     return handleInternetUsersList(user);
+    case 'internet.users.set':      return handleInternetUsersSet(data,user);
+    case 'internet.users.update':   return handleInternetUsersSet(data,user);
+    case 'internet.users.search':   return handleInternetUsersSearch(data,user);
+    case 'tickets.myList':          return handleTicketsList({requesterId:user.empId},user);
+    case 'knowledge.list':          return ok({items:[]});
+    case 'notifications.list':      return handleNotificationsList(user);
+    case 'notifications.markAllRead': return ok({message:'تم'});
+    case 'notifications.broadcastClaim':  return handleBroadcastClaim(data,user);
+    case 'notifications.broadcastAssign': return handleBroadcastAssign(data,user);
+    case 'users.create':            return handleUsersAdd(data,user);
+    case 'users.setActive':         return handleUsersToggle(data,user);
+    case 'users.resetPassword':     return handleUsersResetPw(data,user);
+    case 'devices.repairDone':      return handleDeviceTechRepair(data,user);
+    case 'devices.receiveBack':     return handleDeviceReceiveFromTech(data,user);
+    case 'devices.deliver':         return handleDeviceFinalDeliver(data,user);
+    case 'manual.delete':           return handleManualDelete(data,user);
     case 'notifications.check':     return handleNotificationsCheck(data,user);
     case 'ai.chat':                 return handleAIChat(data,user);
     case 'stats.tech':              return handleTechStats(user);
@@ -822,9 +843,39 @@ function handleManualUpdate(data,user){if(['it','it_manager','admin'].indexOf(us
 function handleManualDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=SS.getSheetByName(SH_MANUAL);if(!sh)return fail('غير موجود');var d=sh.getDataRange().getValues(),hi=d[0];function fi(keys){for(var k=0;k<keys.length;k++){var i=hi.indexOf(keys[k]);if(i>=0)return i;}return -1;}var idCol=fi(['id','رقم']);for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.deleteRow(i+1);return ok({message:'تم الحذف'});}}return fail('غير موجود');}
 
 // ══════ DEPTS ══════
-function handleDeptsList(){var sh=getSheet(SH_DEPTS),allData=sh.getDataRange().getValues();if(!allData.length)return ok({depts:[]});var headers=allData[0],nameCol=-1;for(var h=0;h<headers.length;h++){var hs=String(headers[h]).trim();if(hs.includes('قسم')||hs.includes('name')||hs==='اسم'){nameCol=h;break;}}if(nameCol<0)nameCol=0;var depts=[];for(var i=1;i<allData.length;i++){var val=String(allData[i][nameCol]||'').trim();if(val)depts.push(val);}return ok({depts:depts});}
-function handleDeptsAdd(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');if(!data.name)return fail('اسم القسم مطلوب');var sh=getSheet(SH_DEPTS),allData=sh.getDataRange().getValues(),headers=allData[0],nameCol=0;for(var h=0;h<headers.length;h++){if(String(headers[h]).includes('قسم')||String(headers[h]).toLowerCase().includes('name')){nameCol=h;break;}}for(var i=1;i<allData.length;i++){if(String(allData[i][nameCol]).trim()===data.name.trim())return fail('القسم موجود مسبقاً');}var row=new Array(headers.length).fill('');row[nameCol]=data.name.trim();for(var h2=0;h2<headers.length;h2++){if(String(headers[h2]).includes('تاريخ')||String(headers[h2]).toLowerCase().includes('date')){row[h2]=now();break;}}sh.appendRow(row);return ok({message:'تمت إضافة القسم'});}
-function handleDeptsDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_DEPTS),allData=sh.getDataRange().getValues(),headers=allData[0],nameCol=0;for(var h=0;h<headers.length;h++){if(String(headers[h]).includes('قسم')||String(headers[h]).toLowerCase().includes('name')){nameCol=h;break;}}for(var i=1;i<allData.length;i++){if(String(allData[i][nameCol]).trim()===data.name.trim()){sh.deleteRow(i+1);return ok({message:'تم حذف القسم'});}}return fail('القسم غير موجود');}
+function handleDeptsList(){
+  var sh=getSheet(SH_DEPTS),allData=sh.getDataRange().getValues();
+  if(!allData.length)return ok({depts:[],departments:[]});
+  var headers=allData[0],nameCol=-1;
+  // يبحث عن أي عمود فيه كلمة "قسم" أو "اسم" أو "name"
+  for(var h=0;h<headers.length;h++){
+    var hs=String(headers[h]).trim();
+    if(hs.includes('قسم')||hs.includes('اسم')||hs.toLowerCase().includes('name')){nameCol=h;break;}
+  }
+  if(nameCol<0)nameCol=0;
+  var depts=[];
+  for(var i=1;i<allData.length;i++){var val=String(allData[i][nameCol]||'').trim();if(val)depts.push(val);}
+  return ok({depts:depts,departments:depts});
+}
+function getDeptNameCol(headers){for(var h=0;h<headers.length;h++){var hs=String(headers[h]).trim();if(hs.includes('قسم')||hs.includes('اسم')||hs.toLowerCase().includes('name'))return h;}return 0;}
+function handleDeptsAdd(data,user){
+  if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');
+  if(!data.name)return fail('اسم القسم مطلوب');
+  var sh=getSheet(SH_DEPTS),allData=sh.getDataRange().getValues(),headers=allData[0];
+  var nameCol=getDeptNameCol(headers);
+  for(var i=1;i<allData.length;i++){if(String(allData[i][nameCol]).trim()===data.name.trim())return fail('القسم موجود مسبقاً');}
+  var row=new Array(headers.length).fill('');row[nameCol]=data.name.trim();
+  for(var h2=0;h2<headers.length;h2++){if(String(headers[h2]).includes('تاريخ')||String(headers[h2]).toLowerCase().includes('date')){row[h2]=now();break;}}
+  sh.appendRow(row);return ok({message:'تمت إضافة القسم'});
+}
+function handleDeptsDelete(data,user){
+  if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');
+  var sh=getSheet(SH_DEPTS),allData=sh.getDataRange().getValues(),headers=allData[0];
+  var nameCol=getDeptNameCol(headers);
+  var delName=data.name||data.id||'';
+  for(var i=1;i<allData.length;i++){if(String(allData[i][nameCol]).trim()===delName.trim()){sh.deleteRow(i+1);return ok({message:'تم حذف القسم'});}}
+  return fail('القسم غير موجود');
+}
 
 // ══════ AI CHAT ══════
 var AI_MODEL='claude-sonnet-4-20250514';
@@ -839,6 +890,65 @@ function handleAIChat(data,user){
 }
 function buildAISystemPrompt(user,internetUser,knowledge){var iuSection=internetUser?'يوزر الإنترنت للموظف الحالي: '+internetUser+' — إذا سأل عن يوزره أعطه هذا مباشرة.':'الموظف الحالي ليس عنده يوزر إنترنت مسجل — إذا سأل عنه قله يتواصل مع فريق IT.';var knowledgeSection=knowledge?'## أكثر المشاكل تكراراً وحلولها من سجل IT:\n'+knowledge:'## لا توجد حلول مسجلة بعد — استخدم خبرتك التقنية العامة.';return 'أنت مساعد تقني ذكي لشركة عراقية. اسم الموظف: '+user.firstName+' '+user.lastName+' | القسم: '+user.dept+'\n\n'+iuSection+'\n\n'+knowledgeSection+'\n\n## قواعد صارمة:\n- لا تذكر أي IP أو كلمة مرور أو معلومات شبكية داخلية\n- أجب باللهجة العراقية البسيطة\n- كل رد: تشخيص مختصر + خطوة عملية واحدة\n- بعد 5 خطوات فاشلة: اقترح بلاغ بكلمة [TICKET]';}
 function getAIKey(){var key=PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');if(!key)throw new Error('مفتاح Anthropic API غير موجود — أضفه في Script Properties');return key;}
+
+// ══════ NOTIFICATIONS LIST (للفرونت) ══════
+function handleNotificationsList(user) {
+  if(ROLES_IT.indexOf(user.role)<0 && ROLES_MGR.indexOf(user.role)<0) return fail('غير مصرح');
+  try {
+    var sh=getSheet(SH_TICKETS), allData=sh.getDataRange().getValues();
+    var notifs=[];
+    for(var i=allData.length-1;i>=1;i--){
+      var r=allData[i];
+      var tid=String(r[COL_TICKETS.id]||'').trim();
+      if(!tid||tid.indexOf('TKT')<0) continue;
+      var status=String(r[COL_TICKETS.status]||'').trim();
+      if(status==='تم حل البلاغ') continue;
+      notifs.push({
+        id: tid,
+        subject: String(r[COL_TICKETS.problemType]||''),
+        problem: String(r[COL_TICKETS.problemType]||''),
+        userName: String(r[COL_TICKETS.requesterName]||''),
+        department: String(r[COL_TICKETS.requesterDept]||''),
+        priority: String(r[COL_TICKETS.priority]||'متوسطة'),
+        status: status,
+        assignedName: String(r[COL_TICKETS.assignedName]||''),
+        claimedBy: String(r[COL_TICKETS.assignedId]||''),
+        claimerName: String(r[COL_TICKETS.assignedName]||''),
+        read: !!(r[COL_TICKETS.assignedName])
+      });
+      if(notifs.length>=20) break;
+    }
+    return ok({notifications:notifs});
+  } catch(e) { return ok({notifications:[]}); }
+}
+
+function handleBroadcastClaim(data, user) {
+  try {
+    var tSh=getSheet(SH_TICKETS), tAll=tSh.getDataRange().getValues();
+    for(var k=0;k<tAll.length;k++){
+      if(String(tAll[k][COL_TICKETS.id]).trim()===data.ticketId){
+        notifyTeamAboutClaim(data.ticketId, user, tAll[k]);
+        break;
+      }
+    }
+    return ok({message:'تم الإرسال'});
+  } catch(e) { return ok({message:'تم'}); }
+}
+
+function handleBroadcastAssign(data, user) {
+  try {
+    var tSh=getSheet(SH_TICKETS), tAll=tSh.getDataRange().getValues();
+    for(var k=0;k<tAll.length;k++){
+      if(String(tAll[k][COL_TICKETS.id]).trim()===data.ticketId){
+        var assignedName=String(tAll[k][COL_TICKETS.assignedName]||'');
+        var assigneeData=assignedName?{firstName:assignedName,lastName:'',empId:String(tAll[k][COL_TICKETS.assignedId]||''),email:''}:null;
+        if(assigneeData) notifyTeamAboutAssign(data.ticketId, user, assigneeData, tAll[k]);
+        break;
+      }
+    }
+    return ok({message:'تم الإرسال'});
+  } catch(e) { return ok({message:'تم'}); }
+}
 
 // ══════ TECH STATS ══════
 function handleTechStats(user){
