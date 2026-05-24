@@ -1249,24 +1249,26 @@ async function loadReports(){const c=gc('dashboard');const src=c||(await api('st
 /* ── USERS ── */
 async function fetchUsers(){try{const r=await api('users.list');if(r&&r.success){S.users=r.users;return r.users;}return[];}catch(e){return[];}}
 async function loadUsers(){
-  const u=document.getElementById('users-tb');if(!u)return;
+  const u=document.getElementById('uTbody');if(!u)return;
   u.innerHTML=skel(4,'كلمات سر');
   const users=await fetchUsers();
   renderUsers(users);
-  document.getElementById('usr-role-f').onchange=()=>filterUsers();
-  document.getElementById('usr-srch').oninput=()=>filterUsers();
+  const rf=document.getElementById('usr-role-f');if(rf)rf.onchange=()=>filterUsers();
+  const srch=document.getElementById('uQ');if(srch)srch.oninput=()=>filterUsers();
 }
 function filterUsers(){
-  const rf=document.getElementById('usr-role-f').value;
-  const sf=document.getElementById('usr-srch').value.trim().toLowerCase();
+  const rfEl=document.getElementById('usr-role-f');
+  const rf=rfEl?rfEl.value:'';
+  const sfEl=document.getElementById('uQ');
+  const sf=sfEl?sfEl.value.trim().toLowerCase():'';
   renderUsers(S.users.filter(u=>{
     if(rf&&u.role!==rf)return false;
-    if(sf&&!(u.firstName+' '+u.lastName+u.email).toLowerCase().includes(sf))return false;
+    if(sf&&!(u.firstName+' '+u.lastName+(u.email||'')).toLowerCase().includes(sf))return false;
     return true;
   }));
 }
 function renderUsers(users){
-  const u=document.getElementById('users-tb');if(!u)return;
+  const u=document.getElementById('uTbody');if(!u)return;
   if(!users.length){u.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;opacity:.5">لا يوجد مستخدمون</td></tr>';return;}
   u.innerHTML=users.map(u=>`
   <tr>
@@ -1281,24 +1283,31 @@ function renderUsers(users){
     </td>
   </tr>`).join('');
 }
-function onRoleChange(){
-  const r=document.getElementById('nu-role').value;
-  const deptRow=document.getElementById('nu-dept-row');
-  deptRow.style.display=r==='user'?'':'none';
+function onRoleChange(val){
+  const r=val||document.getElementById('nu-ro').value;
+  const emailRow=document.getElementById('email-row');
+  if(emailRow)emailRow.style.display=(r==='user')?'none':'';
 }
 async function subUser(e){
-  e.preventDefault();
-  const fn=document.getElementById('nu-fn').value.trim(),ln=document.getElementById('nu-ln').value.trim(),em=document.getElementById('nu-em').value.trim(),pw=document.getElementById('nu-pw').value,rl=document.getElementById('nu-role').value,dp=document.getElementById('nu-dept').value.trim();
-  if(!fn||!ln||!em||!pw){toast('يرجى ملء جميع الحقول المطلوبة',true);return;}
+  if(e&&e.preventDefault)e.preventDefault();
+  const fn=(document.getElementById('nu-f')||{value:''}).value.trim();
+  const ln=(document.getElementById('nu-l')||{value:''}).value.trim();
+  const empId=(document.getElementById('nu-id')||{value:''}).value.trim();
+  const ph=(document.getElementById('nu-ph')||{value:''}).value.trim();
+  const em=(document.getElementById('nu-em')||{value:''}).value.trim();
+  const pw=(document.getElementById('nu-pw')||{value:''}).value;
+  const rl=(document.getElementById('nu-ro')||{value:'user'}).value;
+  const dp=(document.getElementById('nu-dp')||{value:''}).value.trim();
+  if(!fn||!ln||!empId||!pw){toast('يرجى ملء جميع الحقول المطلوبة',true);return;}
   try{
-    const r=await api('users.create',{firstName:fn,lastName:ln,email:em,password:pw,role:rl,department:dp});
-    if(r&&r.success){toast('✅ تم إنشاء الحساب');e.target.reset();loadUsers();}
+    const r=await api('users.create',{firstName:fn,lastName:ln,empId:empId,phone:ph,email:em,password:pw,role:rl,department:dp});
+    if(r&&r.success){toast('✅ تم إنشاء الحساب');loadUsers();}
     else toast(r?r.message:'خطأ',true);
   }catch(err){toast('خطأ',true);}
 }
 function openPwModal(uid,name){
   S.pwUid=uid;
-  document.getElementById('pw-user-name').textContent=name;
+  document.getElementById('pwModalName').textContent=name;
   document.getElementById('pw-new').value='';
   openM('pwModal');
 }
@@ -1606,20 +1615,26 @@ async function deleteManual(id){
 
 /* ── DEPARTMENTS ── */
 async function loadDepts(){
-  const el=document.getElementById('dept-list');if(!el)return;
-  el.innerHTML=skel(2,'أقسام');
+  const el=document.getElementById('deptList');
+  if(el)el.innerHTML=skel(2,'أقسام');
   try{
     const r=await api('departments.list');
-    if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد أقسام</p>';return;}
-    const depts=r.departments||[];
-    el.innerHTML=depts.length?depts.map(d=>`<div class="guide-card" style="display:flex;align-items:center;justify-content:space-between">
-      <span><i class="fas fa-building" style="margin-left:8px;color:var(--in)"></i>${esc(d.name)}</span>
-      ${['admin','it_manager'].includes(S.user?.role)?`<button class="btn-sm btn-danger" onclick="deleteDept('${esc(d.id)}')"><i class="fas fa-trash"></i></button>`:''}
-    </div>`).join(''):'<p style="opacity:.5;text-align:center;padding:32px">لا يوجد أقسام بعد</p>';
-  }catch(e){el.innerHTML='<p style="color:red">خطأ</p>';}
+    const depts=(r&&r.success)?r.departments||[]:[];
+    S.depts=depts;
+    if(el){
+      el.innerHTML=depts.length?depts.map(d=>`<div class="guide-card" style="display:flex;align-items:center;justify-content:space-between">
+        <span><i class="fas fa-building" style="margin-left:8px;color:var(--in)"></i>${esc(d.name)}</span>
+        ${['admin','it_manager'].includes(S.user?.role)?`<button class="btn-sm btn-danger" onclick="deleteDept('${esc(d.id)}')"><i class="fas fa-trash"></i></button>`:''}
+      </div>`).join(''):'<p style="opacity:.5;text-align:center;padding:32px">لا يوجد أقسام بعد</p>';
+    }
+    const nuDp=document.getElementById('nu-dp');
+    if(nuDp){nuDp.innerHTML='<option value="">اختر القسم...</option>'+depts.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');}
+    const ciDept=document.getElementById('ci-dept');
+    if(ciDept&&ciDept.tagName==='SELECT'){ciDept.innerHTML='<option value="">اختر...</option>'+depts.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');}
+  }catch(e){if(el)el.innerHTML='<p style="color:red">خطأ</p>';}
 }
 async function addDept(){
-  const inp=document.getElementById('dept-inp');
+  const inp=document.getElementById('dept-new');
   const name=inp?inp.value.trim():'';
   if(!name){toast('أدخل اسم القسم',true);return;}
   try{

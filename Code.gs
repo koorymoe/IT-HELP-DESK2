@@ -825,8 +825,10 @@ function handleUsersList(user){
       firstName:getCell(r,fnIdx),
       lastName: getCell(r,lnIdx),
       dept:     getCell(r,deptIdx),
+      department:getCell(r,deptIdx),
       role:     getCell(r,roleIdx)||'user',
       phone:    getCell(r,phoneIdx),
+      email:    getCell(r, findColIndex(rh,'notifyEmail')),
       active:   av===true||String(av).toUpperCase()==='TRUE',
       lastLogin:getCell(r,llIdx),
       createdAt:getCell(r,caIdx)
@@ -839,15 +841,18 @@ function handleUsersAdd(data,user){
   var empId=(data.empId||'').toString().trim().toUpperCase();if(!empId)return fail('رقم البصمة مطلوب');
   var d=sheetData(SH_USERS),hi=d.headers;for(var i=0;i<d.rows.length;i++){if(String(d.rows[i][hi.indexOf('empId')]).toUpperCase()===empId)return fail('رقم البصمة موجود مسبقاً');}
   var id='USR-'+Utilities.getUuid().replace(/-/g,'').slice(0,10).toUpperCase();
-  appendRow(SH_USERS,{id:id,empId:empId,firstName:data.firstName||'',lastName:data.lastName||'',dept:data.dept||'',role:data.role||'user',pwHash:data.pwHash||'',phone:data.phone||'',notifyEmail:data.notifyEmail||'',active:true,lastLogin:'',createdAt:now()},d.headers);
+  var deptVal=data.dept||data.department||'';
+  var pwVal=data.pwHash||data.password||'';
+  var emailVal=data.notifyEmail||data.email||'';
+  appendRow(SH_USERS,{id:id,empId:empId,firstName:data.firstName||'',lastName:data.lastName||'',dept:deptVal,role:data.role||'user',pwHash:pwVal,phone:data.phone||'',notifyEmail:emailVal,active:true,lastLogin:'',createdAt:now()},d.headers);
   var fullName=(data.firstName+' '+data.lastName).trim(),mr=getInternetUserForEmployee(data.firstName,data.lastName,data.dept||''),extraMsg='',autoMatch=null;
   if(mr&&mr.internetUser){saveInternetUser(empId,fullName,mr.internetUser,data.dept||'','نظام تلقائي');autoMatch={matched:true,internetUser:mr.internetUser,matchedName:mr.matchedName,confidence:mr.confidence};extraMsg=' — تم ربط يوزر الإنترنت تلقائياً: '+mr.internetUser+' ('+mr.confidence+'% تطابق)';}
   else{autoMatch={matched:false};extraMsg=' — لم يُعثر على يوزر إنترنت';}
   return ok({message:'تمت إضافة الموظف'+extraMsg,autoMatch:autoMatch});
 }
-function handleUsersToggle(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),acCol=findColIndex(rh,'active');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){var cur=d[i][acCol]===true||String(d[i][acCol]).toLowerCase()==='true';sh.getRange(i+1,acCol+1).setValue(!cur);return ok({message:(!cur?'تم تفعيل':'تم تعطيل')+' الحساب'});}}return fail('الموظف غير موجود');}
-function handleUsersDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.deleteRow(i+1);return ok({message:'تم حذف الموظف'});}}return fail('الموظف غير موجود');}
-function handleUsersResetPw(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),pwCol=findColIndex(rh,'pwHash');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.getRange(i+1,pwCol+1).setValue(data.pwHash);return ok({message:'تم تغيير الرمز السري'});}}return fail('الموظف غير موجود');}
+function handleUsersToggle(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),acCol=findColIndex(rh,'active');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){var newActive=data.active!==undefined?data.active:!(d[i][acCol]===true||String(d[i][acCol]).toLowerCase()==='true');sh.getRange(i+1,acCol+1).setValue(newActive);return ok({message:(newActive?'تم تفعيل':'تم تعطيل')+' الحساب'});}}return fail('الموظف غير موجود');}
+function handleUsersDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){sh.deleteRow(i+1);return ok({message:'تم حذف الموظف'});}}return fail('الموظف غير موجود');}
+function handleUsersResetPw(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var pw=data.pwHash||data.newPassword||data.password||'';var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),pwCol=findColIndex(rh,'pwHash');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){sh.getRange(i+1,pwCol+1).setValue(pw);return ok({message:'تم تغيير الرمز السري'});}}return fail('الموظف غير موجود');}
 function handleUserMyInfo(user){var result=getInternetUserForEmployee(user.firstName,user.lastName,user.dept);var internetUser=result?result.internetUser:'';var tSh=getSheet(SH_TICKETS),tData=tSh.getDataRange().getValues();var ticketCount=tData.filter(function(r){var tid=String(r[COL_TICKETS.id]||'').trim();if(!tid||tid.indexOf('TKT')<0)return false;var rid=String(r[COL_TICKETS.requesterId]||'').trim();return rid===user.empId||rid===user.id;}).length;return ok({internetUser:internetUser||null,ticketCount:ticketCount,phone:user.phone||''});}
 
 // ══════ INTERNET USERS ══════
