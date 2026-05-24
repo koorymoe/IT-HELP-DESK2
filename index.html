@@ -1424,40 +1424,51 @@ function updateAIDots(show){
   const d=document.getElementById('ai-dots');
   if(d)d.style.display=show?'flex':'none';
 }
-function pickAIDev(name){
-  aiDev=name;
-  document.querySelectorAll('.ai-dev-btn').forEach(b=>b.classList.toggle('selected',b.dataset.dev===name));
-  document.getElementById('ai-input-area').style.display='flex';
-  appendAIMsg('assistant',`سأساعدك في مشاكل ${name}. ما المشكلة التي تواجهها؟`);
+const AI_IDS={desk:{msgs:'deskAiMsgs',inp:'deskAiInp',send:'deskAiSend',dots:'deskAiDots',limitBar:'deskAiLimitBar',devSel:'deskAiDevSel'},mob:{msgs:'mobAiMsgs',inp:'mobAiInp',send:'mobAiSend',dots:'mobAiDots',limitBar:'mobAiLimitBar',devSel:'mobAiDevSel'}};
+const aiState={desk:{msgs:[],dev:null},mob:{msgs:[],dev:null}};
+function pickAIDev(btn,name,ctx){
+  ctx=ctx||'desk';
+  aiState[ctx].dev=name;
+  const sel=document.getElementById(AI_IDS[ctx].devSel);
+  if(sel)sel.querySelectorAll('.ai-dev-chip').forEach(b=>b.classList.toggle('selected',b===btn));
+  const inp=document.getElementById(AI_IDS[ctx].inp),send=document.getElementById(AI_IDS[ctx].send);
+  if(inp)inp.disabled=false;if(send)send.disabled=false;
+  appendAIMsg(ctx,'assistant','👋 سأساعدك في مشاكل '+name+'. ما المشكلة التي تواجهها؟');
 }
-function appendAIMsg(role,text){
-  const c=document.getElementById('ai-msgs');if(!c)return;
+function appendAIMsg(ctx,role,text){
+  ctx=ctx||'desk';
+  const c=document.getElementById(AI_IDS[ctx]?AI_IDS[ctx].msgs:'deskAiMsgs');if(!c)return;
   const d=document.createElement('div');
-  d.className='ai-msg '+(role==='user'?'ai-msg-u':'ai-msg-a');
-  d.innerHTML=`<div class="ai-bubble">${esc(text).replace(/\n/g,'<br>')}</div>`;
+  d.className='ai-msg '+(role==='user'?'user':'sys');
+  d.innerHTML=esc(text).replace(/\n/g,'<br>');
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
-async function sendAIMsg(){
-  const inp=document.getElementById('ai-inp');if(!inp)return;
+async function sendAIMsg(ctx){
+  ctx=ctx||'desk';
+  const ids=AI_IDS[ctx]||AI_IDS.desk;
+  const inp=document.getElementById(ids.inp);if(!inp)return;
   const msg=inp.value.trim();if(!msg)return;
-  if(aiMsgs.filter(m=>m.role==='user').length>=7){toast('وصلت للحد الأقصى للمحادثة (7 رسائل). ابدأ محادثة جديدة.',true);return;}
-  inp.value='';appendAIMsg('user',msg);
-  aiMsgs.push({role:'user',content:msg});
-  updateAIDots(true);
+  const st=aiState[ctx];
+  if(st.msgs.filter(m=>m.role==='user').length>=7){toast('وصلت للحد الأقصى (7 رسائل). ابدأ محادثة جديدة.',true);return;}
+  inp.value='';appendAIMsg(ctx,'user',msg);
+  st.msgs.push({role:'user',content:msg});
   try{
-    const r=await api('ai.chat',{messages:aiMsgs,system:buildAISystem(),device:aiDev});
-    updateAIDots(false);
+    const r=await api('ai.chat',{messages:st.msgs,device:st.dev});
     const reply=r&&r.reply?r.reply:'عذراً، لم أتمكن من معالجة طلبك.';
-    appendAIMsg('assistant',reply);
-    aiMsgs.push({role:'assistant',content:reply});
-  }catch(e){updateAIDots(false);appendAIMsg('assistant','حدث خطأ. حاول مرة أخرى.');}
+    appendAIMsg(ctx,'assistant',reply);
+    st.msgs.push({role:'assistant',content:reply});
+  }catch(e){appendAIMsg(ctx,'assistant','حدث خطأ. حاول مرة أخرى.');}
 }
-function resetAI(){
-  aiMsgs=[];aiDev=null;
-  const c=document.getElementById('ai-msgs');if(c)c.innerHTML='';
-  document.querySelectorAll('.ai-dev-btn').forEach(b=>b.classList.remove('selected'));
-  const ia=document.getElementById('ai-input-area');if(ia)ia.style.display='none';
-  appendAIMsg('assistant','مرحباً! اختر نوع الجهاز للبدء.');
+function resetAI(ctx){
+  ctx=ctx||'desk';
+  const ids=AI_IDS[ctx]||AI_IDS.desk;
+  aiState[ctx]={msgs:[],dev:null};
+  const c=document.getElementById(ids.msgs);if(c)c.innerHTML='';
+  const sel=document.getElementById(ids.devSel);
+  if(sel)sel.querySelectorAll('.ai-dev-chip').forEach(b=>b.classList.remove('selected'));
+  const inp=document.getElementById(ids.inp),send=document.getElementById(ids.send);
+  if(inp)inp.disabled=true;if(send)send.disabled=true;
+  appendAIMsg(ctx,'assistant','👋 اختر نوع الجهاز أعلاه للبدء');
 }
 
 /* ── MOBILE SUPPORT ── */
@@ -1469,7 +1480,7 @@ async function loadMobManual(devName){
   try{
     const r=await api('manual.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد محتوى</p>';return;}
-    const items=(r.items||[]).filter(i=>!devName||i.deviceType===devName);
+    const items=(r.entries||r.items||[]).filter(i=>!devName||i.deviceType===devName);
     if(!items.length){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد محتوى لهذا الجهاز</p>';return;}
     el.innerHTML=items.map(i=>`<div class="guide-card" onclick="openManualModal('${esc(i.id)}')"><i class="${esc(i.icon||'fas fa-book')}"></i><span>${esc(i.title)}</span></div>`).join('');
   }catch(e){el.innerHTML='<p style="color:red">خطأ في التحميل</p>';}
@@ -1485,16 +1496,16 @@ function openMobAI(){nav('tab-mob-ai');resetAI();fetchITKnowledge();}
 /* ── GUIDELINES ── */
 const GUIDE_ICONS=['fas fa-shield-alt','fas fa-lock','fas fa-wifi','fas fa-print','fas fa-desktop','fas fa-server','fas fa-database','fas fa-envelope','fas fa-exclamation-triangle','fas fa-info-circle'];
 async function loadGuidelinesTab(){
-  const el=document.getElementById('guide-list');if(!el)return;
+  const el=document.getElementById('guideList');if(!el)return;
   el.innerHTML=skel(3,'إرشادات');
   try{
     const r=await api('guidelines.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد إرشادات</p>';return;}
-    renderGuideList(r.items||[]);
+    renderGuideList(r.guidelines||r.entries||r.items||[]);
   }catch(e){el.innerHTML='<p style="color:red">خطأ</p>';}
 }
 function renderGuideList(items){
-  const el=document.getElementById('guide-list');if(!el)return;
+  const el=document.getElementById('guideList');if(!el)return;
   if(!items.length){el.innerHTML='<p style="opacity:.5;text-align:center;padding:32px">لا يوجد إرشادات بعد</p>';return;}
   el.innerHTML=items.map(i=>`<div class="guide-card">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
@@ -1537,12 +1548,12 @@ async function deleteGuide(id){
 /* ── MANUAL ── */
 let manSteps=[];
 async function loadManualTab(){
-  const el=document.getElementById('manual-list');if(!el)return;
+  const el=document.getElementById('manualList');if(!el)return;
   el.innerHTML=skel(3,'دليل');
   try{
     const r=await api('manual.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد دليل</p>';return;}
-    renderManualList(r.items||[]);
+    renderManualList(r.entries||r.items||[]);
   }catch(e){el.innerHTML='<p style="color:red">خطأ</p>';}
 }
 function switchDeskDev(name,btn){
@@ -1551,16 +1562,16 @@ function switchDeskDev(name,btn){
   loadManualForDev(name);
 }
 async function loadManualForDev(devName){
-  const el=document.getElementById('manual-list');if(!el)return;
+  const el=document.getElementById('manualList');if(!el)return;
   el.innerHTML=skel(2,'دليل');
   try{
     const r=await api('manual.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد</p>';return;}
-    renderManualList((r.items||[]).filter(i=>!devName||i.deviceType===devName));
+    renderManualList((r.entries||r.items||[]).filter(i=>!devName||i.deviceType===devName));
   }catch(e){el.innerHTML='<p style="color:red">خطأ</p>';}
 }
 function renderManualList(items){
-  const el=document.getElementById('manual-list');if(!el)return;
+  const el=document.getElementById('manualList');if(!el)return;
   if(!items.length){el.innerHTML='<p style="opacity:.5;text-align:center;padding:32px">لا يوجد بعد</p>';return;}
   el.innerHTML=items.map(i=>`<div class="guide-card">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
