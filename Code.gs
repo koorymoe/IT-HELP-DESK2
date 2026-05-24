@@ -888,7 +888,7 @@ function handleDeptsList(){
   }
   if(nameCol<0)nameCol=0;
   var depts=[];
-  for(var i=1;i<allData.length;i++){var val=String(allData[i][nameCol]||'').trim();if(val)depts.push(val);}
+  for(var i=1;i<allData.length;i++){var val=String(allData[i][nameCol]||'').trim();if(val)depts.push({id:val,name:val});}
   return ok({depts:depts,departments:depts});
 }
 function getDeptNameCol(headers){for(var h=0;h<headers.length;h++){var hs=String(headers[h]).trim();if(hs.includes('قسم')||hs.includes('اسم')||hs.toLowerCase().includes('name'))return h;}return 0;}
