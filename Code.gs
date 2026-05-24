@@ -27,6 +27,33 @@ var COL_USERS = {
   notifyEmail: 'إيميل الإشعارات'
 };
 
+// البحث المرن عن عمود — يدعم الأسماء البديلة وإزالة # من بداية/نهاية النص
+var COL_USERS_ALIASES = {
+  id:          ['كود داخلي','id','ID','كود'],
+  empId:       ['رقم البصمة','#رقم البصمة','رقم البصمة#','empId','رقم_البصمة','الرقم الوظيفي'],
+  firstName:   ['الاسم الأول','firstName','الاسم'],
+  lastName:    ['الاسم الأخير','lastName','الكنية'],
+  phone:       ['رقم الهاتف','رقم الهاتف #','#رقم الهاتف','phone','الهاتف'],
+  dept:        ['القسم','dept','department','الإدارة','الدائرة'],
+  role:        ['الصلاحية','role','الدور','الوظيفة'],
+  pwHash:      ['كلمة المرور Hash','كلمة المرور','pwHash','password','الرمز'],
+  active:      ['نشط','active','مفعل','الحالة'],
+  createdAt:   ['تاريخ الإنشاء','createdAt','التاريخ','تاريخ'],
+  lastLogin:   ['آخر دخول','lastLogin','آخر_دخول'],
+  notifyEmail: ['إيميل الإشعارات','البريد الإلكتروني','الإيميل','email','notifyEmail','البريد']
+};
+
+function findColIndex(headers, key) {
+  var aliases = COL_USERS_ALIASES[key] || [COL_USERS[key]];
+  for (var a = 0; a < aliases.length; a++) {
+    for (var h = 0; h < headers.length; h++) {
+      var clean = String(headers[h]).trim().replace(/^#+|#+$/g, '').trim();
+      if (clean === aliases[a] || String(headers[h]).trim() === aliases[a]) return h;
+    }
+  }
+  return -1;
+}
+
 var COL_TICKETS = {
   id:0, createdAt:1, requesterName:2, requesterId:3,
   requesterDept:4, deviceId:5, problemType:7, priority:8,
@@ -311,9 +338,9 @@ function buildManagerEmail(ticket, assignUrl) {
 
 function getEmployeeByEmpId(empId) {
   var sh=getSheet(SH_USERS),allData=sh.getDataRange().getValues(),rh=allData[0];
-  var empCol=rh.indexOf(COL_USERS.empId),roleCol=rh.indexOf(COL_USERS.role);
-  var fnCol=rh.indexOf(COL_USERS.firstName),lnCol=rh.indexOf(COL_USERS.lastName);
-  var emailCol=rh.indexOf(COL_USERS.notifyEmail),idCol=rh.indexOf(COL_USERS.id);
+  var empCol=findColIndex(rh,'empId'),roleCol=findColIndex(rh,'role');
+  var fnCol=findColIndex(rh,'firstName'),lnCol=findColIndex(rh,'lastName');
+  var emailCol=findColIndex(rh,'notifyEmail'),idCol=findColIndex(rh,'id');
   for(var i=1;i<allData.length;i++){
     var rEmpId=String(allData[i][empCol]||'').trim();
     if(rEmpId===String(empId).trim()||(parseInt(rEmpId)&&parseInt(rEmpId)===parseInt(empId))){
@@ -455,8 +482,24 @@ function getSheet(name){var sh=SS.getSheetByName(name);if(!sh){var allowCreate=[
 function sheetData(name){
   var sh=getSheet(name),vals=sh.getDataRange().getValues();
   if(vals.length<2)return{headers:vals[0]||[],rows:[]};
-  if(name===SH_USERS){var rm={};Object.keys(COL_USERS).forEach(function(e){rm[COL_USERS[e]]=e;});return{headers:vals[0].map(function(h){return rm[h]||h;}),rows:vals.slice(1)};}
+  if(name===SH_USERS){
+    var rawHeaders=vals[0];
+    var engHeaders=rawHeaders.map(function(h){
+      var clean=String(h).trim().replace(/^#+|#+$/g,'').trim();
+      for(var key in COL_USERS_ALIASES){
+        var aliases=COL_USERS_ALIASES[key];
+        for(var a=0;a<aliases.length;a++){if(clean===aliases[a]||String(h).trim()===aliases[a])return key;}
+      }
+      return clean||String(h);
+    });
+    return{headers:engHeaders,rows:vals.slice(1)};
+  }
   return{headers:vals[0],rows:vals.slice(1)};
+}
+
+function getUsersColIdxFlex(sh,key){
+  var headers=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  return findColIndex(headers,key);
 }
 function appendRow(sheetName,obj,headers){
   var sh=getSheet(sheetName),row;
@@ -474,10 +517,10 @@ function handleLogin(data){
   var empId=(data.empId||'').toString().trim(),pwHash=(data.pwHash||'').toString().trim().toLowerCase();
   if(!empId||!pwHash)return fail('البيانات ناقصة');
   var empIdNum=parseInt(empId),sh=getSheet(SH_USERS),allData=sh.getDataRange().getValues(),rh=allData[0];
-  var idCol=rh.indexOf(COL_USERS.id),empIdCol=rh.indexOf(COL_USERS.empId),pwCol=rh.indexOf(COL_USERS.pwHash);
-  var activeCol=rh.indexOf(COL_USERS.active),roleCol=rh.indexOf(COL_USERS.role);
-  var firstCol=rh.indexOf(COL_USERS.firstName),lastCol=rh.indexOf(COL_USERS.lastName);
-  var deptCol=rh.indexOf(COL_USERS.dept),phoneCol=rh.indexOf(COL_USERS.phone),emailCol=rh.indexOf(COL_USERS.notifyEmail);
+  var idCol=findColIndex(rh,'id'),empIdCol=findColIndex(rh,'empId'),pwCol=findColIndex(rh,'pwHash');
+  var activeCol=findColIndex(rh,'active'),roleCol=findColIndex(rh,'role');
+  var firstCol=findColIndex(rh,'firstName'),lastCol=findColIndex(rh,'lastName');
+  var deptCol=findColIndex(rh,'dept'),phoneCol=findColIndex(rh,'phone'),emailCol=findColIndex(rh,'notifyEmail');
   for(var i=1;i<allData.length;i++){
     var r=allData[i],rEmpId=String(r[empIdCol]||'').trim();
     if(rEmpId!==empId&&rEmpId!==empId.toUpperCase()&&(isNaN(empIdNum)||parseInt(rEmpId)!==empIdNum))continue;
@@ -504,9 +547,9 @@ function verifyToken(token){
     var userId=p[0],empId=p[1],role=p[2],ts=parseInt(p[3]);
     if(Date.now()-ts>12*3600*1000)return null;
     var sh=getSheet(SH_USERS),allD=sh.getDataRange().getValues(),rh=allD[0];
-    var idC=rh.indexOf(COL_USERS.id),acC=rh.indexOf(COL_USERS.active),empC=rh.indexOf(COL_USERS.empId);
-    var rlC=rh.indexOf(COL_USERS.role),fnC=rh.indexOf(COL_USERS.firstName),lnC=rh.indexOf(COL_USERS.lastName);
-    var dpC=rh.indexOf(COL_USERS.dept),phC=rh.indexOf(COL_USERS.phone),emC=rh.indexOf(COL_USERS.notifyEmail);
+    var idC=findColIndex(rh,'id'),acC=findColIndex(rh,'active'),empC=findColIndex(rh,'empId');
+    var rlC=findColIndex(rh,'role'),fnC=findColIndex(rh,'firstName'),lnC=findColIndex(rh,'lastName');
+    var dpC=findColIndex(rh,'dept'),phC=findColIndex(rh,'phone'),emC=findColIndex(rh,'notifyEmail');
     for(var i=1;i<allD.length;i++){
       var r=allD[i],rId=String(r[idC]||'').trim(),rEmp=String(r[empC]||'').trim();
       if(rId!==userId&&rEmp!==empId)continue;
@@ -518,7 +561,7 @@ function verifyToken(token){
 }
 function updateLastLogin(userId){
   try{var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),hi=d[0];
-  var idCol=hi.indexOf(COL_USERS.id),llCol=hi.indexOf(COL_USERS.lastLogin);
+  var idCol=findColIndex(hi,'id'),llCol=findColIndex(hi,'lastLogin');
   for(var i=1;i<d.length;i++){if(String(d[i][idCol])===String(userId)){if(llCol>=0)sh.getRange(i+1,llCol+1).setValue(now());break;}}}catch(e){}
 }
 
@@ -693,7 +736,7 @@ function buildTicketEmail(ticket,claimUrl,solveUrl){
 }
 
 function sendSolvedEmail(to,ticketId,userName,solution){try{MailApp.sendEmail({to:to,subject:'✅ تم حل بلاغك ['+ticketId+']',htmlBody:'<div dir="rtl" style="font-family:Arial;padding:20px"><h2 style="color:#059669">✅ تم حل بلاغك</h2><p>عزيزي '+userName+'</p><p>البلاغ رقم <strong>'+ticketId+'</strong> تم حله</p><p>'+(solution||'تم المعالجة')+'</p></div>'});}catch(e){}}
-function getEmailByEmpId(empId){var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),empCol=getUsersColIdx(sh,'empId'),emailCol=getUsersColIdx(sh,'notifyEmail');for(var i=1;i<d.length;i++){if(String(d[i][empCol]).trim()===String(empId).trim())return String(d[i][emailCol]||'').trim()||null;}return null;}
+function getEmailByEmpId(empId){var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],empCol=findColIndex(rh,'empId'),emailCol=findColIndex(rh,'notifyEmail');for(var i=1;i<d.length;i++){if(String(d[i][empCol]).trim()===String(empId).trim())return emailCol>=0?String(d[i][emailCol]||'').trim()||null:null;}return null;}
 function getEmailForUser(userId){var d=sheetData(SH_USERS),hi=d.headers;for(var i=0;i<d.rows.length;i++){if(String(d.rows[i][hi.indexOf('id')])===userId)return String(d.rows[i][hi.indexOf('notifyEmail')]||'').trim()||null;}return null;}
 
 function handleNotificationsCheck(data,user){
@@ -727,7 +770,20 @@ function handleDevicesList(data,user){
 function updateDeviceField(devId,updates){var sh=ensureDeviceSheet(),d=sh.getDataRange().getValues();if(d.length<1)return fail('الجهاز غير موجود');var hi=d[0],devIdCol=hi.indexOf('devId');if(devIdCol<0)devIdCol=0;for(var i=1;i<d.length;i++){if(String(d[i][devIdCol]).trim()===devId){Object.keys(updates).forEach(function(k){var col=hi.indexOf(k);if(col>=0)sh.getRange(i+1,col+1).setValue(updates[k]);});return ok({message:'تم تحديث الجهاز'});}}return fail('الجهاز غير موجود: '+devId);}
 
 // ══════ USERS ══════
-function handleUsersList(user){if(ROLES_ADMIN.indexOf(user.role)<0&&ROLES_IT.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),allData=sh.getDataRange().getValues(),rh=allData[0];function ci(k){return rh.indexOf(COL_USERS[k]);}var users=[];for(var i=1;i<allData.length;i++){var r=allData[i];function g(k){var c=ci(k);return c>=0?String(r[c]||'').trim():'';}var empId=g('empId');if(!empId)continue;var av=ci('active')>=0?r[ci('active')]:true;users.push({id:g('id')||('USR-'+empId),empId:empId,firstName:g('firstName'),lastName:g('lastName'),dept:g('dept'),role:g('role')||'user',phone:g('phone'),active:av===true||String(av).toUpperCase()==='TRUE',lastLogin:g('lastLogin'),createdAt:g('createdAt')});}return ok({users:users});}
+function handleUsersList(user){
+  if(ROLES_ADMIN.indexOf(user.role)<0&&ROLES_IT.indexOf(user.role)<0)return fail('غير مصرح');
+  var sh=getSheet(SH_USERS),allData=sh.getDataRange().getValues(),rh=allData[0];
+  function ci(k){return findColIndex(rh,k);}
+  var users=[];
+  for(var i=1;i<allData.length;i++){
+    var r=allData[i];
+    function g(k){var c=ci(k);return c>=0?String(r[c]||'').trim():'';}
+    var empId=g('empId');if(!empId)continue;
+    var acIdx=ci('active'),av=acIdx>=0?r[acIdx]:true;
+    users.push({id:g('id')||('USR-'+empId),empId:empId,firstName:g('firstName'),lastName:g('lastName'),dept:g('dept'),role:g('role')||'user',phone:g('phone'),active:av===true||String(av).toUpperCase()==='TRUE',lastLogin:g('lastLogin'),createdAt:g('createdAt')});
+  }
+  return ok({users:users});
+}
 function handleUsersAdd(data,user){
   if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');
   var empId=(data.empId||'').toString().trim().toUpperCase();if(!empId)return fail('رقم البصمة مطلوب');
@@ -739,9 +795,9 @@ function handleUsersAdd(data,user){
   else{autoMatch={matched:false};extraMsg=' — لم يُعثر على يوزر إنترنت';}
   return ok({message:'تمت إضافة الموظف'+extraMsg,autoMatch:autoMatch});
 }
-function handleUsersToggle(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),idCol=getUsersColIdx(sh,'id'),acCol=getUsersColIdx(sh,'active');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){var cur=d[i][acCol]===true||String(d[i][acCol]).toLowerCase()==='true';sh.getRange(i+1,acCol+1).setValue(!cur);return ok({message:(!cur?'تم تفعيل':'تم تعطيل')+' الحساب'});}}return fail('الموظف غير موجود');}
-function handleUsersDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),idCol=getUsersColIdx(sh,'id');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.deleteRow(i+1);return ok({message:'تم حذف الموظف'});}}return fail('الموظف غير موجود');}
-function handleUsersResetPw(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),idCol=getUsersColIdx(sh,'id'),pwCol=getUsersColIdx(sh,'pwHash');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.getRange(i+1,pwCol+1).setValue(data.pwHash);return ok({message:'تم تغيير الرمز السري'});}}return fail('الموظف غير موجود');}
+function handleUsersToggle(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),acCol=findColIndex(rh,'active');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){var cur=d[i][acCol]===true||String(d[i][acCol]).toLowerCase()==='true';sh.getRange(i+1,acCol+1).setValue(!cur);return ok({message:(!cur?'تم تفعيل':'تم تعطيل')+' الحساب'});}}return fail('الموظف غير موجود');}
+function handleUsersDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.deleteRow(i+1);return ok({message:'تم حذف الموظف'});}}return fail('الموظف غير موجود');}
+function handleUsersResetPw(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),pwCol=findColIndex(rh,'pwHash');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===data.id){sh.getRange(i+1,pwCol+1).setValue(data.pwHash);return ok({message:'تم تغيير الرمز السري'});}}return fail('الموظف غير موجود');}
 function handleUserMyInfo(user){var result=getInternetUserForEmployee(user.firstName,user.lastName,user.dept);var internetUser=result?result.internetUser:'';var tSh=getSheet(SH_TICKETS),tData=tSh.getDataRange().getValues();var ticketCount=tData.filter(function(r){var tid=String(r[COL_TICKETS.id]||'').trim();if(!tid||tid.indexOf('TKT')<0)return false;var rid=String(r[COL_TICKETS.requesterId]||'').trim();return rid===user.empId||rid===user.id;}).length;return ok({internetUser:internetUser||null,ticketCount:ticketCount,phone:user.phone||''});}
 
 // ══════ INTERNET USERS ══════
