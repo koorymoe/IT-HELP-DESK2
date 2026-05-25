@@ -1601,6 +1601,8 @@ let manSteps=[];
 async function loadManualTab(){
   const el=document.getElementById('manualList');if(!el)return;
   el.innerHTML=skel(3,'دليل');
+  const isAdmin=S.user&&['admin','it_manager'].includes(S.user.role);
+  const addBtn=document.getElementById('addManualBtn');if(addBtn)addBtn.style.display=isAdmin?'':'none';
   try{
     const r=await api('manual.list');
     if(!r||!r.success){el.innerHTML='<p style="opacity:.5;text-align:center">لا يوجد دليل</p>';return;}
@@ -1668,13 +1670,21 @@ function pickManualIcon(ic){
   document.getElementById('manual-ic-preview').className=ic;
   document.querySelectorAll('.mic-opt').forEach(b=>b.classList.toggle('selected',b.dataset.ic===ic));
 }
-function openManualModal(){manSteps=[];renderStepsList();openM('ovAddManual');}
+function openManualModal(){
+  manSteps=[];renderStepsList();
+  const t=document.getElementById('manual-title');if(t)t.value='';
+  const d=document.getElementById('manual-dev');if(d)d.value='';
+  const desc=document.getElementById('manual-desc');if(desc)desc.value='';
+  document.getElementById('manualModalTitle').textContent='إضافة تعليمات جديدة';
+  openM('ovAddManual');
+}
 async function subManual(e){
   e.preventDefault();
   const title=document.getElementById('manual-title').value.trim(),devType=document.getElementById('manual-dev').value,icon=document.getElementById('manual-ic-sel').value;
   if(!title){toast('أدخل العنوان',true);return;}
   try{
-    const r=await api('manual.add',{title,deviceType:devType,steps:manSteps,icon});
+    if(!manSteps.length){toast('أضف خطوة واحدة على الأقل',true);return;}
+    const r=await api('manual.add',{title,device:devType,steps:manSteps,icon});
     if(r&&r.success){toast('✅ تمت الإضافة');closeM('ovAddManual');manSteps=[];loadManualTab();}
     else toast(r?r.message:'خطأ',true);
   }catch(err){toast('خطأ',true);}
