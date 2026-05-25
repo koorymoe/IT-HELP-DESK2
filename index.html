@@ -1294,7 +1294,7 @@ function filterUsers(){
   const sf=sfEl?sfEl.value.trim().toLowerCase():'';
   renderUsers(S.users.filter(u=>{
     if(rf&&u.role!==rf)return false;
-    if(sf&&!(u.firstName+' '+u.lastName+(u.email||'')).toLowerCase().includes(sf))return false;
+    if(sf&&!(u.firstName+' '+u.lastName+(u.email||'')+(u.empId||'')).toLowerCase().includes(sf))return false;
     return true;
   }));
 }

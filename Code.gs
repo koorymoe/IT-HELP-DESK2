@@ -523,22 +523,21 @@ function getUsersColIdxFlex(sh,key){
   return findColIndex(headers,key);
 }
 function appendRow(sheetName,obj,headers){
-  var sh=getSheet(sheetName),row;
+  var sh=getSheet(sheetName);
+  var rh=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  var row=new Array(rh.length).fill('');
   if(sheetName===SH_USERS){
-    var rh=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
-    row=rh.map(function(h,colIdx){
-      // جرب كل مفتاح في COL_USERS_ALIASES
-      for(var key in COL_USERS_ALIASES){
-        if(obj[key]!==undefined){
-          var ci=findColIndex(rh,key);
-          if(ci===colIdx)return obj[key];
-        }
-      }
-      // fallback: طابق باسم العمود مباشرة
-      return obj[String(h).trim()]!==undefined?obj[String(h).trim()]:'';
-    });
+    // لكل مفتاح بالـ obj، ابحث عن عموده في الشيت وضع القيمة
+    for(var key in obj){
+      if(obj[key]===undefined||obj[key]==='')continue;
+      var ci=findColIndex(rh,key);
+      // إذا ما لقى عبر الـ aliases جرب المطابقة المباشرة
+      if(ci<0){for(var x=0;x<rh.length;x++){if(String(rh[x]).trim()===key){ci=x;break;}}}
+      if(ci>=0&&ci<row.length)row[ci]=obj[key];
+    }
+  } else {
+    for(var i=0;i<rh.length;i++){var h=String(rh[i]).trim();if(obj[h]!==undefined)row[i]=obj[h];}
   }
-  else{row=headers.map(function(h){return obj[h]!==undefined?obj[h]:'';});}
   sh.appendRow(row);
 }
 function updateRow(sheetName,rowIndex,obj,headers){var sh=getSheet(sheetName),row=headers.map(function(h){return obj[h]!==undefined?obj[h]:'';});sh.getRange(rowIndex+2,1,1,row.length).setValues([row]);}
