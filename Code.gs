@@ -800,13 +800,13 @@ function handleUsersList(user){
   if(allData.length<2)return ok({users:[]});
   var rh=allData[0];
   // نحسب الـ indexes مرة واحدة خارج الـ loop
-  var idIdx    = findColIndex(rh,'id');
-  var empIdx   = findColIndex(rh,'empId');
-  var fnIdx    = findColIndex(rh,'firstName');
-  var lnIdx    = findColIndex(rh,'lastName');
-  var deptIdx  = findColIndex(rh,'dept');
-  var roleIdx  = findColIndex(rh,'role');
-  var phoneIdx = findColIndex(rh,'phone');
+  var idIdx    = findColIndex(rh,'id');       if(idIdx<0)idIdx=0;
+  var empIdx   = findColIndex(rh,'empId');    if(empIdx<0)empIdx=1;
+  var fnIdx    = findColIndex(rh,'firstName');if(fnIdx<0)fnIdx=2;
+  var lnIdx    = findColIndex(rh,'lastName'); if(lnIdx<0)lnIdx=3;
+  var phoneIdx = findColIndex(rh,'phone');    if(phoneIdx<0)phoneIdx=4;
+  var deptIdx  = findColIndex(rh,'dept');     if(deptIdx<0)deptIdx=5;
+  var roleIdx  = findColIndex(rh,'role');     if(roleIdx<0)roleIdx=6;
   var acIdx    = findColIndex(rh,'active');
   var llIdx    = findColIndex(rh,'lastLogin');
   var caIdx    = findColIndex(rh,'createdAt');
@@ -842,7 +842,8 @@ function handleUsersAdd(data,user){
   var d=sheetData(SH_USERS),hi=d.headers;for(var i=0;i<d.rows.length;i++){if(String(d.rows[i][hi.indexOf('empId')]).toUpperCase()===empId)return fail('رقم البصمة موجود مسبقاً');}
   var id='USR-'+Utilities.getUuid().replace(/-/g,'').slice(0,10).toUpperCase();
   var deptVal=data.dept||data.department||'';
-  var pwVal=data.pwHash||data.password||'';
+  var plainPw=data.password||'';
+  var pwVal=data.pwHash||(plainPw?sha256(plainPw):'');
   var emailVal=data.notifyEmail||data.email||'';
   appendRow(SH_USERS,{id:id,empId:empId,firstName:data.firstName||'',lastName:data.lastName||'',dept:deptVal,role:data.role||'user',pwHash:pwVal,phone:data.phone||'',notifyEmail:emailVal,active:true,lastLogin:'',createdAt:now()},d.headers);
   var fullName=(data.firstName+' '+data.lastName).trim(),mr=getInternetUserForEmployee(data.firstName,data.lastName,data.dept||''),extraMsg='',autoMatch=null;
@@ -852,7 +853,7 @@ function handleUsersAdd(data,user){
 }
 function handleUsersToggle(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),acCol=findColIndex(rh,'active');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){var newActive=data.active!==undefined?data.active:!(d[i][acCol]===true||String(d[i][acCol]).toLowerCase()==='true');sh.getRange(i+1,acCol+1).setValue(newActive);return ok({message:(newActive?'تم تفعيل':'تم تعطيل')+' الحساب'});}}return fail('الموظف غير موجود');}
 function handleUsersDelete(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){sh.deleteRow(i+1);return ok({message:'تم حذف الموظف'});}}return fail('الموظف غير موجود');}
-function handleUsersResetPw(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var pw=data.pwHash||data.newPassword||data.password||'';var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),pwCol=findColIndex(rh,'pwHash');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){sh.getRange(i+1,pwCol+1).setValue(pw);return ok({message:'تم تغيير الرمز السري'});}}return fail('الموظف غير موجود');}
+function handleUsersResetPw(data,user){if(ROLES_ADMIN.indexOf(user.role)<0)return fail('غير مصرح');var uid=data.id||data.userId||'';var rawPw=data.newPassword||data.password||'';var pw=data.pwHash||(rawPw?sha256(rawPw):'');var sh=getSheet(SH_USERS),d=sh.getDataRange().getValues(),rh=d[0],idCol=findColIndex(rh,'id'),pwCol=findColIndex(rh,'pwHash');for(var i=1;i<d.length;i++){if(String(d[i][idCol])===uid){sh.getRange(i+1,pwCol+1).setValue(pw);return ok({message:'تم تغيير الرمز السري'});}}return fail('الموظف غير موجود');}
 function handleUserMyInfo(user){var result=getInternetUserForEmployee(user.firstName,user.lastName,user.dept);var internetUser=result?result.internetUser:'';var tSh=getSheet(SH_TICKETS),tData=tSh.getDataRange().getValues();var ticketCount=tData.filter(function(r){var tid=String(r[COL_TICKETS.id]||'').trim();if(!tid||tid.indexOf('TKT')<0)return false;var rid=String(r[COL_TICKETS.requesterId]||'').trim();return rid===user.empId||rid===user.id;}).length;return ok({internetUser:internetUser||null,ticketCount:ticketCount,phone:user.phone||''});}
 
 // ══════ INTERNET USERS ══════
