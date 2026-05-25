@@ -1303,10 +1303,12 @@ function renderUsers(users){
   if(!users.length){u.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;opacity:.5">لا يوجد مستخدمون</td></tr>';return;}
   u.innerHTML=users.map(u=>`
   <tr>
-    <td><div style="font-weight:600">${esc(u.firstName)} ${esc(u.lastName)}</div><div style="font-size:.78rem;opacity:.6">${esc(u.email)}</div></td>
+    <td style="font-family:monospace;font-size:.85rem">${esc(u.empId||'—')}</td>
+    <td><div style="font-weight:600">${esc(u.firstName)} ${esc(u.lastName)}</div><div style="font-size:.78rem;opacity:.6">${esc(u.email||'')}</div></td>
+    <td>${esc(u.department||u.dept||'—')}</td>
     <td><span class="badge" style="background:var(--in-l);color:var(--in)">${ROLE_L[u.role]||u.role}</span></td>
-    <td>${esc(u.department||'—')}</td>
     <td><span class="badge" style="background:${u.active?'var(--gr-l)':'var(--re-l)'};color:${u.active?'var(--gr-d)':'#b91c1c'}">${u.active?'نشط':'موقوف'}</span></td>
+    <td style="font-size:.78rem;opacity:.6">${esc(u.lastLogin||'—')}</td>
     <td>
       <button class="btn-sm" onclick="openPwModal('${esc(u.id)}','${esc(u.firstName)} ${esc(u.lastName)}')" title="تغيير كلمة المرور"><i class="fas fa-key"></i></button>
       <button class="btn-sm" onclick="togUser('${esc(u.id)}',${!u.active})" title="${u.active?'إيقاف':'تفعيل'}"><i class="fas fa-${u.active?'ban':'check'}"></i></button>
