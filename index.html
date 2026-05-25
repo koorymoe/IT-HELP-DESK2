@@ -283,6 +283,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 .prob-btn.selected .pb-tx{color:var(--in-d)}
 .pri-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;width:100%}
 .pri-btn{border:2px solid var(--border);border-radius:10px;padding:9px 4px;text-align:center;cursor:pointer;transition:.15s;background:var(--card);font-size:10px;font-weight:700;color:var(--sl);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+.pri-btn.selected{border-color:var(--in);background:var(--in-l);color:var(--in-d)}
 .pri-btn.sel-منخفضة{border-color:#10b981;background:#ecfdf5;color:#065f46}
 .pri-btn.sel-متوسطة{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8}
 .pri-btn.sel-عالية{border-color:#f59e0b;background:#fffbeb;color:#92400e}
@@ -1338,12 +1339,7 @@ async function subUser(e){
     else toast(r?r.message:'خطأ',true);
   }catch(err){toast('خطأ',true);}
 }
-function openPwModal(uid,name){
-  S.pwUid=uid;
-  document.getElementById('pwModalName').textContent=name;
-  document.getElementById('pw-new').value='';
-  openM('pwModal');
-}
+function openPwModal(uid,name){S.pwUid=uid;const nm=document.getElementById('pwModalName');if(nm)nm.textContent=name;const inp=document.getElementById('pw-new');if(inp)inp.value='';openM('pwModal');}
 function closePwModal(){closeM('pwModal');}
 async function submitPwReset(){
   const np=document.getElementById('pw-new').value;
@@ -1948,10 +1944,16 @@ async function deleteTicket(tid){
 /* ── UTILITY ── */
 function animN(el){if(!el)return;el.classList.remove('anim-in');void el.offsetWidth;el.classList.add('anim-in');}
 function skel(n,label){return Array(n).fill(`<div class="skel-row"><div class="skel" style="height:18px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:14px;width:40%"></div></div>`).join('');}
-function openM(id){const el=document.getElementById(id);if(el){el.classList.add('open');el.classList.add('show');}}
-function closeM(id){const el=document.getElementById(id);if(el){el.classList.remove('open');el.classList.remove('show');}}
+function openM(id){const el=document.getElementById(id);if(el){el.style.display='flex';el.classList.add('open');el.classList.add('show');document.body.style.overflow='hidden';}}
+function closeM(id){const el=document.getElementById(id);if(el){el.style.display='none';el.classList.remove('open');el.classList.remove('show');document.body.style.overflow='';}}
 function selProb(btn,v){document.getElementById('mn-p').value=v;document.querySelectorAll('.prob-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');}
-function selPri(btn,v){document.getElementById('mn-pri').value=v;document.querySelectorAll('.pri-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');}
+function selPri(btn,v){
+  document.getElementById('mn-pri').value=v;
+  document.querySelectorAll('.pri-btn').forEach(b=>{
+    b.className=b.className.replace(/\bsel-\S+/g,'').replace(/\bselected\b/g,'').trim();
+  });
+  if(btn){btn.classList.add('selected');btn.classList.add('sel-'+v);}
+}
 function selDev(btn,v){document.getElementById('mn-di').value=v;document.querySelectorAll('.dev-chip').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');}
 let _toastT;
 function toast(msg,err=false){
