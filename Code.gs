@@ -524,7 +524,20 @@ function getUsersColIdxFlex(sh,key){
 }
 function appendRow(sheetName,obj,headers){
   var sh=getSheet(sheetName),row;
-  if(sheetName===SH_USERS){var rh=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];row=rh.map(function(h){var k=Object.keys(COL_USERS).find(function(x){return COL_USERS[x]===h;});return(k&&obj[k]!==undefined)?obj[k]:(obj[h]!==undefined?obj[h]:'');});}
+  if(sheetName===SH_USERS){
+    var rh=sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+    row=rh.map(function(h,colIdx){
+      // جرب كل مفتاح في COL_USERS_ALIASES
+      for(var key in COL_USERS_ALIASES){
+        if(obj[key]!==undefined){
+          var ci=findColIndex(rh,key);
+          if(ci===colIdx)return obj[key];
+        }
+      }
+      // fallback: طابق باسم العمود مباشرة
+      return obj[String(h).trim()]!==undefined?obj[String(h).trim()]:'';
+    });
+  }
   else{row=headers.map(function(h){return obj[h]!==undefined?obj[h]:'';});}
   sh.appendRow(row);
 }
